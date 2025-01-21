@@ -1,0 +1,11 @@
+assets/images
+assets/statements
+assets/other/*.json
+Previous_versions_of_app
+*__pycache__/
+tests
+myevn
+.env
+list.txt
+req.txt
+task.txt
