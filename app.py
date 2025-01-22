@@ -156,7 +156,12 @@ if st.session_state["connected"]:
             # Display an error message if there is no data
             st.info("Choose a Bank from the dropdown and upload the bank statement to get started.")
 
+    # get data from db
     df=get_data(db_name,user_name)
+
+    # Convert the Date column to datetime and then format it
+    df['Date'] = pd.to_datetime(df['Date'],format=date_format,errors='coerce').dt.strftime('%d-%b-%Y')
+
     # Show the data in an ag-Grid table
     st.subheader(f"Displaying Bank Statement data")
 
