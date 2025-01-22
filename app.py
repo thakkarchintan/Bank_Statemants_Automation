@@ -17,7 +17,22 @@ from utils import *
 
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Bank Statements Automation",layout="wide")
-st.title("Bank Statements Automation")
+st.markdown(
+        """
+        <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top:200px;
+        }
+        </style>
+        <div class="center">
+            <h1>Bank Statements Automation</h1>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 load_dotenv()
 
