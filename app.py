@@ -16,7 +16,7 @@ from utils import *
 # from utils.bank_data import *
 
 # Set Streamlit to wide mode
-st.set_page_config(page_title="Autostatementpro",layout="wide")
+st.set_page_config(page_title="Bank Statements Automation",layout="wide")
 
 load_dotenv()
 
