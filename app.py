@@ -17,22 +17,6 @@ from utils import *
 
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Bank Statements Automation",layout="wide")
-st.markdown(
-        """
-        <style>
-        .center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top:200px;
-        }
-        </style>
-        <div class="center">
-            <h1>Bank Statements Automation</h1>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
 load_dotenv()
 
@@ -49,6 +33,21 @@ authenticator.login()
 db_name=os.getenv("DATABASE")
 
 if st.session_state["connected"]:
+    st.markdown(
+        """
+        <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        </style>
+        <div class="center">
+            <h1>Bank Statements Automation</h1>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     user_info=st.session_state['user_info']
     user_name = str(user_info.get('email'))
     user_name = user_name[:-10]
@@ -64,6 +63,9 @@ if st.session_state["connected"]:
     if st.sidebar.button("Log out"):
         authenticator.logout()
         
+    # sorting list of banks
+    bank_list.sort()
+
     # Sidebar with bank selection dropdown and file upload
     bank = st.sidebar.selectbox("Select Bank", bank_list)
 
@@ -204,5 +206,21 @@ if st.session_state["connected"]:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     
-# else:
+else:
+    st.markdown(
+        """
+        <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top:200px;
+        }
+        </style>
+        <div class="center">
+            <h1>Bank Statements Automation</h1>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 #     st.title("Bank Statements Automation")    
