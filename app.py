@@ -17,6 +17,7 @@ from utils import *
 
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Bank Statements Automation",layout="wide")
+st.title("Bank Statements Automation")
 
 load_dotenv()
 
@@ -25,6 +26,7 @@ authenticator = Authenticator(
     secret_path = "/etc/secrets/Bank_statement.json",
     redirect_uri="https://bankstatements.onrender.com",
 )
+
 authenticator.check_auth()
 authenticator.login()
 
@@ -188,4 +190,4 @@ if st.session_state["connected"]:
     )
     
 # else:
-#     st.write("You have to log in first ...")    
+#     st.title("Bank Statements Automation")    
