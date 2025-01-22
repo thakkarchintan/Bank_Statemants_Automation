@@ -1,11 +1,12 @@
 assets/images
 assets/statements
-assets/other/*.json
+etc/secrets/*.json
 Previous_versions_of_app
 *__pycache__/
 tests
 myevn
 .env
+.envNew
 list.txt
 req.txt
 task.txt

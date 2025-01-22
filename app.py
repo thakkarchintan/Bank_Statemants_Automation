@@ -16,13 +16,13 @@ from utils import *
 # from utils.bank_data import *
 
 # Set Streamlit to wide mode
-st.set_page_config(page_title="Transaction Visualizer",layout="wide")
+st.set_page_config(page_title="Autostatementpro",layout="wide")
 
 load_dotenv()
 
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
-    secret_path = "assets\other\Bank_statement.json",
+    secret_path = os.path.join("etc","secrets","Bank_statement.json"),
     redirect_uri="http://localhost:8501",
 )
 authenticator.check_auth()
@@ -92,7 +92,7 @@ if st.session_state["connected"]:
 
             # Start - Load the categorization data from the Excel file to process and categorize the Debit transactions
 
-            categorization_file_path = "assets\other\categorization.xlsx"
+            categorization_file_path = os.path.join("assets","other","categorization.xlsx")
             categorization_df = pd.read_excel(categorization_file_path, sheet_name='debit')
 
             # Create a dictionary for quick lookup
