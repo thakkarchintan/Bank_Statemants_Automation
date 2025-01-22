@@ -77,7 +77,7 @@ if st.session_state["connected"]:
         return output
 
     date_format=banks_date_format[bank]
-    
+
     if st.sidebar.button("Add data"):
         table_columns=table_columns_dic[bank]
         new_table_columns = ['Date','Narration','Debit','Credit']
@@ -161,7 +161,7 @@ if st.session_state["connected"]:
     df=get_data(db_name,user_name)
 
     # Convert the Date column to datetime and then format it
-    df['Date'] = pd.to_datetime(df['Date'],format=date_format,errors='coerce').dt.strftime('%d-%b-%Y')
+    df['Date'] = pd.to_datetime(df['Date'],errors='coerce').dt.strftime('%d-%b-%Y')
 
     # Show the data in an ag-Grid table
     st.subheader(f"Displaying Bank Statement data")
