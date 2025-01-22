@@ -23,7 +23,7 @@ load_dotenv()
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
     secret_path = os.path.join("etc","secrets","Bank_statement.json"),
-    redirect_uri="http://localhost:8501",
+    redirect_uri="https://autostatements.pro.onrender.com",
 )
 authenticator.check_auth()
 authenticator.login()
