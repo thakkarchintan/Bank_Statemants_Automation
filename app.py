@@ -187,7 +187,5 @@ if st.session_state["connected"]:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     
-
-    #     # Use the function in your Streamlit app
-else:
-    st.write("You have to log in first ...")    
+# else:
+#     st.write("You have to log in first ...")    

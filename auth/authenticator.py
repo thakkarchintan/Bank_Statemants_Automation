@@ -47,7 +47,29 @@ class Authenticator:
     def login(self):
         if not st.session_state["connected"]:
             auth_url = self.get_auth_url()
-            st.sidebar.link_button("login with google", auth_url)
+            st.markdown(
+                f"""
+                <style>
+                .gcenter {{
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }}
+                </style>
+                <div class="gcenter">
+                    <a href="{auth_url}" target="_blank">
+                        <button style="background-color: #4285F4; margin-right:15px; color: white; border-radius: 5px; padding: 10px 50px; font-size: 20px; border: none; cursor: pointer;">
+                            Login with Google
+                            <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" 
+                            width="30" style="vertical-align: middle; margin-left: 10px; border-radius: 50%;"/>
+                        </button>
+                    </a>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            # st.sidebar.link_button("login with google", auth_url)
 
     def check_auth(self):
 
