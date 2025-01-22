@@ -76,8 +76,9 @@ if st.session_state["connected"]:
         
         return output
 
+    date_format=banks_date_format[bank]
+    
     if st.sidebar.button("Add data"):
-        date_format=banks_date_format[bank]
         table_columns=table_columns_dic[bank]
         new_table_columns = ['Date','Narration','Debit','Credit']
         isCrDr=bank_status_dict[bank]
