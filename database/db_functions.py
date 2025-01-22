@@ -13,7 +13,8 @@ HOST = os.getenv("HOST")
 USER = os.getenv("USER")
 PASSWORD = os.getenv("PASSWORD")
 DATABASE = os.getenv("DATABASE")
-PORT = int(os.getenv("PORT"))
+PORT = 3306
+# int(os.getenv("PORT"))
 
 # Table name
 # user_name='user1'
