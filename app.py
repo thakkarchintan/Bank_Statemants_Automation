@@ -27,7 +27,6 @@ authenticator = Authenticator(
 )
 
 authenticator.check_auth()
-authenticator.login()
 
 
 db_name=os.getenv("DATABASE")
@@ -223,4 +222,6 @@ else:
         """,
         unsafe_allow_html=True
     )
+    authenticator.login()
+    
 #     st.title("Bank Statements Automation")    
