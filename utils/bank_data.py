@@ -88,10 +88,10 @@ table_columns_dic = {
     'Karur Vysya Bank': []
 }
 
-table_columns_dic = {
+table_columns_pdf_dic = {
     'HDFC Bank': ['Date', 'Narration', 'Withdrawal Amt.', 'Deposit Amt.'],
     'State Bank of India': ['Date', 'Details', 'Debit', 'Credit'],
-    'ICICI Bank': ['Transaction Date','Transaction Remarks','Withdrawal Amount (INR )','Deposit Amount (INR )'],
+    'ICICI Bank': ['Transaction Date','Transaction Remarks','Withdrawal Amount\n(INR )', 'Deposit Amount\n(INR )'],
     'Bank of Baroda': ['TRAN DATE', 'NARRATION', 'WITHDRAWAL(DR)', 'DEPOSIT(CR)'],
     'Bank of India': ['Date','Remarks','Debit','Credit'],
     'Indian Overseas Bank': ['DATE','NARATION','DEBIT','CREDIT'],

@@ -20,6 +20,8 @@ st.set_page_config(page_title="Bank Statements Automation",layout="wide")
 
 load_dotenv()
 
+showToast=False
+
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
     secret_path = "/etc/secrets/Bank_statement.json",
@@ -41,8 +43,8 @@ if st.session_state["connected"]:
             align-items: center;
         }
         </style>
-        <div class="center">
-            <h1>Bank Statements Automation</h1>
+        <div>
+            <h3>Bank Statements Automation</h3>
         </div>
         """,
         unsafe_allow_html=True
@@ -56,8 +58,6 @@ if st.session_state["connected"]:
         user_data = (user_info.get('id'),user_name,user_info.get('name'),user_info.get('email'))
         add_user(db_name,'users',user_data)
 
-    else:
-        st.write(f"Welcome ! ")
 
     if st.sidebar.button("Log out"):
         authenticator.logout()
@@ -98,13 +98,14 @@ if st.session_state["connected"]:
 
     if st.sidebar.button("Add data"):
         table_columns=table_columns_dic[bank]
+        table_columns_pdf=table_columns_pdf_dic[bank]
         new_table_columns = ['Date','Narration','Debit','Credit']
         isCrDr=bank_status_dict[bank]
 
         # If a file is uploaded
         if uploaded_file is not None:
 
-            df=format_uploaded_file(uploaded_file,table_columns,new_table_columns,date_format,isCrDr)
+            df=format_uploaded_file(uploaded_file,table_columns,table_columns_pdf,new_table_columns,date_format,isCrDr)
 
             # Add a new column 'Category'
             df['Category'] = ""
@@ -213,11 +214,11 @@ else:
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top:200px;
+            margin-top:150px;
         }
         </style>
         <div class="center">
-            <h1>Bank Statements Automation</h1>
+            <h3>Bank Statements Automation</h3>
         </div>
         """,
         unsafe_allow_html=True

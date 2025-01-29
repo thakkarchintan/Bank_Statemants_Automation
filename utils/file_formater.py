@@ -23,19 +23,34 @@ def csv_to_df(uploaded_file,required_columns):
         
     return df
 
-def pdf_to_df(uploaded_file,table_columns):
+def pdf_to_df(uploaded_file,table_columns_pdf):
     combined_df = pd.DataFrame()
 
     # Open the uploaded PDF file
     with pdfplumber.open(uploaded_file) as pdf:
+        found_col=False
+        all_col=[]
         for i, page in enumerate(pdf.pages):
             tables = page.extract_tables()
             for table in tables:
                 # Append the table data to the combined DataFrame
-                if set(table_columns).issubset(table[0]):
-                    # Convert the table to a DataFrame
-                    df = pd.DataFrame(table[1:], columns=table[0])  # Assuming the first row is the header
-                    combined_df = pd.concat([combined_df, df], ignore_index=True)
+                for t in table:
+                    if  not t[0]:
+                        continue
+                    if found_col and len(all_col)==len(t):
+                        # print("\nkfkdhf\n")
+                        combined_df.loc[len(combined_df)] = t
+                        # # Convert the table to a DataFrame
+                        # df = pd.DataFrame(table,columns=all_col)  # Assuming the first row is the header
+                        # combined_df = pd.concat([combined_df, df], ignore_index=True)
+                    elif set(table_columns_pdf).issubset(t):
+                        found_col=True
+                        all_col=t
+                        # Convert the table to a DataFrame
+                        combined_df = pd.DataFrame(columns=all_col)  # Assuming the first row is the header
+                        # print(df)
+                        # combined_df = pd.concat([combined_df, df], ignore_index=True)
+    # print(combined_df)
     return combined_df
 
 def xls_to_df(uploaded_file):
@@ -46,7 +61,7 @@ def xlsx_to_df(uploaded_file):
     df = pd.read_excel(uploaded_file, engine='openpyxl')
     return df
 
-def format_uploaded_file(uploaded_file, table_columns, new_table_columns,date_format,isCrDr):
+def format_uploaded_file(uploaded_file, table_columns,table_columns_pdf, new_table_columns,date_format,isCrDr):
     df = pd.DataFrame()
     try:
         if uploaded_file.name.lower().endswith('.csv'):
@@ -56,12 +71,12 @@ def format_uploaded_file(uploaded_file, table_columns, new_table_columns,date_fo
         elif uploaded_file.name.lower().endswith('.xlsx'):
             df = xlsx_to_df(uploaded_file)
         elif uploaded_file.name.lower().endswith('.pdf'):
+            table_columns=table_columns_pdf
             df = pdf_to_df(uploaded_file,table_columns)
         else:
             print("Unsupported file format")
         
         
-
         # Find the start of the transaction table
         header_index = None
         all_table_columns=[]
@@ -82,10 +97,15 @@ def format_uploaded_file(uploaded_file, table_columns, new_table_columns,date_fo
 
         # Retain only the specified columns
         df = df[table_columns]
-
         
         for i in range(2):
             df = df.rename(columns={table_columns[i]:new_table_columns[i]})
+
+        # print(df.dtypes)
+
+        df['Date'] = df['Date'].astype(str)
+
+        df['Date'] = df['Date'].str.replace(',', '/')
         
         # Convert the Date column to datetime and then format it
         df['Date'] = pd.to_datetime(df['Date'],format=date_format,errors='coerce').dt.strftime('%Y-%m-%d')
