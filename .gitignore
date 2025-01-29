@@ -6,7 +6,7 @@ Previous_versions_of_app
 tests
 myevn
 .env
-.envNew
+.env_aws
 list.txt
 req.txt
 task.txt
