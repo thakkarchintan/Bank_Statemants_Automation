@@ -75,11 +75,11 @@ if st.session_state["connected"]:
     # uploaded_file = st.sidebar.file_uploader(f"Upload your {bank} statement from {starting_date} to {ending_date}\nTransactions of other dates will be neglected", type=["xls", "xlsx", "csv","pdf"])
     uploaded_file = st.sidebar.file_uploader(f"Upload your {bank} statement", type=["xls", "xlsx", "csv","pdf"])
 
-    override = st.sidebar.selectbox(f"Want to override data :", ['No','Yes'])
-    override= True if override=='Yes' else False
+    # override = st.sidebar.selectbox(f"Want to override data :", ['No','Yes'])
+    # override= True if override=='Yes' else False
 
-    st.sidebar.write(f"{'Data will be overridden' if override else 'data will be appended if not exists in table'}")
-
+    # st.sidebar.write(f"{'Data will be overridden' if override else 'data will be appended if not exists in table'}")
+    override=False
     # Function to convert DataFrame to Excel
     def convert_df_to_excel(df):
         output = BytesIO()
