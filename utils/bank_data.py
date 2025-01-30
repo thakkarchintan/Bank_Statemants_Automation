@@ -160,3 +160,15 @@ banks_date_format = {
     # 'df4': '%m-%d-%Y',  # mm-dd-yyyy
     # 'df5': '%d-%b-%Y',  # dd-MMM-yyyy (e.g., 13-Jan-2025)
 
+import os
+import pandas as pd
+
+categorization_file_path = os.path.join("assets","other","categorization.xlsx")
+
+debit_categorization_df = pd.read_excel(categorization_file_path, sheet_name='debit')
+
+debit_categorization_dict = dict(zip(debit_categorization_df['Narration Reference'], debit_categorization_df['Category Reference']))
+
+credit_categorization_df = pd.read_excel(categorization_file_path, sheet_name='credit')
+
+credit_categorization_dict = dict(zip(credit_categorization_df['Narration Reference'], credit_categorization_df['Category Reference']))

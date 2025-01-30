@@ -1,7 +1,38 @@
+import streamlit as st
 import pandas as pd
+from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
 import pdfplumber
 import datetime as dt
 import xlrd
+from io import BytesIO
+
+# Function to categorize each row based on narration content
+def categorize_debit_row(narration):
+    for key in debit_categorization_dict.keys():
+        if key.lower() in narration.lower():
+            return debit_categorization_dict[key]
+    return ""
+
+def categorize_credit_row(narration):
+    for key in credit_categorization_dict.keys():
+        if key.lower() in narration.lower():
+            return credit_categorization_dict[key]
+    return ""
+
+# Function to convert DataFrame to Excel
+def convert_df_to_excel(df):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+    # Save the file
+    writer.close()
+
+    # Seek the buffer position to the start
+    output.seek(0)
+    
+    return output
 
 def csv_to_df(uploaded_file,required_columns):
     # Find the header row by checking if all required columns are in the line
@@ -61,7 +92,13 @@ def xlsx_to_df(uploaded_file):
     df = pd.read_excel(uploaded_file, engine='openpyxl')
     return df
 
-def format_uploaded_file(uploaded_file, table_columns,table_columns_pdf, new_table_columns,date_format,isCrDr):
+from utils import debit_categorization_dict,banks_date_format,table_columns_dic,table_columns_pdf_dic ,bank_status_dict, credit_categorization_dict
+def format_uploaded_file(uploaded_file, bank):
+    date_format=banks_date_format[bank]
+    table_columns=table_columns_dic[bank]
+    table_columns_pdf=table_columns_pdf_dic[bank]
+    new_table_columns = ['Date','Narration','Debit','Credit']
+    isCrDr=bank_status_dict[bank]
     df = pd.DataFrame()
     try:
         if uploaded_file.name.lower().endswith('.csv'):
@@ -133,11 +170,77 @@ def format_uploaded_file(uploaded_file, table_columns,table_columns_pdf, new_tab
         df['Credit'] = df['Credit'].astype(str).str.replace(r'[^0-9.]', '', regex=True)
         df['Debit'] = pd.to_numeric(df['Debit'], errors='coerce')
         df['Credit'] = pd.to_numeric(df['Credit'], errors='coerce')
+        # print(df)
+        # Add a new column 'Category'
+        df['Category'] = ""
 
-        
+        df['Category'] = df.apply(
+            lambda row: categorize_credit_row(row['Narration']) if pd.notna(row['Credit']) and row['Credit'] != "" else "",
+            axis=1
+        )
 
+        df['Category'] = df.apply(
+            lambda row: categorize_debit_row(row['Narration']) if pd.notna(row['Debit']) and row['Debit'] != "" else row['Category'],
+            axis=1
+        )
+
+        df.fillna(0, inplace=True)        
+
+        return df
+    
     except Exception as e:
         print(f"Error cleaning Excel file: {e}")
+    return pd.DataFrame()
 
-    return df
     
+def display_data(df,Height):
+    # Configure the ag-Grid options without pagination
+    gb = GridOptionsBuilder.from_dataframe(df)
+    gb.configure_side_bar()  # Add a sidebar
+    
+    # Automatically configure columns to fit content dynamically
+    for column in df.columns:
+        gb.configure_column(column, minWidth=100,maxWidth=200,wrapText=True)
+
+    gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
+
+    gridOptions = gb.build()
+
+    # Display the grid
+    AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height)  
+
+def show_messege(isloggedin):
+    st.markdown("""
+        <style>
+            .container {
+                border-radius: 10px;
+                /* text-align: center; */
+                margin :auto;
+            }
+            p {
+                font-size: 16px;
+                line-height: 1.5;
+            }            
+            .note {
+                margin-top: 15px;
+                font-size: 14px;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    if not isloggedin:
+        st.markdown("""
+            <style>
+                .container {
+                    margin-left: 150px;
+                    margin-right: 150px;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+    st.markdown("""
+        <div class="container">
+            <h3>All Your Bank Transactions. One Unified View.</h3>
+            <p>Tired of juggling multiple bank statements? Upload statements from any Indian bank and instantly get a clean, organized, and standardized view of all your transactions in one place.</p>
+            <p>Gain powerful insights into your income, expenses, and spending trends with smart analytics—helping you stay in control of your finances like never before.</p>
+            <p class="note">Ps - The app is in its early development stage and we would welcome the opportunity to build it together with you.</p>
+        </div>
+    """, unsafe_allow_html=True)
