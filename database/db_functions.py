@@ -44,8 +44,14 @@ def create_table(database_name, create_table_query,conn):
 # 3. Insert data into the table
 def insert_data(database_name, table_name, data,conn,cursor):
     try:
+        no_of_values=len(data)
+        no_of_values-=1
+        s='( %s'
+        for i in range(no_of_values):
+            s+=", %s"
+        s+=' )'
         conn.select_db(database_name)
-        insert_query = f"INSERT IGNORE INTO {table_name} VALUES (%s, %s, %s, %s)"
+        insert_query = f"INSERT INTO {table_name} VALUES {s}"
         cursor.execute(insert_query, data)  
         conn.commit()
         print(f"Data inserted successfully into table '{table_name}'.")
@@ -86,6 +92,7 @@ def add_data(df,override,database_name, table_name):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
+            Name VARCHAR(50), 
             Bank VARCHAR(50), 
             Date DATE, 
             Narration VARCHAR(255), 
@@ -132,7 +139,8 @@ def get_transaction_data(database_name,table_name):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
-            Bank VARCHAR(50), 
+            Name VARCHAR(50),
+            Bank VARCHAR(50),
             Date DATE, 
             Narration VARCHAR(255), 
             Debit FLOAT, 
@@ -182,11 +190,12 @@ def add_user(database_name,table_name,data):
     cursor.close()
     conn.close()
 
-def update_summary(database_name,table_name,bank,From,Till):
+def update_summary(database_name,table_name,ac_name,bank,From,Till):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
-            Bank VARCHAR(50) PRIMARY KEY, 
+            Name VARCHAR(50), 
+            Bank VARCHAR(50), 
             Start_Date DATE,
             End_Date DATE,
             Pending_days INT
@@ -196,8 +205,8 @@ def update_summary(database_name,table_name,bank,From,Till):
     
     cursor = conn.cursor()
 
-    query = f"SELECT Start_Date,End_Date FROM {table_name} WHERE Bank = %s"
-    cursor.execute(query, (bank,))
+    query = f"SELECT Start_Date,End_Date FROM {table_name} WHERE Name = %s and Bank = %s"
+    cursor.execute(query, (ac_name,bank,))
 
     # Fetch result
     dates = cursor.fetchone()
@@ -229,7 +238,7 @@ def update_summary(database_name,table_name,bank,From,Till):
         update_data(database_name,table_name,'Pending_days',pending_days.days,condition,conn,cursor)
     
     else:
-        data=(bank,From,Till,pending_days.days)
+        data=(ac_name,bank,From,Till,pending_days.days)
         insert_data(database_name,table_name,data,conn,cursor)
     
     cursor.close()
@@ -242,7 +251,8 @@ def get_summary_data(database_name,table_name):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
-            Bank VARCHAR(50) PRIMARY KEY, 
+            Name VARCHAR(50), 
+            Bank VARCHAR(50), 
             Start_Date DATE,
             End_Date DATE,
             Pending_days INT
@@ -264,3 +274,21 @@ def get_summary_data(database_name,table_name):
         return all_data
     
     return pd.DataFrame()
+
+def add_feedback(database_name,table_name,data):
+    conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
+    cursor = conn.cursor()
+
+    create_database(database_name,cursor)
+
+    create_table_query = f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            id varchar(50) ,
+            feedback VARCHAR(255)
+        )
+    """
+    create_table(database_name,create_table_query,conn)
+    insert_data(database_name,table_name,data,conn,cursor)
+    # Close the connection
+    cursor.close()
+    conn.close()

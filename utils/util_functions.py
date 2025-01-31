@@ -93,6 +93,7 @@ def xlsx_to_df(uploaded_file):
     return df
 
 from utils import debit_categorization_dict,banks_date_format,table_columns_dic,table_columns_pdf_dic ,bank_status_dict, credit_categorization_dict
+
 def format_uploaded_file(uploaded_file, bank):
     date_format=banks_date_format[bank]
     table_columns=table_columns_dic[bank]
@@ -209,7 +210,7 @@ def display_data(df,Height):
     # Display the grid
     AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height)  
 
-def show_messege(isloggedin):
+def show_messege():
     st.markdown("""
         <style>
             .container {
@@ -218,7 +219,7 @@ def show_messege(isloggedin):
                 margin :auto;
             }
             p {
-                font-size: 16px;
+                font-size: 18px;
                 line-height: 1.5;
             }            
             .note {
@@ -227,15 +228,7 @@ def show_messege(isloggedin):
             }
         </style>
     """, unsafe_allow_html=True)
-    if not isloggedin:
-        st.markdown("""
-            <style>
-                .container {
-                    margin-left: 150px;
-                    margin-right: 150px;
-                }
-            </style>
-        """, unsafe_allow_html=True)
+    
     st.markdown("""
         <div class="container">
             <h3>All Your Bank Transactions. One Unified View.</h3>

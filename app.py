@@ -24,13 +24,81 @@ authenticator = Authenticator(
 
 authenticator.check_auth()
 
-
 db_name=os.getenv("DATABASE")
 
 if st.session_state["connected"]:
-    # Create tabs
-    tab1, tab2, tab3 = st.tabs(["Dashboard", "Bank Entries", "Summary"])
     db_df=pd.DataFrame()
+    user_info=st.session_state['user_info']
+    user_name = str(user_info.get('email'))
+    user_name = user_name[:-10]
+    user_name = user_name.replace('.','__')
+    summ_table = user_name+'_summary'
+
+    if user_info.get('name'):
+        user_data = (user_info.get('id'),user_name,user_info.get('name'),user_info.get('email'))
+        add_user(db_name,'users',user_data)
+
+    if st.sidebar.button("Log out"):
+        authenticator.logout()
+        
+    # Text input for account holder's name
+    ac_name = st.sidebar.text_input("Account Holder's Name:", placeholder="Enter account holder's name here...")
+    ac_name=ac_name.strip()
+
+    # sorting list of banks
+    bank_list.sort()
+
+    # Sidebar with bank selection dropdown and file upload
+    bank = st.sidebar.selectbox("Select Bank", bank_list)
+    
+    uploaded_file = st.sidebar.file_uploader(f"Upload your {bank} statement", type=["xls", "xlsx", "pdf"])
+
+    override=False
+    
+    if st.sidebar.button("Add data"):
+        # If a file is uploaded
+        if uploaded_file is not None and ac_name:
+            try:
+                df=format_uploaded_file(uploaded_file,bank)
+
+                From=min(pd.to_datetime(df['Date'],errors='coerce'))
+                Till=max(pd.to_datetime(df['Date'],errors='coerce'))
+                update_summary(db_name,summ_table,ac_name,bank,From,Till)
+                
+                # Add a new columna 'Bank' and 'Name'
+                df['Bank'] = bank
+                df['Name'] = ac_name
+
+                df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
+                # print(df)
+
+                add_data(df,override,db_name,user_name)
+                st.toast(":green[Data updated successfully]")
+
+            except Exception as e:
+                print(f"Error in adding data: {e}")
+                st.toast(":red[Something went wrong.]")
+                st.toast(":red[Ensure that the uploaded bank statement matches the selected bank.]")
+
+        else:
+            # Display an error message if there is no data
+            st.toast("Choose a Bank from the dropdown and upload the bank statement to get started.")
+
+            if not ac_name:
+                st.toast("Please enter account holder's name.")
+
+    if st.sidebar.button("Delete my data"):
+        try:
+            delete_data(db_name,user_name,"1=1")
+            delete_data(db_name,summ_table,"1=1")
+            st.toast(":green[Data deleted successfully]")
+        except Exception as e:
+            print(f"Error in deleting: {e}")
+            st.toast(":red[Something went wrong.]")
+    
+    # Create tabs
+    tab1, tab2, tab3, tab4= st.tabs(["Dashboard", "Bank Entries", "Summary","Feedback"])
+
     # Content for each tab
     with tab1:
         st.markdown(
@@ -48,74 +116,7 @@ if st.session_state["connected"]:
             """,
             unsafe_allow_html=True
         )
-        user_info=st.session_state['user_info']
-        user_name = str(user_info.get('email'))
-        user_name = user_name[:-10]
-        user_name = user_name.replace('.','__')
-        summ_table = user_name+'_summary'
-
-        if user_info.get('name'):
-            user_data = (user_info.get('id'),user_name,user_info.get('name'),user_info.get('email'))
-            add_user(db_name,'users',user_data)
-
-
-        if st.sidebar.button("Log out"):
-            authenticator.logout()
-            
-        # sorting list of banks
-        bank_list.sort()
-
-        # Sidebar with bank selection dropdown and file upload
-        bank = st.sidebar.selectbox("Select Bank", bank_list)
-        
-        uploaded_file = st.sidebar.file_uploader(f"Upload your {bank} statement", type=["xls", "xlsx", "pdf"])
-
-        # override = st.sidebar.selectbox(f"Want to override data :", ['No','Yes'])
-        # override= True if override=='Yes' else False
-
-        # st.sidebar.write(f"{'Data will be overridden' if override else 'data will be appended if not exists in table'}")
-        override=False
-
-
-        if st.sidebar.button("Add data"):
-
-            # If a file is uploaded
-            if uploaded_file is not None:
-                try:
-                    df=format_uploaded_file(uploaded_file,bank)
-
-                    From=min(pd.to_datetime(df['Date'],errors='coerce'))
-                    Till=max(pd.to_datetime(df['Date'],errors='coerce'))
-                    update_summary(db_name,summ_table,bank,From,Till)
-                    # Add a new column 'Bank'
-                    df['Bank'] = bank
-
-                    df = df[['Bank','Date','Narration','Debit','Credit','Category']]
-                    # print(df)
-
-                    add_data(df,override,db_name,user_name)
-                    st.toast(":green[Data updated successfully]")
-
-                except Exception as e:
-                    print(f"Error in adding data: {e}")
-                    st.toast(":red[Something went wrong.]")
-                    st.toast("Choose a Bank from the dropdown and upload the bank statement of same bank to get started.")
-
-            else:
-                # Display an error message if there is no data
-                st.toast("Choose a Bank from the dropdown and upload the bank statement of same bank to get started.")
-
-        if st.sidebar.button("Delte all data"):
-            try:
-                delete_data(db_name,user_name,"1=1")
-                delete_data(db_name,summ_table,"1=1")
-                st.toast(":green[Data deleted successfully]")
-            except Exception as e:
-                print(f"Error in deleting: {e}")
-                st.toast(":red[Something went wrong.]")
-
-        show_messege(True)   
-
+        show_messege()   
 
     with tab2:    
         try:
@@ -164,30 +165,30 @@ if st.session_state["connected"]:
         except Exception as e:
             print(f"Error in fetching summary data: {e}")
             st.toast(":red[Something went wrong.]")
+    
+    with tab4:
+        feedback_table='Feedback'
+        st.subheader("User Feedback Form")
 
+        # Text area for feedback
+        feedback = st.text_area("Your Feedback:", placeholder="Write your feedback here...")
+        feedback=feedback.strip()
+        # Submit button
+        if st.button("Submit Feedback"):
+            if feedback:  # Checking if input is not empty
+                try:
+                    data=(user_name,feedback)
+                    add_feedback(db_name,feedback_table,data)
+                    st.toast(":green[Thank you for your feedback!]")
+                    # st.write("You wrote:", feedback)
+                except Exception as e:
+                    print(f"Error in adding feedback: {e}")
+                    st.toast(":red[Something went wrong.]")
+                
+            else:
+                st.warning("Please enter your feedback before submitting.")   
         
-    
-    
 else:
     # st.header("Bank Statements Automation")
-    st.markdown(
-        """
-        <style>
-        .center {
-            display: flex;
-            margin-top:0;
-            justify-content: center;
-            align-items: center;
-        }
-        </style>
-        <div class="center">
-            <h1>Bank Statements Automation</h1>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    show_messege(False)
-    
-    authenticator.login()
-    
-#     st.title("Bank Statements Automation")   
+    show_messege()
+    authenticator.login() 
