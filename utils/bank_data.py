@@ -39,7 +39,7 @@ bank_list = [
     "Bandhan Bank",
     "Kotak Mahindra Bank",
 
-    # "Axis Bank",
+    "Axis Bank",
     # "Union Bank of India",
     # "Punjab National Bank",
     # "Canara Bank",
@@ -69,7 +69,7 @@ table_columns_dic = {
     'Bandhan Bank': ['Transaction Date','Description','Amount (INR)','Cr/Dr'],
     'Kotak Mahindra Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
 
-    'Axis Bank': [],
+    'Axis Bank': ["Tran Date","PARTICULARS","DR","CR"],
     'Union Bank of India': [],
     'Punjab National Bank': [],
     'Canara Bank': [],
@@ -100,7 +100,7 @@ table_columns_pdf_dic = {
                     #  ['Transaction Date','Description','Amount','Cr/Dr']],
     'Kotak Mahindra Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
 
-    'Axis Bank': [],
+    'Axis Bank': ["Tran Date", "Particulars", "Debit", "Credit"],
     'Union Bank of India': [],
     'Punjab National Bank': [],
     'Canara Bank': [],
@@ -134,7 +134,7 @@ banks_date_format = {
     # "%d-%m-%Y",
     "Kotak Mahindra Bank": "%d/%m/%Y",
 
-    "Axis Bank": "%d/%m/%Y",
+    "Axis Bank": "%d-%m-%Y",
     "Union Bank of India": "%d/%m/%Y",
     "Punjab National Bank": "%d/%m/%Y",
     "Canara Bank": "%d/%m/%Y",
