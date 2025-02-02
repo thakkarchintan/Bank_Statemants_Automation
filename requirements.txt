@@ -12,3 +12,5 @@ streamlit-aggrid
 extra-streamlit-components
 xlsxwriter
 openpyxl
+email-to
+secure-smtplib
