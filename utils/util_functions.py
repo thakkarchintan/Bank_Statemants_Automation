@@ -201,7 +201,7 @@ def display_data(df,Height):
     
     # Automatically configure columns to fit content dynamically
     for column in df.columns:
-        gb.configure_column(column, minWidth=100,maxWidth=200,wrapText=True)
+        gb.configure_column(column, minWidth=100,wrapText=True)
 
     gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
 
@@ -210,30 +210,93 @@ def display_data(df,Height):
     # Display the grid
     AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height)  
 
-def show_messege():
-    st.markdown("""
-        <style>
-            .container {
-                border-radius: 10px;
-                /* text-align: center; */
-                margin :auto;
-            }
-            p {
-                font-size: 18px;
-                line-height: 1.5;
-            }            
-            .note {
-                margin-top: 15px;
-                font-size: 14px;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+def show_message(url):
+    css = """
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 2.5%;
+            max-width: 100%;
+            margin: auto;
+            margin-top: 0;
+        }
+        .video-section {
+            flex: 1;
+            max-width: 50%;
+        }
+        .text-section {
+            flex: 1;
+            max-width: 50%;
+        }
+        h2{
+            margin-top:0;
+            margin-bottom:0;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .para {
+            font-size: 20px;
+            margin-top: 10px;
+            line-height: 1.3;
+        }
+        .note {
+            margin-top: 15px;
+            font-size: 20px;
+            line-height: 1.3;
+        }
+        iframe {
+            width: 100%;
+            height: 290px;
+        }
+        .gcenter {
+            width: 100%;
+            display: flex;
+            margin-top: 10px;
+        }
+        .google-button {
+            background-color: #4285F4;
+            margin-right: 5px;
+            color: white !important;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            text-decoration: none !important;
+        }
+        .google-button img {
+            width: 20px;
+            margin-left: 5px;
+            border-radius: 50%;
+        }
+    </style>
+    """
     
-    st.markdown("""
-        <div class="container">
+    html = f"""
+    <div class="container">
+        <!--
+        <div class="video-section">
+            <h3>Tutorial</h3>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/GcZW24SkbHM?si=hfxhPfJ6T2BakXNh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div> -->
+        <div class="text-section">
             <h3>All Your Bank Transactions. One Unified View.</h3>
-            <p>Tired of juggling multiple bank statements? Upload statements from any Indian bank and instantly get a clean, organized, and standardized view of all your transactions in one place.</p>
-            <p>Gain powerful insights into your income, expenses, and spending trends with smart analytics—helping you stay in control of your finances like never before.</p>
-            <p class="note">Ps - The app is in its early development stage and we would welcome the opportunity to build it together with you.</p>
+            <div class="para">Tired of juggling multiple bank statements? Upload statements from any Indian bank and instantly get a clean, organized, and standardized view of all your transactions in one place.</div>
+            <div class="para">Gain powerful insights into your income, expenses, and spending trends with smart analytics - helping you stay in control of your finances like never before.</div>
+            <div class="note">Ps - The app is in its early development stage and we would welcome the opportunity to build it together with you.</div>
+            <div class="gcenter">
+                <a href="{url}" class="google-button" target="_self">
+                    Login with Google
+                    <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" alt="Google logo" />
+                </a>
+            </div>
         </div>
-    """, unsafe_allow_html=True)
+    </div>
+    """
+    
+    st.markdown(css, unsafe_allow_html=True)
+    st.markdown(html, unsafe_allow_html=True)

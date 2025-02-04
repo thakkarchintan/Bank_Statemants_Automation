@@ -42,7 +42,7 @@ def create_table(database_name, create_table_query,conn):
         print("Error creating table:", e)
 
 # 3. Insert data into the table
-def insert_data(database_name, table_name, data,conn,cursor):
+def insert_data(database_name, table_name, data, conn, cursor, col_names=""):
     try:
         no_of_values=len(data)
         no_of_values-=1
@@ -51,7 +51,7 @@ def insert_data(database_name, table_name, data,conn,cursor):
             s+=", %s"
         s+=' )'
         conn.select_db(database_name)
-        insert_query = f"INSERT INTO {table_name} VALUES {s}"
+        insert_query = f"INSERT INTO {table_name} {col_names} VALUES {s};"
         cursor.execute(insert_query, data)  
         conn.commit()
         print(f"Data inserted successfully into table '{table_name}'.")
@@ -178,14 +178,15 @@ def add_user(database_name,table_name,data):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
-            id INT PRIMARY KEY,
-            user_name VARCHAR(50),
+            id INT NOT NULL primary key AUTO_INCREMENT,
+            user_name VARCHAR(50) UNIQUE,
             name VARCHAR(50),
-            email VARCHAR(50)
+            email VARCHAR(50) UNIQUE
         )
     """
     create_table(database_name,create_table_query,conn)
-    insert_data(database_name,table_name,data,conn,cursor)
+    col_names='(user_name,name,email)'
+    insert_data(database_name,table_name,data,conn,cursor,col_names)
     # Close the connection
     cursor.close()
     conn.close()

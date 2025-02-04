@@ -29,21 +29,18 @@ db_name=os.getenv("DATABASE")
 if st.session_state["connected"]:
     db_df=pd.DataFrame()
     user_info=st.session_state['user_info']
-    user_name = str(user_info.get('email'))
-    user_name = user_name[:-10]
+    user_email = str(user_info.get('email'))
+    user_name = user_email[:-10]
     user_name = user_name.replace('.','__')
     summ_table = user_name+'_summary'
 
     if user_info.get('name'):
-        user_data = (user_info.get('id'),user_name,user_info.get('name'),user_info.get('email'))
+        user_data = (user_name,user_info.get('name'),user_email)
         add_user(db_name,'users',user_data)
 
     if st.sidebar.button("Log out"):
         authenticator.logout()
         
-    # Text input for account holder's name
-    ac_name = st.sidebar.text_input("Account Holder's Name:", placeholder="Enter account holder's name here...")
-    ac_name=ac_name.strip()
 
     # sorting list of banks
     bank_list.sort()
@@ -51,13 +48,18 @@ if st.session_state["connected"]:
     # Sidebar with bank selection dropdown and file upload
     bank = st.sidebar.selectbox("Select Bank", bank_list)
     
-    uploaded_file = st.sidebar.file_uploader(f"Upload your {bank} statement", type=["xls", "xlsx", "pdf"])
+    uploaded_file = st.sidebar.file_uploader(f"Upload bank statement", type=["xls", "xlsx", "pdf"])
+
+    # Text input for account holder's name
+    ac_name = st.sidebar.text_input("Account Holder's Name:", placeholder="Enter account holder's name here...")
+    ac_name=ac_name.strip()
 
     override=False
+
     
     if st.sidebar.button("Add data"):
         # If a file is uploaded
-        if uploaded_file is not None and ac_name:
+        if uploaded_file is not None:
             try:
                 df=format_uploaded_file(uploaded_file,bank)
 
@@ -67,6 +69,8 @@ if st.session_state["connected"]:
                 
                 # Add a new columna 'Bank' and 'Name'
                 df['Bank'] = bank
+                if not ac_name:
+                    ac_name=""
                 df['Name'] = ac_name
 
                 df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
@@ -84,8 +88,6 @@ if st.session_state["connected"]:
             # Display an error message if there is no data
             st.toast("Choose a Bank from the dropdown and upload the bank statement to get started.")
 
-            if not ac_name:
-                st.toast("Please enter account holder's name.")
 
     if st.sidebar.button("Delete my data"):
         try:
@@ -97,7 +99,7 @@ if st.session_state["connected"]:
             st.toast(":red[Something went wrong.]")
     
     # Create tabs
-    tab1, tab2, tab3, tab4= st.tabs(["Dashboard", "Bank Entries", "Summary","Feedback"])
+    tab1, tab2, tab3, tab4= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback"])
 
     # Content for each tab
     with tab1:
@@ -116,9 +118,9 @@ if st.session_state["connected"]:
             """,
             unsafe_allow_html=True
         )
-        show_messege()   
+        # show_messege()   
 
-    with tab2:    
+    with tab3:    
         try:
             # get data from db
             db_df=get_transaction_data(db_name,user_name)
@@ -141,7 +143,7 @@ if st.session_state["connected"]:
             print(f"Error in fetching transction data: {e}")
             st.toast(":red[Something went wrong.]")
     
-    with tab3:
+    with tab2:
         try:
             # st.subheader("Summary")
             summary_df=get_summary_data(db_name,summ_table)
@@ -167,6 +169,15 @@ if st.session_state["connected"]:
             st.toast(":red[Something went wrong.]")
     
     with tab4:
+        # Admin Email Config
+        ADMIN_EMAIL1 = os.getenv("ADMIN_EMAIL1")  
+        ADMIN_EMAIL2 = os.getenv("ADMIN_EMAIL2")
+        ADMIN_EMAILS=[ADMIN_EMAIL1,ADMIN_EMAIL2]
+
+        SMTP_SERVER = os.getenv("SMTP_SERVER")
+
+        SMTP_USER = os.getenv("SMTP_USER")  # Replace with your Gmail
+        SMTP_PASSWORD = os.getenv("email_pass")  # Use an App Password, not your main password
         feedback_table='Feedback'
         st.subheader("User Feedback Form")
 
@@ -179,16 +190,17 @@ if st.session_state["connected"]:
                 try:
                     data=(user_name,feedback)
                     add_feedback(db_name,feedback_table,data)
-                    st.toast(":green[Thank you for your feedback!]")
-                    # st.write("You wrote:", feedback)
+                    send_email(feedback,user_email,ADMIN_EMAILS,SMTP_SERVER,SMTP_USER,SMTP_PASSWORD)
+                    # send_email(feedback,user_email,ADMIN_EMAIL2,SMTP_SERVER,SMTP_USER,SMTP_PASSWORD)
+                    st.toast(":green[Thank you for your feedback! It has been sent to the admin.]")
                 except Exception as e:
-                    print(f"Error in adding feedback: {e}")
-                    st.toast(":red[Something went wrong.]")
+                    print(f"Error sending feedback: {e}")
+                    st.toast(":red[Failed to send feedback. Please try again later.]")
                 
             else:
                 st.warning("Please enter your feedback before submitting.")   
         
 else:
     # st.header("Bank Statements Automation")
-    show_messege()
-    authenticator.login() 
+    auth_url=authenticator.login()  
+    show_message(auth_url)
