@@ -51,7 +51,7 @@ def insert_data(database_name, table_name, data, conn, cursor, col_names=""):
             s+=", %s"
         s+=' )'
         conn.select_db(database_name)
-        insert_query = f"INSERT INTO {table_name} {col_names} VALUES {s};"
+        insert_query = f"INSERT IGNORE INTO {table_name} {col_names} VALUES {s};"
         cursor.execute(insert_query, data)  
         conn.commit()
         print(f"Data inserted successfully into table '{table_name}'.")
@@ -88,7 +88,7 @@ def delete_data(database_name, table_name, condition):
 def add_data(df,override,database_name, table_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
-    create_database(database_name,cursor)
+    # create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -131,11 +131,10 @@ def add_data(df,override,database_name, table_name):
     except Exception as e:
         print(f"Error occurred: {e}")
 
-
 def get_transaction_data(database_name,table_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
-    create_database(database_name,cursor)
+    # create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -174,19 +173,17 @@ def add_user(database_name,table_name,data):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
 
-    create_database(database_name,cursor)
+    # create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
-            id INT NOT NULL primary key AUTO_INCREMENT,
-            user_name VARCHAR(50) UNIQUE,
+            user_name VARCHAR(50) primary key,
             name VARCHAR(50),
             email VARCHAR(50) UNIQUE
         )
     """
     create_table(database_name,create_table_query,conn)
-    col_names='(user_name,name,email)'
-    insert_data(database_name,table_name,data,conn,cursor,col_names)
+    insert_data(database_name,table_name,data,conn,cursor)
     # Close the connection
     cursor.close()
     conn.close()
@@ -226,8 +223,6 @@ def update_summary(database_name,table_name,ac_name,bank,From,Till):
         # dates[1]=dt.datetime.strptime(str(dates[1]),'%Y-%m-%d')
         From=min(dt.datetime.strptime(str(dates[0]),'%Y-%m-%d'),From)
         Till=max(dt.datetime.strptime(str(dates[1]),'%Y-%m-%d'),Till)
-        print(From)
-        print(Till,end='\n')
         pending_days=dt.datetime.now(ist) - ist.localize(Till)
         # print(type(pending_days.days))
 
@@ -248,7 +243,7 @@ def update_summary(database_name,table_name,ac_name,bank,From,Till):
 def get_summary_data(database_name,table_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
-    create_database(database_name,cursor)
+    # create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -280,7 +275,7 @@ def add_feedback(database_name,table_name,data):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
 
-    create_database(database_name,cursor)
+    # create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -293,3 +288,20 @@ def add_feedback(database_name,table_name,data):
     # Close the connection
     cursor.close()
     conn.close()
+
+def get_name(database_name,table_name,user_name):
+    conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
+    conn.select_db(database_name)
+    cursor = conn.cursor()
+
+    query = f"SELECT name FROM {table_name} WHERE user_name = %s;"
+    cursor.execute(query, (user_name,))
+
+    # Fetch result
+    name = cursor.fetchone()
+
+    # Close connection
+    cursor.close()
+    cursor = conn.cursor()
+
+    return name[0]

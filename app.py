@@ -33,10 +33,14 @@ if st.session_state["connected"]:
     user_name = user_email[:-10]
     user_name = user_name.replace('.','__')
     summ_table = user_name+'_summary'
+    name=user_info.get('name')
 
-    if user_info.get('name'):
+    if name:
         user_data = (user_name,user_info.get('name'),user_email)
         add_user(db_name,'users',user_data)
+    else:
+        name=get_name(db_name,'users',user_name)
+
 
     if st.sidebar.button("Log out"):
         authenticator.logout()
@@ -62,6 +66,11 @@ if st.session_state["connected"]:
         if uploaded_file is not None:
             try:
                 df=format_uploaded_file(uploaded_file,bank)
+                
+                # Default name if ac_name is not entered
+                if not ac_name:
+                    ac_name=name
+                df['Name'] = ac_name
 
                 From=min(pd.to_datetime(df['Date'],errors='coerce'))
                 Till=max(pd.to_datetime(df['Date'],errors='coerce'))
@@ -69,9 +78,6 @@ if st.session_state["connected"]:
                 
                 # Add a new columna 'Bank' and 'Name'
                 df['Bank'] = bank
-                if not ac_name:
-                    ac_name=""
-                df['Name'] = ac_name
 
                 df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
                 # print(df)
