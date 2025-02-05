@@ -292,8 +292,15 @@ def add_feedback(database_name,table_name,data):
 def get_name(database_name,table_name,user_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     conn.select_db(database_name)
+    create_table_query = f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            user_name VARCHAR(50) primary key,
+            name VARCHAR(50),
+            email VARCHAR(50) UNIQUE
+        )
+    """
+    create_table(database_name,create_table_query,conn)
     cursor = conn.cursor()
-
     query = f"SELECT name FROM {table_name} WHERE user_name = %s;"
     cursor.execute(query, (user_name,))
 
@@ -304,4 +311,4 @@ def get_name(database_name,table_name,user_name):
     cursor.close()
     cursor = conn.cursor()
 
-    return name[0]
+    return name[0] if name else ""
