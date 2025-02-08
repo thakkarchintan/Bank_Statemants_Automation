@@ -56,7 +56,7 @@ def csv_to_df(uploaded_file,required_columns):
         
     return df
 
-def pdf_to_df(uploaded_file,table_columns_pdf):
+def pdf_to_df(uploaded_file,table_columns_pdf,bank):
     combined_df = pd.DataFrame()
 
     # Open the uploaded PDF file
@@ -68,21 +68,25 @@ def pdf_to_df(uploaded_file,table_columns_pdf):
             for table in tables:
                 # Append the table data to the combined DataFrame
                 for t in table:
+                    # print(t)
                     if  not t[0]:
                         continue
                     if found_col and len(all_col)==len(t):
                         # print("\nkfkdhf\n")
                         combined_df.loc[len(combined_df)] = t
-                        # # Convert the table to a DataFrame
-                        # df = pd.DataFrame(table,columns=all_col)  # Assuming the first row is the header
-                        # combined_df = pd.concat([combined_df, df], ignore_index=True)
+                        
                     elif set(table_columns_pdf).issubset(t):
                         found_col=True
                         all_col=t
                         # Convert the table to a DataFrame
-                        combined_df = pd.DataFrame(columns=all_col)  # Assuming the first row is the header
-                        # print(df)
-                        # combined_df = pd.concat([combined_df, df], ignore_index=True)
+                        combined_df = pd.DataFrame(columns=all_col)  
+            
+            # print(combined_df)
+            if bank=="Kotak Mahindra Bank" and i==0:
+                combined_df = combined_df.drop(combined_df.columns[[1, 7]], axis=1)
+                all_col=combined_df.columns
+                # combined_df = combined_df.drop(0)
+
     # print(combined_df)
     return combined_df
 
@@ -112,11 +116,10 @@ def format_uploaded_file(uploaded_file, bank):
             df = xlsx_to_df(uploaded_file)
         elif uploaded_file.name.lower().endswith('.pdf'):
             table_columns=table_columns_pdf
-            df = pdf_to_df(uploaded_file,table_columns)
+            df = pdf_to_df(uploaded_file,table_columns,bank)
         else:
             print("Unsupported file format")
-        
-        
+        # print(df)
         # Find the start of the transaction table
         header_index = None
         all_table_columns=[]
@@ -156,6 +159,11 @@ def format_uploaded_file(uploaded_file, bank):
         df = df.dropna(subset=['Narration'], how="all").reset_index(drop=True)
         # print(df)
         if isCrDr:
+            # if bank == 'Kotak Mahindra Bank':
+            #     df['Credit'] = df[table_columns[3]].apply(lambda x: x if x > 0 else 0)
+            #     df['Debit'] = df[table_columns[3]].apply(lambda x: -x if x < 0 else 0)
+                
+            # else:
             # Create separate credit and debit columns 
             df['Credit'] = df[table_columns[2]].where(df[table_columns[3]].str.contains(r'[cC]', na=False), 0)
             df['Debit'] = df[table_columns[2]].where(df[table_columns[3]].str.contains(r'[dD]', na=False), 0)
@@ -324,14 +332,17 @@ def display_graph(df,selected_name,selected_bank):
     # Drop the sorting column
     monthly_data = monthly_data.drop(columns=["sort_order"])
 
+    custom_colors={"Debit":"#F08080", "Credit":"#5CB85C"}
+
     # Plot using Plotly
     fig = px.bar(
         monthly_data,
         x="month_year",
         y=["Debit", "Credit"],
         title=f"{selected_name if selected_name!='All'else ''} {'('+selected_bank+') ' if selected_bank!='All'else ''}{':'if selected_bank!='All' or selected_name!='All' else ''} Monthly Debit & Credit",
-        labels={"month_year": "Month", "value": "Amount"},
+        labels={"month_year": "Month", "value": "Amount","variable":""},
         barmode="group",
+        color_discrete_map=custom_colors
     )
 
     # Show figure in Streamlit
