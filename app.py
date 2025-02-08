@@ -3,6 +3,7 @@ import pandas as pd
 from io import BytesIO
 from datetime import datetime
 import os
+import time
 from dotenv import load_dotenv
 
 from auth import Authenticator
@@ -124,6 +125,11 @@ if st.session_state["connected"]:
                     except Exception as e:
                         print(f"Error in deleting: {e}")
                         st.toast(":red[Something went wrong.]")
+
+                    st.session_state.confirm = False
+                    time.sleep(4)
+                    st.rerun()
+
             with col2:
                 if st.button("Cancel"):
                     st.session_state.confirm = False
