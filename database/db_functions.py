@@ -164,10 +164,6 @@ def get_transaction_data(database_name,table_name):
     
     return pd.DataFrame()
 
-        # # Find new rows that are not in the existing data
-        # merged_data = pd.concat([df_new, existing_data],ignore_index=True)
-
-        # print(merged_data)
 
 def add_user(database_name,table_name,data):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)

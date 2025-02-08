@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import pdfplumber
@@ -192,8 +193,7 @@ def format_uploaded_file(uploaded_file, bank):
     except Exception as e:
         print(f"Error cleaning Excel file: {e}")
     return pd.DataFrame()
-
-    
+   
 def display_data(df,Height):
     # Configure the ag-Grid options without pagination
     gb = GridOptionsBuilder.from_dataframe(df)
@@ -300,3 +300,38 @@ def show_message(url):
     
     st.markdown(css, unsafe_allow_html=True)
     st.markdown(html, unsafe_allow_html=True)
+
+def display_graph(df,selected_name,selected_bank):
+    # Extract month and year separately in the format "Jan 2024"
+    df["month_year"] = df["Date"].dt.strftime("%b %Y")  # "Jan 2024" format
+    # Create a sorting column for proper month-year order
+    df["sort_order"] = df["Date"].dt.to_period("M")
+    # Filter data for the selected name and bank
+    if selected_bank!='All':
+        df = df[df["Bank"] == selected_bank]
+    if selected_name!='All':
+        df = df[df["Name"] == selected_name]
+
+    # Group by month and sum values, then sort
+    monthly_data = (
+        df.groupby(["month_year", "sort_order"])[["Debit", "Credit"]]
+        .sum()
+        .reset_index()
+        .sort_values(by="sort_order")
+    )
+
+    # Drop the sorting column
+    monthly_data = monthly_data.drop(columns=["sort_order"])
+
+    # Plot Bar Chart
+    fig, ax = plt.subplots(figsize=(8, 5))
+    monthly_data.set_index("month_year").plot(kind="bar", ax=ax)
+    plt.xlabel("Month")
+    plt.ylabel("Amount in ₹")
+    plt.title(f"Monthly Debit & Credit for {selected_name}")
+    plt.xticks(rotation=45)
+    plt.legend(["Debit", "Credit"])
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+    # Display Plot
+    st.pyplot(fig)

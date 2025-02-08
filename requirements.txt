@@ -14,3 +14,4 @@ xlsxwriter
 openpyxl
 email-to
 secure-smtplib
+streamlit-javascript

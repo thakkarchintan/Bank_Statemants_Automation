@@ -95,48 +95,102 @@ if st.session_state["connected"]:
             st.toast("Choose a Bank from the dropdown and upload the bank statement to get started.")
 
 
-    if st.sidebar.button("Delete my data"):
-        try:
-            delete_data(db_name,user_name,"1=1")
-            delete_data(db_name,summ_table,"1=1")
-            st.toast(":green[Data deleted successfully]")
-        except Exception as e:
-            print(f"Error in deleting: {e}")
-            st.toast(":red[Something went wrong.]")
+        import streamlit as st
+
+    # Initialize session state for confirmation popup
+    if "confirm" not in st.session_state:
+        st.session_state.confirm = False
+
+    def confirm_submission():
+        st.session_state.confirm = True
+
+    # Sidebar elements
+    with st.sidebar:
+
+        # Submit button inside sidebar
+        st.button("Delete my data", on_click=confirm_submission)
+
+        # Show confirmation inside sidebar
+        if st.session_state.confirm:
+            st.warning("This will delete your all data and cannot be undone. Are you sure to proceed?")
+            col1, col2 = st.columns(2)
+
+            with col1:
+                if st.button("Yes, Proceed"):
+                    try:
+                        delete_data(db_name,user_name,"1=1")
+                        delete_data(db_name,summ_table,"1=1")
+                        st.toast(":green[Data deleted successfully]")
+                    except Exception as e:
+                        print(f"Error in deleting: {e}")
+                        st.toast(":red[Something went wrong.]")
+            with col2:
+                if st.button("Cancel"):
+                    st.session_state.confirm = False
+                    st.rerun()
     
+    # get data from db
+    db_df=get_transaction_data(db_name,user_name)
+
+    # Convert the Date column to datetime
+    db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
+
     # Create tabs
     tab1, tab2, tab3, tab4= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback"])
 
     # Content for each tab
     with tab1:
-        st.markdown(
-            """
-            <style>
-            .center {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            </style>
-            <div>
-                <h3>Bank Statements Automation</h3>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        # show_messege()   
+        try :
+            st.markdown(
+                """
+                <style>
+                .center {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                </style>
+                <div>
+                    <h3>Bank Statements Automation</h3>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            # show_messege()
+
+            if not db_df.empty:
+                name_options = ["All"] + list(db_df["Name"].unique())
+                bank_options = ["All"] + list(db_df["Bank"].unique())
+
+                g_df = db_df[['Date','Name','Bank','Debit','Credit']].copy()
+                # Create 3 columns
+                d1, d2 = st.columns(2)
+
+                # Dropdown to select a name and bank
+                with d1:
+                    selected_name = st.selectbox("Select Name:", options=name_options)
+
+                with d2:
+                    selected_bank = st.selectbox("Select Bank:", options=bank_options)
+
+
+                if st.button("Display Graph"):
+                    display_graph(g_df,selected_name,selected_bank)
+                    
+            # else:
+            #     st.toast(":red[Please add data first.]")  
+        except Exception as e:
+            print(f"Error in fetching transction data: {e}")
+            st.toast(":red[Something went wrong.]")
+
 
     with tab3:    
         try:
-            # get data from db
-            db_df=get_transaction_data(db_name,user_name)
-
-            # Convert the Date column to datetime and then format it
-            db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce').dt.strftime('%d-%b-%Y')
+            db_df['Date'] = db_df['Date'].dt.strftime('%d-%b-%Y')
 
             if not db_df.empty:
                 display_data(db_df,600)
-
+                db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
                 st.download_button(
                     key='dbb',
                     label="Download Excel file",
@@ -160,6 +214,10 @@ if st.session_state["connected"]:
 
             if not summary_df.empty:
                 display_data(summary_df,200)
+
+                # Convert the Date column to datetime and then format it
+                summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce')
+                summary_df['End_Date'] = pd.to_datetime(summary_df['End_Date'],errors='coerce')
 
                 st.download_button(
                     key='dbs',
@@ -190,13 +248,17 @@ if st.session_state["connected"]:
         # Text area for feedback
         feedback = st.text_area("Your Feedback:", placeholder="Write your feedback here...")
         feedback=feedback.strip()
+        
+        # File uploader (Optional)
+        uploaded_file = st.file_uploader("Attach a file (optional)", type=["xls","xlsx","pdf", "png", "jpg"])
+
         # Submit button
         if st.button("Submit Feedback"):
             if feedback:  # Checking if input is not empty
                 try:
                     data=(user_name,feedback)
                     add_feedback(db_name,feedback_table,data)
-                    send_email(feedback,user_email,ADMIN_EMAILS,SMTP_SERVER,SMTP_USER,SMTP_PASSWORD)
+                    send_email(feedback,user_email,uploaded_file,ADMIN_EMAILS,SMTP_SERVER,SMTP_USER,SMTP_PASSWORD)
                     # send_email(feedback,user_email,ADMIN_EMAIL2,SMTP_SERVER,SMTP_USER,SMTP_PASSWORD)
                     st.toast(":green[Thank you for your feedback! It has been sent to the admin.]")
                 except Exception as e:
