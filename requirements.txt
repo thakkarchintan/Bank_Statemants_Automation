@@ -16,3 +16,5 @@ email-to
 secure-smtplib
 streamlit-javascript
 matplotlib
+plotly
+plotly-express

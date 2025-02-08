@@ -37,7 +37,7 @@ bank_list = [
     "Indian Overseas Bank",
 
     "Bandhan Bank",
-    "Kotak Mahindra Bank",
+    # "Kotak Mahindra Bank",
 
     "Axis Bank",
     # "Union Bank of India",
@@ -98,7 +98,7 @@ table_columns_pdf_dic = {
     
     'Bandhan Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
                     #  ['Transaction Date','Description','Amount','Cr/Dr']],
-    'Kotak Mahindra Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
+    'Kotak Mahindra Bank': ['TRANSACTION DATE','TRANSACTION DETAILS','BALANCE(₹)','DEBIT/CREDIT(₹)'],
 
     'Axis Bank': ["Tran Date", "Particulars", "Debit", "Credit"],
     'Union Bank of India': [],

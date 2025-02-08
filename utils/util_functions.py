@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+import plotly.express as px
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import pdfplumber
@@ -323,15 +324,15 @@ def display_graph(df,selected_name,selected_bank):
     # Drop the sorting column
     monthly_data = monthly_data.drop(columns=["sort_order"])
 
-    # Plot Bar Chart
-    fig, ax = plt.subplots(figsize=(8, 5))
-    monthly_data.set_index("month_year").plot(kind="bar", ax=ax)
-    plt.xlabel("Month")
-    plt.ylabel("Amount in ₹")
-    plt.title(f"Monthly Debit & Credit for {selected_name}")
-    plt.xticks(rotation=45)
-    plt.legend(["Debit", "Credit"])
-    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    # Plot using Plotly
+    fig = px.bar(
+        monthly_data,
+        x="month_year",
+        y=["Debit", "Credit"],
+        title=f"{selected_name if selected_name!='All'else ''} {'('+selected_bank+') ' if selected_bank!='All'else ''}{':'if selected_bank!='All' or selected_name!='All' else ''} Monthly Debit & Credit",
+        labels={"month_year": "Month", "value": "Amount"},
+        barmode="group",
+    )
 
-    # Display Plot
-    st.pyplot(fig)
+    # Show figure in Streamlit
+    st.plotly_chart(fig)

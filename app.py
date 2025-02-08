@@ -124,12 +124,11 @@ if st.session_state["connected"]:
                         st.toast(":green[Data deleted successfully]")
                     except Exception as e:
                         print(f"Error in deleting: {e}")
-                        st.toast(":red[Something went wrong.]")
-
+                        st.toast(":red[Something went wrong.Please try again.]")
                     st.session_state.confirm = False
                     time.sleep(4)
                     st.rerun()
-
+                    
             with col2:
                 if st.button("Cancel"):
                     st.session_state.confirm = False
@@ -147,21 +146,6 @@ if st.session_state["connected"]:
     # Content for each tab
     with tab1:
         try :
-            st.markdown(
-                """
-                <style>
-                .center {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                }
-                </style>
-                <div>
-                    <h3>Bank Statements Automation</h3>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
             # show_messege()
 
             if not db_df.empty:
@@ -170,7 +154,7 @@ if st.session_state["connected"]:
 
                 g_df = db_df[['Date','Name','Bank','Debit','Credit']].copy()
                 # Create 3 columns
-                d1, d2 = st.columns(2)
+                d1, d2, d3 = st.columns(3)
 
                 # Dropdown to select a name and bank
                 with d1:
@@ -179,8 +163,13 @@ if st.session_state["connected"]:
                 with d2:
                     selected_bank = st.selectbox("Select Bank:", options=bank_options)
 
+                show_data = False
+                with d3:
+                    st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
+                    if st.button("Display Graph"):
+                        show_data = True
 
-                if st.button("Display Graph"):
+                if show_data:
                     display_graph(g_df,selected_name,selected_bank)
                     
             # else:
@@ -275,6 +264,5 @@ if st.session_state["connected"]:
                 st.warning("Please enter your feedback before submitting.")   
         
 else:
-    # st.header("Bank Statements Automation")
     auth_url=authenticator.login()  
     show_message(auth_url)
