@@ -287,10 +287,6 @@ def show_message(url):
     
     html = f"""
     <div class="container">
-        <div class="video-section">
-            <h3>Tutorial</h3>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/GcZW24SkbHM?si=hfxhPfJ6T2BakXNh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        </div>
         <div class="text-section">
             <h3>All Your Bank Transactions. One Unified View.</h3>
             <div class="para">Tired of juggling multiple bank statements? Upload statements from any Indian bank and instantly get a clean, organized, and standardized view of all your transactions in one place.</div>
@@ -302,6 +298,10 @@ def show_message(url):
                     <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" alt="Google logo" />
                 </a>
             </div>
+        </div>
+        <div class="video-section">
+            <h3>Tutorial</h3>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/GcZW24SkbHM?si=hfxhPfJ6T2BakXNh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>
     </div>
     """
@@ -346,3 +346,44 @@ def display_graph(df,selected_name,selected_bank):
 
     # Show figure in Streamlit
     st.plotly_chart(fig)
+
+def show_agreement():
+    html_string = """
+    <div class="cont">
+        <h3>Your Data, Your Control - Our Commitment to Privacy & Security</h3>
+        <div class="para bolda">Your Data is Yours - No Sharing, No Selling</div>
+        <div class="para">We do not share or sell your data. It is only used within the app to organize and categorize your transactions.</div>
+        <div class="para bolda">You Upload, We Process</div>
+        <div class="para">You manually upload your bank statements, and we only process the data you provide—nothing more, nothing less.</div>
+        <div class="para bolda">You Can Delete Your Data Anytime</div>
+        <div class="para">Your data, your choice! You can delete your uploaded data anytime, and once deleted, it is gone forever.</div>
+        <div class="para">By using this app, you agree to these practices.If you have any questions, feel free to reach out at <span class="email">bankstatementsautomation@gmail.com</span></div>
+    </div>
+    """
+
+    css_string = """
+    <style>
+        .cont {
+            margin: auto;
+            margin-top: 0px;
+            margin-bottom: 20px;
+            width: 80%;
+        }
+        .para {
+            font-size: 20px;
+            margin-top: 8px;
+            line-height: 1.2;
+        }
+        .bolda {
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        .email {
+            font-weight: bold;
+            color: #0056b3;
+        }
+    </style>
+    """
+    st.markdown(css_string, unsafe_allow_html=True)
+    st.markdown(html_string, unsafe_allow_html=True)
+

@@ -5,6 +5,9 @@ from jwt import ExpiredSignatureError
 import streamlit as st
 import extra_streamlit_components as stx
 
+if "cookie" not in st.session_state:
+    st.session_state.cookie = stx.CookieManager()
+
 
 class AuthTokenManager:
     def __init__(
@@ -13,7 +16,7 @@ class AuthTokenManager:
         token_key: str,
         token_duration_days: int,
     ):
-        self.cookie_manager = stx.CookieManager()
+        self.cookie_manager = st.session_state.cookie
         self.cookie_name = cookie_name
         self.token_key = token_key
         self.token_duration_days = token_duration_days
