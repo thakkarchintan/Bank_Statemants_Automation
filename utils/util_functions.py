@@ -287,11 +287,10 @@ def show_message(url):
     
     html = f"""
     <div class="container">
-        <!--
         <div class="video-section">
             <h3>Tutorial</h3>
             <iframe width="560" height="315" src="https://www.youtube.com/embed/GcZW24SkbHM?si=hfxhPfJ6T2BakXNh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        </div> -->
+        </div>
         <div class="text-section">
             <h3>All Your Bank Transactions. One Unified View.</h3>
             <div class="para">Tired of juggling multiple bank statements? Upload statements from any Indian bank and instantly get a clean, organized, and standardized view of all your transactions in one place.</div>
