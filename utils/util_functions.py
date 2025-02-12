@@ -347,6 +347,108 @@ def display_graph(df,selected_name,selected_bank):
     # Show figure in Streamlit
     st.plotly_chart(fig)
 
+def display_graph1(df,selected_name,selected_bank,keyword,graph_name,debit_or_credit='all'):
+    # Extract month and year separately in the format "Jan 2024"
+    df["month_year"] = df["Date"].dt.strftime("%b %Y")  # "Jan 2024" format
+    # Create a sorting column for proper month-year order
+    df["sort_order"] = df["Date"].dt.to_period("M")
+    # Filter data for the selected name and bank
+    if selected_bank!='All':
+        df = df[df["Bank"] == selected_bank]
+    if selected_name!='All':
+        df = df[df["Name"] == selected_name]
+    
+    df = df[df['Narration'].str.contains(keyword, case=False, na=False)]
+
+    if df.empty:
+        st.write("No data found.")
+        return
+
+    custom_colors={"Debit":"#F08080", "Credit":"#5CB85C"}
+    lst=["Debit", "Credit"]
+
+    if debit_or_credit=='Debit':
+        custom_colors={"Debit":"#F08080"}
+        lst=["Debit"]
+
+    elif debit_or_credit=='Credit':
+        custom_colors={"Credit":"#5CB85C"}
+        lst=["Credit"]
+
+
+    # Group by month and sum values, then sort
+    monthly_data = (
+        df.groupby(["month_year", "sort_order"])[lst]
+        .sum()
+        .reset_index()
+        .sort_values(by="sort_order")
+    )
+
+    # Drop the sorting column
+    monthly_data = monthly_data.drop(columns=["sort_order"])
+    
+    # Plot using Plotly
+    fig = px.bar(
+        monthly_data,
+        x="month_year",
+        y=lst,
+        title=f"{selected_name if selected_name!='All'else ''} {'('+selected_bank+') ' if selected_bank!='All'else ''}{':'if selected_bank!='All' or selected_name!='All' else ''} {graph_name}",
+        labels={"month_year": "Month", "value": "Amount","variable":""},
+        barmode="group",
+        color_discrete_map=custom_colors
+    )
+
+    # Show figure in Streamlit
+    st.plotly_chart(fig)
+
+def display_graph2(df,selected_name,selected_bank,is_low,graph_name):
+    # Extract month and year separately in the format "Jan 2024"
+    df["month_year"] = df["Date"].dt.strftime("%b %Y")  # "Jan 2024" format
+    # Create a sorting column for proper month-year order
+    df["sort_order"] = df["Date"].dt.to_period("M")
+    # Filter data for the selected name and bank
+    if selected_bank!='All':
+        df = df[df["Bank"] == selected_bank]
+    if selected_name!='All':
+        df = df[df["Name"] == selected_name]
+    
+    if is_low:
+        df = df[(df['Debit'] >= 0) & (df['Debit'] <= 500)]
+    else:
+        df = df[(df['Debit'] > 500) & (df['Debit'] <= 1500)]
+
+    if df.empty:
+        st.write("No data found.")
+        return
+
+    custom_colors={"Debit":"#F08080"}
+    lst=["Debit"]
+
+    # Group by month and sum values, then sort
+    monthly_data = (
+        df.groupby(["month_year", "sort_order"])[lst]
+        .sum()
+        .reset_index()
+        .sort_values(by="sort_order")
+    )
+
+    # Drop the sorting column
+    monthly_data = monthly_data.drop(columns=["sort_order"])
+    
+    # Plot using Plotly
+    fig = px.bar(
+        monthly_data,
+        x="month_year",
+        y=lst,
+        title=f"{selected_name if selected_name!='All'else ''} {'('+selected_bank+') ' if selected_bank!='All'else ''}{':'if selected_bank!='All' or selected_name!='All' else ''} {graph_name}",
+        labels={"month_year": "Month", "value": "Amount","variable":""},
+        barmode="group",
+        color_discrete_map=custom_colors
+    )
+
+    # Show figure in Streamlit
+    st.plotly_chart(fig)
+
 def show_agreement():
     html_string = """
     <div class="cont">
