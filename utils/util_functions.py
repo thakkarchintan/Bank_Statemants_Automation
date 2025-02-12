@@ -223,41 +223,31 @@ def show_message(url):
     css = """
     <style>
         .container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 2.5%;
-            max-width: 100%;
-            margin: auto;
-            margin-top: 0;
-        }
-        .video-section {
-            flex: 1;
-            max-width: 50%;
+            width:100vw;
+            height:100vh;
+            display:flex;
+            flex-direction:column;
+            gap:1.5rem;
         }
         .text-section {
-            flex: 1;
-            max-width: 50%;
+            max-width: 90%;
         }
-        h2{
-            margin-top:0;
-            margin-bottom:0;
-            padding-top:0;
-            padding-bottom:0;
+        .para{
+            font-size: 1.2rem;
         }
-        .para {
-            font-size: 20px;
-            margin-top: 10px;
-            line-height: 1.3;
+        .section-heading{
+            font-size:1.5rem;
         }
-        .note {
-            margin-top: 15px;
-            font-size: 20px;
-            line-height: 1.3;
+        
+        .policy h2{
+            font-size:1.6rem;
         }
-        iframe {
-            width: 100%;
-            height: 290px;
+        
+        .policy p {
+            font-size:1.2rem;
+        }
+        .policy{
+            line-height:1;
         }
         .gcenter {
             width: 100%;
@@ -265,20 +255,23 @@ def show_message(url):
             margin-top: 10px;
         }
         .google-button {
+            margin-top:10px;
             background-color: #4285F4;
             margin-right: 5px;
             color: white !important;
             border-radius: 5px;
-            padding: 5px 10px;
-            font-size: 17px;
+            padding: 10px 15px;
+            font-size: 1.5rem;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             text-decoration: none !important;
+            gap:5px;
         }
         .google-button img {
-            width: 20px;
+            width: 1.5rem;
+            height:1.5rem;
             margin-left: 5px;
             border-radius: 50%;
         }
@@ -287,22 +280,37 @@ def show_message(url):
     
     html = f"""
     <div class="container">
-        <div class="text-section">
-            <h3>All Your Bank Transactions. One Unified View.</h3>
-            <div class="para">Tired of juggling multiple bank statements? Upload statements from any Indian bank and instantly get a clean, organized, and standardized view of all your transactions in one place.</div>
-            <div class="para">Gain powerful insights into your income, expenses, and spending trends with smart analytics - helping you stay in control of your finances like never before.</div>
-            <div class="note">Ps - The app is in its early development stage and we would welcome the opportunity to build it together with you.</div>
+            <div class="text-section">
+                <h3 class="section-heading">All Your Bank Transactions. One Unified View.</h3>
+                <div class="para">Upload PDF or XLS bank statements from the list of supported banks (hyperlink) and instantly get a clean, organized, and standardized view of all your transactions in one place.</div>
+                <div class="para">Gain powerful insights and analytics helping you see trends, hidden charges and other analytics from your transactions data never before!</div>
+            </div>
+            <div class = "policy">
+                <h3 class="section-heading">Our Commitment to Privacy & Security</h3>
+                <div>
+                    <h2 class="section-subheading">100% Encrypted & Secure</h2>
+                    <p>All the data is 100% encrypted using the most sophisticated encryption methods to ensure user privacy and security.</p>
+                </div>
+                <div>
+                    <h2>You Upload, We Process</h2>
+                    <p>You manually upload your bank statements, and we only process the data you provide - nothing more, nothing less.</p>
+                </div>
+                <div>
+                    <h2>You Can Delete Your Data Anytime</h2>
+                    <p>Your data, your choice! You can delete your uploaded data anytime, and once deleted, it is gone forever.</p>
+                </div>
+                    <div>
+                    <h2>Your Data is Yours - No Sharing, No Selling</h2>
+                    <p>We do not and will not share or sell your data. The data is used within the app to organize and categorize transactions.</p>
+                </div>
+                <p>If you have any questions, feel free to reach out at <a href="mailto:bankstatementsautomation@gmail.com">bankstatementsautomation@gmail.com</a></p>
+            </div>
             <div class="gcenter">
                 <a href="{url}" class="google-button" target="_self">
                     Login with Google
                     <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" alt="Google logo" />
                 </a>
             </div>
-        </div>
-        <div class="video-section">
-            <h3>Tutorial</h3>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/GcZW24SkbHM?si=hfxhPfJ6T2BakXNh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        </div>
     </div>
     """
     
