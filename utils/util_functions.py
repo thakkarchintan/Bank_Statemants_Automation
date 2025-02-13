@@ -490,6 +490,7 @@ def display_graph(df,selected_name,selected_bank):
         barmode="group",
         color_discrete_map=custom_colors
     )
+    
 
     # Show figure in Streamlit
     st.plotly_chart(fig)
