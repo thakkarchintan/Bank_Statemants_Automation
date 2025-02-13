@@ -66,7 +66,6 @@ if st.session_state["connected"]:
                 for uploaded_file in uploaded_files:
                     df=format_uploaded_file(uploaded_file,bank)
                     df = df[df['Narration'] != 'OPENINGBALANCE...']
-                    no_of_transactions=df.shape[0]
                     # Default name if ac_name is not entered
                     if not ac_name:
                         ac_name=name
@@ -75,15 +74,40 @@ if st.session_state["connected"]:
                     From=min(pd.to_datetime(df['Date'],errors='coerce'))
                     Till=max(pd.to_datetime(df['Date'],errors='coerce'))
 
-                    update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
-                    
                     # Add a new columna 'Bank' and 'Name'
                     df['Bank'] = bank
 
                     df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
-                    # print(df)
 
-                    add_data(df,override,db_name,user_name)
+                    # get data from db
+                    existing_df=get_transaction_data(db_name,user_name)
+                    
+                    # Ensure Date column is in the same format
+                    df['Date'] = pd.to_datetime(df['Date'])
+                    existing_df['Date'] = pd.to_datetime(existing_df['Date'])
+
+                    # Ensure numeric columns have consistent types
+                    df['Debit'] = df['Debit'].astype(float)
+                    df['Credit'] = df['Credit'].astype(float)
+                    existing_df['Debit'] = existing_df['Debit'].astype(float)
+                    existing_df['Credit'] = existing_df['Credit'].astype(float)
+
+                    # Strip whitespace and standardize text columns (optional)
+                    text_cols = ['Name', 'Bank', 'Narration', 'Category']
+                    for col in text_cols:
+                        df[col] = df[col].str.strip()
+                        existing_df[col] = existing_df[col].str.strip()
+
+                    # Remove exact matches
+                    df_filtered = df.merge(existing_df, on=df.columns.tolist(), how='left', indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
+
+
+                    no_of_transactions=df_filtered.shape[0]
+
+                    if not df_filtered.empty:    
+                        update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
+
+                        add_data(df_filtered,override,db_name,user_name)
                     st.toast(":green[Data updated successfully]")
 
             except Exception as e:
