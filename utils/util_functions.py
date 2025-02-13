@@ -151,7 +151,10 @@ def format_uploaded_file(uploaded_file, bank):
         df['Date'] = df['Date'].str.replace(',', '/')
         
         # Convert the Date column to datetime and then format it
-        df['Date'] = pd.to_datetime(df['Date'],format=date_format,errors='coerce').dt.strftime('%Y-%m-%d')
+        if date_format is not None:
+            df['Date'] = pd.to_datetime(df['Date'],format=date_format,errors='coerce').dt.strftime('%Y-%m-%d')
+        else:
+            df['Date'] = pd.to_datetime(df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
 
         # Remove irrelevant data at the bottom
         # Assuming valid transaction rows should not have NaN in all key columns
