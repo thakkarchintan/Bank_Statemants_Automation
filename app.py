@@ -4,12 +4,6 @@ from io import BytesIO
 from datetime import datetime , timedelta
 import os
 import time
-import streamlit as st
-import pandas as pd
-from io import BytesIO
-from datetime import datetime , timedelta
-import os
-import time
 from dotenv import load_dotenv
 
 # Set Streamlit to wide mode
@@ -71,7 +65,8 @@ if st.session_state["connected"]:
             try:
                 for uploaded_file in uploaded_files:
                     df=format_uploaded_file(uploaded_file,bank)
-                    
+                    df = df[df['Narration'] != 'OPENINGBALANCE...']
+                    no_of_transactions=df.shape[0]
                     # Default name if ac_name is not entered
                     if not ac_name:
                         ac_name=name
@@ -79,7 +74,8 @@ if st.session_state["connected"]:
 
                     From=min(pd.to_datetime(df['Date'],errors='coerce'))
                     Till=max(pd.to_datetime(df['Date'],errors='coerce'))
-                    update_summary(db_name,summ_table,ac_name,bank,From,Till)
+
+                    update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
                     
                     # Add a new columna 'Bank' and 'Name'
                     df['Bank'] = bank
@@ -104,7 +100,6 @@ if st.session_state["connected"]:
 
     # Convert the Date column to datetime
     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
-
 
     # Initialize session state for confirmation popup
     if "confirm" not in st.session_state:
@@ -199,7 +194,7 @@ if st.session_state["connected"]:
                 db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
                 st.download_button(
                     key='dbb',
-                    label="Download Excel file",
+                    label="Download data",
                     data=convert_df_to_excel(db_df),
                     file_name="bank_statement.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -228,7 +223,7 @@ if st.session_state["connected"]:
 
                     st.download_button(
                         key='dbs',
-                        label="Download Excel file",
+                        label="Download data",
                         data=convert_df_to_excel(summary_df),
                         file_name="bank_statement_summary.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
