@@ -8,7 +8,7 @@ bank_status_dict = {
     'Indian Overseas Bank': False,
 
     'Bandhan Bank': True,
-    'Kotak Mahindra Bank': False,
+    'Kotak Bank': False,
 
     'Union Bank of India': False,
     'Punjab National Bank': False,
@@ -37,7 +37,7 @@ bank_list = [
     "Indian Overseas Bank",
 
     "Bandhan Bank",
-    "Kotak Mahindra Bank",
+    "Kotak Bank",
 
     "Axis Bank",
     # "Union Bank of India",
@@ -67,7 +67,7 @@ table_columns_dic = {
     'Indian Overseas Bank': ['DATE','NARATION','DEBIT','CREDIT'],
     
     'Bandhan Bank': ['Transaction Date','Description','Amount (INR)','Cr/Dr'],
-    'Kotak Mahindra Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
+    'Kotak Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
 
     'Axis Bank': ["Tran Date","PARTICULARS","DR","CR"],
     'Union Bank of India': [],
@@ -98,7 +98,7 @@ table_columns_pdf_dic = {
     
     'Bandhan Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
                     #  ['Transaction Date','Description','Amount','Cr/Dr']],
-    'Kotak Mahindra Bank': 
+    'Kotak Bank': 
     # ['TRANSACTION DATE','TRANSACTION DETAILS','BALANCE(₹)','DEBIT/CREDIT(₹)'],
     ['Date', 'Narration', 'Withdrawal(Dr)', 'Deposit(Cr)'],
 
@@ -134,7 +134,7 @@ banks_date_format = {
 
     "Bandhan Bank": None,
     # "%d-%m-%Y",
-    "Kotak Mahindra Bank": None,
+    "Kotak Bank": None,
     # "%d/%m/%Y",
 
     "Axis Bank": "%d-%m-%Y",

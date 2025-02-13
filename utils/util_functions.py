@@ -82,7 +82,7 @@ def pdf_to_df(uploaded_file,table_columns_pdf,bank):
                         combined_df = pd.DataFrame(columns=all_col)  
             
             # print(combined_df)
-            if bank=="Kotak Mahindra Bank" and i==0:
+            if bank=="Kotak Bank" and i==0:
                 combined_df = combined_df.drop(combined_df.columns[[1, 7]], axis=1)
                 all_col=combined_df.columns
                 # combined_df = combined_df.drop(0)
@@ -159,7 +159,7 @@ def format_uploaded_file(uploaded_file, bank):
         df = df.dropna(subset=['Narration'], how="all").reset_index(drop=True)
         # print(df)
         if isCrDr:
-            # if bank == 'Kotak Mahindra Bank':
+            # if bank == 'Kotak Bank':
             #     df['Credit'] = df[table_columns[3]].apply(lambda x: x if x > 0 else 0)
             #     df['Debit'] = df[table_columns[3]].apply(lambda x: -x if x < 0 else 0)
                 

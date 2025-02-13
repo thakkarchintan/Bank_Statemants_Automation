@@ -184,7 +184,7 @@ def add_user(database_name,table_name,data):
     cursor.close()
     conn.close()
 
-def update_summary(database_name,table_name,ac_name,bank,From,Till):
+def update_summary(database_name,table_name,ac_name,bank,From,Till,no_of_transactions):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -192,18 +192,19 @@ def update_summary(database_name,table_name,ac_name,bank,From,Till):
             Bank VARCHAR(50), 
             Start_Date DATE,
             End_Date DATE,
-            Pending_days INT
+            Pending_days INT,
+            Transactions INT
         );
     """
     create_table(database_name,create_table_query,conn)
     
     cursor = conn.cursor()
 
-    query = f"SELECT Start_Date,End_Date FROM {table_name} WHERE Name = %s and Bank = %s"
+    query = f"SELECT Start_Date,End_Date,Transactions FROM {table_name} WHERE Name = %s and Bank = %s"
     cursor.execute(query, (ac_name,bank,))
 
     # Fetch result
-    dates = cursor.fetchone()
+    dates_and_transactions = cursor.fetchone()
 
     # Close connection
     cursor.close()
@@ -214,11 +215,12 @@ def update_summary(database_name,table_name,ac_name,bank,From,Till):
     ist = pytz.timezone('Asia/Kolkata')
     # print(dt.datetime.now(ist))
     pending_days=dt.datetime.now(ist) - ist.localize(Till)
-    if dates:
+    if dates_and_transactions:
         # dates[0]=dt.datetime.strptime(str(dates[0]),'%Y-%m-%d')
         # dates[1]=dt.datetime.strptime(str(dates[1]),'%Y-%m-%d')
-        From=min(dt.datetime.strptime(str(dates[0]),'%Y-%m-%d'),From)
-        Till=max(dt.datetime.strptime(str(dates[1]),'%Y-%m-%d'),Till)
+        From=min(dt.datetime.strptime(str(dates_and_transactions[0]),'%Y-%m-%d'),From)
+        Till=max(dt.datetime.strptime(str(dates_and_transactions[1]),'%Y-%m-%d'),Till)
+        no_of_transactions+=dates_and_transactions[2]
         pending_days=dt.datetime.now(ist) - ist.localize(Till)
         # print(type(pending_days.days))
 
@@ -228,9 +230,10 @@ def update_summary(database_name,table_name,ac_name,bank,From,Till):
         update_data(database_name,table_name,'Start_Date',From,condition,conn,cursor)
         update_data(database_name,table_name,'End_Date',Till,condition,conn,cursor)
         update_data(database_name,table_name,'Pending_days',pending_days.days,condition,conn,cursor)
+        update_data(database_name,table_name,'Transactions',no_of_transactions,condition,conn,cursor)
     
     else:
-        data=(ac_name,bank,From,Till,pending_days.days)
+        data=(ac_name,bank,From,Till,pending_days.days,no_of_transactions)
         insert_data(database_name,table_name,data,conn,cursor)
     
     cursor.close()
@@ -247,7 +250,8 @@ def get_summary_data(database_name,table_name):
             Bank VARCHAR(50), 
             Start_Date DATE,
             End_Date DATE,
-            Pending_days INT
+            Pending_days INT,
+            Transactions INT
         );
     """
     create_table(database_name,create_table_query,conn)
