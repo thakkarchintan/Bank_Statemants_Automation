@@ -8,6 +8,8 @@ import pdfplumber
 import datetime as dt
 import xlrd
 from io import BytesIO
+import os
+import base64
 
 # Function to categorize each row based on narration content
 def categorize_debit_row(narration):
@@ -223,6 +225,12 @@ def display_data(df,Height):
     AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height)  
 
 def show_message(url):
+    def get_base64_image(image_path):
+        with open(image_path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+
+    image_base64 = get_base64_image("assets/homepage/profile_image.jpg")
+    
     css = """
     <style>
         .container {
@@ -237,15 +245,15 @@ def show_message(url):
         }
         .para{
             font-size: 1.2rem;
+            margin-bottom:10px;
         }
         .section-heading{
             font-size:1.5rem;
         }
         
         .policy h2{
-            font-size:1.6rem;
+            font-size:1.5rem;
         }
-        
         .policy p {
             font-size:1.2rem;
         }
@@ -258,7 +266,6 @@ def show_message(url):
             margin-top: 10px;
         }
         .google-button {
-            margin-top:10px;
             background-color: #4285F4;
             margin-right: 5px;
             color: white !important;
@@ -278,18 +285,66 @@ def show_message(url):
             margin-left: 5px;
             border-radius: 50%;
         }
+        .profile-section{
+            display:flex;
+            gap:20px;
+            width:90%;
+            margin-top:20px;
+            margin-bottom:20px;
+            justify-content:start;
+            align-items:center;
+        }
+        .profile-image img{
+            border-radius:100%;
+        }
+        .profile-text p{
+            margin-top:5px;
+            margin-bottom:5px;
+            font-size:1.2rem;
+        }
+        .profile-info{
+            margin-top:15px;
+        }
+        .profile-info p{
+            margin-top:5px;
+            margin-bottom:5px;
+            font-size:1.2rem;
+        }
+        .bold-text{
+            font-weight: bold;
+        }
+         table {
+            width: 60%;
+            border-collapse: collapse;
+            margin: 20px;
+            font-family: Arial, sans-serif;
+            text-align: center; /* Ensures all text in table is centered */
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+    
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
     </style>
     """
     
     html = f"""
     <div class="container">
             <div class="text-section">
-                <h3 class="section-heading">All Your Bank Transactions. One Unified View.</h3>
-                <div class="para">Upload PDF or XLS bank statements from the list of supported banks (hyperlink) and instantly get a clean, organized, and standardized view of all your transactions in one place.</div>
+                <h1 class="section-heading">All Your Bank Transactions. One Unified View.</h1>
+                <div class="para">Upload PDF or XLS bank statements from the <a href = "#bank-table">list of supported banks</a> and instantly get a clean, organized, and standardized view of all your transactions in one place.</div>
                 <div class="para">Gain powerful insights and analytics helping you see trends, hidden charges and other analytics from your transactions data never before!</div>
             </div>
             <div class = "policy">
-                <h3 class="section-heading">Our Commitment to Privacy & Security</h3>
+                <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
                 <div>
                     <h2 class="section-subheading">100% Encrypted & Secure</h2>
                     <p>All the data is 100% encrypted using the most sophisticated encryption methods to ensure user privacy and security.</p>
@@ -314,6 +369,87 @@ def show_message(url):
                     <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" alt="Google logo" />
                 </a>
             </div>
+            <div class = "profile-section">
+                <div class = "profile-image">
+                    <img src="data:image/jpeg;base64,{image_base64}" width="200">
+                </div>
+                <div class = "profile-text">
+                    <h1>Why I Created This App</h1>
+                    <p>For over <span class ="bold-text">three years</span> , I manually categorized my bank transactions, trying to make sense of where my money was going. 
+                    It was tedious, time-consuming, and honestly—inefficient.</p>
+                    <p>At some point, I realized there had to be a <span class ="bold-text">better way</span>. So, I decided to <span class ="bold-text">automate the entire process</span>. What started as a personal tool quickly turned
+                    into something I thought could benefit others too.</p>
+                    <p>That’s why I’m sharing it with my network—if you’ve ever struggled with organizing your finances, 
+                    I hope this helps! Would love to hear your thoughts. 🚀.</p>
+                    <div class = "profile-info">
+                        <p>Regards,</p>
+                        <p>Chintan Thakkar</p>
+                        <p><a href="https://www.linkedin.com/in/1chintanthakkar/">Linkedin</a></p> 
+                    </div>     
+                </div>
+            </div>
+            <table id="bank-table">
+        <tr>
+            <th>Name of the Bank</th>
+            <th>XLS or XLSX Supported</th>
+            <th>PDF Supported</th>
+        </tr>
+        <tr>
+            <td>Bank of India</td>
+            <td>Yes</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>HDFC Bank</td>
+            <td>Yes</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>Indian Overseas Bank</td>
+            <td>Yes</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>Axis Bank</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>ICICI Bank</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>State Bank of India</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>Bandhan Bank</td>
+            <td>Work in progress</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>Indian Bank</td>
+            <td>Work in progress</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>Kotak Mahindra Bank</td>
+            <td>Work in progress</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>Punjab National Bank</td>
+            <td>Work in progress</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>Union Bank of India</td>
+            <td>Work in progress</td>
+            <td>Work in progress</td>
+        </tr>
+    </table>
     </div>
     """
     
