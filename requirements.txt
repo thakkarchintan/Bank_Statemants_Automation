@@ -18,7 +18,6 @@ streamlit-javascript
 matplotlib
 plotly
 plotly-express
-Crypto.Cipher
 joblib
 logging
 botocore.exceptions
