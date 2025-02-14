@@ -88,7 +88,7 @@ def delete_data(database_name, table_name, condition):
 def add_data(df,override,database_name, table_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
-    # create_database(database_name,cursor)
+    create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -134,7 +134,7 @@ def add_data(df,override,database_name, table_name):
 def get_transaction_data(database_name,table_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
-    # create_database(database_name,cursor)
+    create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -169,7 +169,7 @@ def add_user(database_name,table_name,data):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
 
-    # create_database(database_name,cursor)
+    create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -242,7 +242,7 @@ def update_summary(database_name,table_name,ac_name,bank,From,Till,no_of_transac
 def get_summary_data(database_name,table_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
-    # create_database(database_name,cursor)
+    create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -275,7 +275,7 @@ def add_feedback(database_name,table_name,data):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
 
-    # create_database(database_name,cursor)
+    create_database(database_name,cursor)
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -291,6 +291,8 @@ def add_feedback(database_name,table_name,data):
 
 def get_name(database_name,table_name,user_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
+    cursor = conn.cursor()
+    create_database(database_name,cursor)
     conn.select_db(database_name)
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
@@ -300,7 +302,6 @@ def get_name(database_name,table_name,user_name):
         )
     """
     create_table(database_name,create_table_query,conn)
-    cursor = conn.cursor()
     query = f"SELECT name FROM {table_name} WHERE user_name = %s;"
     cursor.execute(query, (user_name,))
 
