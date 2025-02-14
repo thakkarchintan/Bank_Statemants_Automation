@@ -21,4 +21,3 @@ plotly-express
 joblib
 logging
 boto3
-base64
