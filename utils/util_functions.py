@@ -235,10 +235,10 @@ def show_message(url):
     <style>
         .container {
             width:100vw;
-            height:100vh;
+            height:100%;
             display:flex;
             flex-direction:column;
-            gap:1.5rem;
+            gap:2rem;
         }
         .text-section {
             max-width: 90%;
@@ -259,6 +259,10 @@ def show_message(url):
         }
         .policy{
             line-height:1;
+        }
+        .profile{
+            margin-bottom:10px;
+            margin-top:10px;
         }
         .gcenter {
             width: 100%;
@@ -333,6 +337,9 @@ def show_message(url):
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
+        .table-section h1{
+            margin-left:20px;
+        }
     </style>
     """
     
@@ -369,12 +376,13 @@ def show_message(url):
                     <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" alt="Google logo" />
                 </a>
             </div>
-            <div class = "profile-section">
+            <div class = "profile">
+             <h1>Why I Created This App</h1>
+                <div class = "profile-section">
                 <div class = "profile-image">
                     <img src="data:image/jpeg;base64,{image_base64}" width="200">
                 </div>
                 <div class = "profile-text">
-                    <h1>Why I Created This App</h1>
                     <p>For over <span class ="bold-text">three years</span> , I manually categorized my bank transactions, trying to make sense of where my money was going. 
                     It was tedious, time-consuming, and honestly—inefficient.</p>
                     <p>At some point, I realized there had to be a <span class ="bold-text">better way</span>. So, I decided to <span class ="bold-text">automate the entire process</span>. What started as a personal tool quickly turned
@@ -382,75 +390,79 @@ def show_message(url):
                     <p>That’s why I’m sharing it with my network—if you’ve ever struggled with organizing your finances, 
                     I hope this helps! Would love to hear your thoughts. 🚀.</p>
                     <div class = "profile-info">
-                        <p>Regards,</p>
                         <p>Chintan Thakkar</p>
                         <p><a href="https://www.linkedin.com/in/1chintanthakkar/">Linkedin</a></p> 
                     </div>     
                 </div>
             </div>
-            <table id="bank-table">
-        <tr>
-            <th>Name of the Bank</th>
-            <th>XLS or XLSX Supported</th>
-            <th>PDF Supported</th>
-        </tr>
-        <tr>
-            <td>Bank of India</td>
-            <td>Yes</td>
-            <td>Work in progress</td>
-        </tr>
-        <tr>
-            <td>HDFC Bank</td>
-            <td>Yes</td>
-            <td>Work in progress</td>
-        </tr>
-        <tr>
-            <td>Indian Overseas Bank</td>
-            <td>Yes</td>
-            <td>Work in progress</td>
-        </tr>
-        <tr>
-            <td>Axis Bank</td>
-            <td>Yes</td>
-            <td>Yes</td>
-        </tr>
-        <tr>
-            <td>ICICI Bank</td>
-            <td>Yes</td>
-            <td>Yes</td>
-        </tr>
-        <tr>
-            <td>State Bank of India</td>
-            <td>Yes</td>
-            <td>Yes</td>
-        </tr>
-        <tr>
-            <td>Bandhan Bank</td>
-            <td>Work in progress</td>
-            <td>Yes</td>
-        </tr>
-        <tr>
-            <td>Indian Bank</td>
-            <td>Work in progress</td>
-            <td>Work in progress</td>
-        </tr>
-        <tr>
-            <td>Kotak Mahindra Bank</td>
-            <td>Work in progress</td>
-            <td>Work in progress</td>
-        </tr>
-        <tr>
-            <td>Punjab National Bank</td>
-            <td>Work in progress</td>
-            <td>Work in progress</td>
-        </tr>
-        <tr>
-            <td>Union Bank of India</td>
-            <td>Work in progress</td>
-            <td>Work in progress</td>
-        </tr>
-    </table>
+            </div>
+    <diV class="table-section">
+        <h1>List of supported banks</h1>
+        <table id="bank-table">
+            <tr>
+                <th>Name of the Bank</th>
+                <th>XLS or XLSX Supported</th>
+                <th>PDF Supported</th>
+            </tr>
+            <tr>
+                <td>Bank of India</td>
+                <td>Yes</td>
+                <td>Work in progress</td>
+            </tr>
+            <tr>
+                <td>HDFC Bank</td>
+                <td>Yes</td>
+                <td>Work in progress</td>
+            </tr>
+            <tr>
+                <td>Indian Overseas Bank</td>
+                <td>Yes</td>
+                <td>Work in progress</td>
+            </tr>
+            <tr>
+                <td>Axis Bank</td>
+                <td>Yes</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>ICICI Bank</td>
+                <td>Yes</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>State Bank of India</td>
+                <td>Yes</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>Bandhan Bank</td>
+                <td>Work in progress</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>Indian Bank</td>
+                <td>Work in progress</td>
+                <td>Work in progress</td>
+            </tr>
+            <tr>
+                <td>Kotak Mahindra Bank</td>
+                <td>Work in progress</td>
+                <td>Work in progress</td>
+            </tr>
+            <tr>
+                <td>Punjab National Bank</td>
+                <td>Work in progress</td>
+                <td>Work in progress</td>
+            </tr>
+            <tr>
+                <td>Union Bank of India</td>
+                <td>Work in progress</td>
+                <td>Work in progress</td>
+            </tr>
+        </table>
     </div>
+<div class = "space-maker"></div>
+</div>
     """
     
     st.markdown(css, unsafe_allow_html=True)
