@@ -18,3 +18,9 @@ streamlit-javascript
 matplotlib
 plotly
 plotly-express
+Crypto.Cipher
+joblib
+logging
+botocore.exceptions
+boto3
+base64
