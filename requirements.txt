@@ -20,6 +20,5 @@ plotly
 plotly-express
 joblib
 logging
-botocore.exceptions
 boto3
 base64
