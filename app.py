@@ -19,7 +19,7 @@ showToast=False
 
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
-    secret_path = "/etc/secrets/Bank_statement.json",
+    secret_path = "etc/secrets/Bank_statement.json",
     redirect_uri="https://bankstatements.onrender.com",
 )
 
