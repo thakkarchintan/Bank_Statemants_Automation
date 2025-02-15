@@ -21,3 +21,4 @@ plotly-express
 joblib
 logging
 boto3
+pycryptodome
