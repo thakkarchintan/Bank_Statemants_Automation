@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import datetime as dt
 import pytz
+from Encryption import *
 
 load_dotenv()
 
@@ -92,16 +93,18 @@ def add_data(df,override,database_name, table_name):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
-            Name VARCHAR(50), 
-            Bank VARCHAR(50), 
+            Name VARCHAR(255),
+            Bank TEXT, 
             Date DATE, 
-            Narration VARCHAR(255), 
-            Debit FLOAT, 
-            Credit FLOAT, 
-            Category VARCHAR(50)
+            Narration TEXT, 
+            Debit TEXT, 
+            Credit TEXT, 
+            Category TEXT,
+            EncryptedKey TEXT
         )
     """
-    create_table(database_name,create_table_query,conn)
+    create_table(database_name, create_table_query, conn)
+
 
     if override :
         min_date=min(df['Date'])
@@ -115,7 +118,8 @@ def add_data(df,override,database_name, table_name):
     # Close the connection
     cursor.close()
     conn.close()
-
+    encrypt_columns = ["Bank", "Narration", "Debit", "Credit", "Category"]
+    edf = encrypt_dataframe(df,encrypt_columns)
     # Create database connection
     engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
 
@@ -123,8 +127,8 @@ def add_data(df,override,database_name, table_name):
         if not df.empty:
             # Insert the new rows into the database
             # df.to_sql(table_name, con=Conn, if_exists='append', index=False)
-            df.to_sql(table_name, con=engine, if_exists='append', index=False)
-
+            edf.to_sql(table_name, con=engine, if_exists='append', index=False)
+            print(edf)
             print(f"{len(df)} new rows inserted.")
         else:
             print("No new rows to insert.")
@@ -138,16 +142,17 @@ def get_transaction_data(database_name,table_name):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
-            Name VARCHAR(50),
-            Bank VARCHAR(50),
+            Name VARCHAR(255),
+            Bank TEXT, 
             Date DATE, 
-            Narration VARCHAR(255), 
-            Debit FLOAT, 
-            Credit FLOAT, 
-            Category VARCHAR(50)
+            Narration TEXT, 
+            Debit TEXT, 
+            Credit TEXT, 
+            Category TEXT,
+            EncryptedKey TEXT
         )
     """
-    create_table(database_name,create_table_query,conn)
+    create_table(database_name, create_table_query, conn)
 
     # Close the connection
     cursor.close()
@@ -159,9 +164,11 @@ def get_transaction_data(database_name,table_name):
     with engine.connect() as Conn:
         # Read existing data from the table
         all_data = pd.read_sql(text(f"SELECT * FROM {table_name} order by Date;"), Conn)
-
-        return all_data
-    
+        print(all_data)
+        decrypt_columns = ["Bank", "Narration", "Debit", "Credit", "Category"]
+        ddf = decrypt_dataframe(all_data,decrypt_columns)
+        fdf = convert_debit_credit_to_float(ddf)
+        return fdf
     return pd.DataFrame()
 
 

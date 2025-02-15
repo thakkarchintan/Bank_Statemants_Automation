@@ -192,3 +192,21 @@ def decrypt_dataframe(df, decrypt_columns):
 
     logging.info("Data decryption completed successfully.")
     return decrypted_df
+
+def convert_debit_credit_to_float(df):
+    """
+    Converts 'Debit' and 'Credit' columns in a DataFrame from string to float.
+    Handles missing values and incorrect formats.
+    """
+    for col in ["Debit", "Credit"]:
+        if col in df.columns:
+            df[col] = (
+                df[col]
+                .astype(str)                      # Ensure all values are string
+                .str.replace(",", "")             # Remove thousands separator if present
+                .str.replace("₹", "")             # Remove currency symbols if present
+                .str.strip()                      # Remove leading/trailing spaces
+                .replace("", "0")                 # Replace empty strings with "0"
+                .astype(float)                    # Convert to float
+            )
+    return df
