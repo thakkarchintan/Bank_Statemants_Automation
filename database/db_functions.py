@@ -128,7 +128,7 @@ def add_data(df,override,database_name, table_name):
             # Insert the new rows into the database
             # df.to_sql(table_name, con=Conn, if_exists='append', index=False)
             edf.to_sql(table_name, con=engine, if_exists='append', index=False)
-            print(edf)
+            # print(edf)
             print(f"{len(df)} new rows inserted.")
         else:
             print("No new rows to insert.")
@@ -164,7 +164,7 @@ def get_transaction_data(database_name,table_name):
     with engine.connect() as Conn:
         # Read existing data from the table
         all_data = pd.read_sql(text(f"SELECT * FROM {table_name} order by Date;"), Conn)
-        print(all_data)
+        # print(all_data)
         decrypt_columns = ["Bank", "Narration", "Debit", "Credit", "Category"]
         ddf = decrypt_dataframe(all_data,decrypt_columns)
         fdf = convert_debit_credit_to_float(ddf)
