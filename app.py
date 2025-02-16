@@ -1,4 +1,6 @@
 import streamlit as st
+import razorpay
+import streamlit.components.v1 as components
 import pandas as pd
 from io import BytesIO
 from datetime import datetime , timedelta
@@ -29,6 +31,8 @@ db_name=os.getenv("DATABASE")
 
 if st.session_state["connected"]:
     db_df=pd.DataFrame()
+    dummy_data_file_path = os.path.join("assets","other","dummy_data.xlsx")
+    dummy_data = pd.read_excel(dummy_data_file_path)
     user_info=st.session_state['user_info']
     user_email = str(user_info.get('email'))
     user_name = user_email[:-10]
@@ -165,7 +169,7 @@ if st.session_state["connected"]:
                 st.toast(":red[There are no transactions in your account. No data to delete!]")
 
     # Create tabs
-    tab1, tab2, tab3, tab4= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback"])
+    tab1, tab2, tab3, tab4, tab5= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback","Razorpay"])
 
     # Content for each tab
     with tab1:
@@ -202,10 +206,39 @@ if st.session_state["connected"]:
                     display_graph1(g2_df,selected_name,selected_bank,'emi','Monthly EMI','Debit')
                     display_graph2(g2_df,selected_name,selected_bank,True,'Debit transactions between 0 to 500')
                     display_graph2(g2_df,selected_name,selected_bank,False,'Debit transactions between 501 to 1500')
+        
+            else:
+                name_options = ["All"] + list(dummy_data["Name"].unique())
+                bank_options = ["All"] + list(dummy_data["Bank"].unique())
 
-                    
-            # else:
-            #     st.toast(":red[Please add data first.]")  
+                g_df = dummy_data[['Date','Name','Bank','Debit','Credit']].copy()
+                g1_df = dummy_data[['Date','Name','Bank','Narration','Debit','Credit']].copy()
+                g2_df = dummy_data[['Date','Name','Bank','Narration','Debit','Credit']].copy()
+                g3_df = dummy_data[['Date','Name','Bank','Debit']].copy()
+                # Create 3 columns
+                d1, d2, d3 = st.columns(3)
+
+                # Dropdown to select a name and bank
+                with d1:
+                    selected_name = st.selectbox("Select Name:", options=name_options)
+
+                with d2:
+                    selected_bank = st.selectbox("Select Bank:", options=bank_options)
+
+                show_data = False
+                with d3:
+                    st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
+                    if st.button("Show Dummy Data",key='showd3'):
+                        show_data = True
+
+                if show_data:
+                    display_graph(g_df,selected_name,selected_bank)
+                    display_graph1(g1_df,selected_name,selected_bank,'salary','Monthly Income from Salary','Credit')
+                    display_graph1(g2_df,selected_name,selected_bank,'emi','Monthly EMI','Debit')
+                    display_graph2(g2_df,selected_name,selected_bank,True,'Debit transactions between 0 to 500')
+                    display_graph2(g2_df,selected_name,selected_bank,False,'Debit transactions between 501 to 1500')
+        
+                  
         except Exception as e:
             print(f"Error in showing transction data graph: {e}")
             st.toast(":red[Something went wrong.]")
@@ -223,6 +256,12 @@ if st.session_state["connected"]:
                     file_name="bank_statement.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
+            else:
+                if st.button("Show Dummy Data",key='showd2'):
+                    dummy_data['Date'] = dummy_data['Date'].dt.strftime('%d-%b-%Y')
+                    display_data(dummy_data,600)
+                    dummy_data['Date'] = pd.to_datetime(dummy_data['Date'],errors='coerce')
+                
 
         except Exception as e:
             print(f"Error in fetching transction data: {e}")
@@ -252,8 +291,17 @@ if st.session_state["connected"]:
                         file_name="bank_statement_summary.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
-                # else:
-                #     st.toast(":red[Please add data first.]")
+            else:
+                if st.button("Show Dummy Summary",key='showd1'):
+                    dummy_summary_data_file_path = os.path.join("assets","other","dummy_summary_data.xlsx")
+                    dummy_summary_data=pd.read_excel(dummy_summary_data_file_path)
+                    # Convert the Date column to datetime and then format it
+                    dummy_summary_data['Start_Date'] = pd.to_datetime(dummy_summary_data['Start_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
+                    dummy_summary_data['End_Date'] = pd.to_datetime(dummy_summary_data['End_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
+
+                    display_data(dummy_summary_data,300)
+
+
         except Exception as e:
             print(f"Error in fetching summary data: {e}")
             st.toast(":red[Something went wrong.]")
@@ -294,6 +342,75 @@ if st.session_state["connected"]:
             else:
                 st.warning("Please enter your feedback before submitting.")   
 
+    with tab5:
+        # Razorpay credentials
+        RAZORPAY_KEY_ID = "rzp_test_oGlOoFOEoLSCxR"
+        RAZORPAY_KEY_SECRET = "4vLa5BysJcGi4f6BWt1ptB5d"
+
+        # Initialize the Razorpay client
+        client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+        st.subheader("Razorpay Payment Gateway")
+
+        # Get payment details from user
+        amount_in_inr = st.number_input("Enter Amount (INR)", min_value=2500, step=100)
+        email = st.text_input("Enter Email ID")
+        contact = st.text_input("Enter Contact Number")
+
+        if st.button("Proceed to Pay"):
+            if amount_in_inr and email and contact:
+                try:
+                    # Create an order in Razorpay (amount in paise)
+                    order_data = {
+                        "amount": amount_in_inr * 100,  # convert INR to paise
+                        "currency": "INR",
+                        "payment_capture": 1,
+                        "notes": {"email": email, "contact": contact}
+                    }
+                    order = client.order.create(data=order_data)
+                    
+                    # Prepare the Razorpay checkout widget as an HTML snippet
+                    checkout_html = f"""
+                    <html>
+                    <head>
+                        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                    </head>
+                    <body>
+                        <script>
+                        var options = {{
+                            "key": "{RAZORPAY_KEY_ID}",
+                            "amount": "{order['amount']}", // Amount is in paise
+                            "currency": "INR",
+                            "name": "Your Business Name",
+                            "description": "Payment for Order",
+                            "order_id": "{order['id']}",
+                            "handler": function (response) {{
+                                // You can handle the response here after successful payment
+                                console.log(response);
+                                window.location.href = "/?payment=success";
+                            }},
+                            "prefill": {{
+                                "name": "{email}",
+                                "email": "{email}",
+                                "contact": "{contact}"
+                            }},
+                            "theme": {{
+                                "color": "#F37254"
+                            }}
+                        }};
+                        var rzp1 = new Razorpay(options);
+                        rzp1.open();
+                        </script>
+                    </body>
+                    </html>
+                    """
+                    # Render the checkout widget using Streamlit's components.
+                    # height can be adjusted as needed.
+                    components.html(checkout_html, height=600)
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
+            else:
+                st.error("Please enter all details before proceeding.")
 
 else:
     auth_url=authenticator.login()  
