@@ -365,7 +365,7 @@ def show_message(url):
                     <h2>Your Data is Yours - No Sharing, No Selling</h2>
                     <p>We do not and will not share or sell your data. The data is used within the app to organize and categorize transactions.</p>
                 </div>
-                <p>If you have any questions, feel free to reach out at <a href="mailto:bankstatementsautomation@gmail.com">bankstatementsautomation@gmail.com</a></p>
+                <p>If you have any questions, feel free to reach out at <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
             </div>
             <div class="gcenter">
                 <a href="{url}" class="google-button" target="_self">
@@ -387,7 +387,7 @@ def show_message(url):
                     <p>That’s why I’m sharing it with my network—if you’ve ever struggled with organizing your finances, 
                     I hope this helps! Would love to hear your thoughts. 🚀.</p>
                     <div class = "profile-info">
-                        <p>Chintan Thakkar (<a href="https://www.linkedin.com/in/1chintanthakkar/">Linkedin</a>)</p>
+                        <p><a href="https://www.linkedin.com/in/1chintanthakkar/">Chintan Thakkar</a></p>
                     </div>     
                 </div>
             </div>
