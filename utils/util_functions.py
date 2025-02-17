@@ -244,25 +244,26 @@ def show_message(url):
             max-width: 90%;
         }
         .para{
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             margin-bottom:10px;
+        }
+        .bold {
+            font-weight:bold;
         }
         .section-heading{
             font-size:1.5rem;
         }
+        .section-subheading{
+            font-weight:bold;
+        }
         
-        .policy h2{
-            font-size:1.5rem;
-        }
-        .policy p {
-            font-size:1.2rem;
-        }
         .policy{
-            line-height:1;
-        }
-        .profile{
-            margin-bottom:10px;
-            margin-top:10px;
+            font-size:1.5rem;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            justify-content:center;
+            align-items:start;
         }
         .gcenter {
             width: 100%;
@@ -292,7 +293,7 @@ def show_message(url):
         .profile-section{
             display:flex;
             gap:20px;
-            width:90%;
+            width:70%;
             margin-top:20px;
             margin-bottom:20px;
             justify-content:start;
@@ -300,11 +301,12 @@ def show_message(url):
         }
         .profile-image img{
             border-radius:100%;
+            aspect-ratio: 1 / 1;        
         }
         .profile-text p{
             margin-top:5px;
             margin-bottom:5px;
-            font-size:1.2rem;
+            font-size:1.5rem;
         }
         .profile-info{
             margin-top:15px;
@@ -320,6 +322,10 @@ def show_message(url):
          #bank-table {
         max-width: 60%;
         border-collapse: collapse; /* Ensures table borders collapse together */
+    }
+    
+    .leftpad2{
+        padding-left:3px
     }
 
     #bank-table th, #bank-table td {
@@ -386,29 +392,27 @@ def show_message(url):
     html = f"""
     <div class="container">
             <div class="text-section">
-                <h1 class="section-heading">All Your Bank Transactions. One Unified View.</h1>
-                <div class="para">Upload PDF or XLS bank statements from the <a href = "#bank-table">list of supported banks</a> and instantly get a clean, organized, and standardized view of all your transactions in one place.</div>
-                <div class="para">Gain powerful insights and analytics helping you see trends, hidden charges and other analytics from your transactions data never before!</div>
+                <h1 class="section-heading">Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
+                <div class="para">Upload PDF or XLS bank statements from the <a href = "#bank-table">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
+                <div class="para bold">✅ Track Spending Patterns</div>
+                <div class="para bold">✅ Spot Hidden Charges</div>
+                <div class="para bold">✅ Gain Powerful Insights to Improve Financial Decisions</div>
             </div>
             <div class = "policy">
                 <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
                 <div>
-                    <h2 class="section-subheading">100% Encrypted & Secure</h2>
-                    <p>All the data is 100% encrypted using the most sophisticated encryption methods to ensure user privacy and security.</p>
+                    <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>Your data is fully encrypted using industry-leading security.</p>
+                </div>
+               <div>
+                    <p><span class="section-subheading">📂 You Upload, We Process - </span>We only process the data you provide—nothing more, nothing less.</p>
+                </div>
+               <div>
+                    <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever</p>
                 </div>
                 <div>
-                    <h2>You Upload, We Process</h2>
-                    <p>You manually upload your bank statements, and we only process the data you provide - nothing more, nothing less.</p>
+                    <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
                 </div>
-                <div>
-                    <h2>You Can Delete Your Data Anytime</h2>
-                    <p>Your data, your choice! You can delete your uploaded data anytime, and once deleted, it is gone forever.</p>
-                </div>
-                    <div>
-                    <h2>Your Data is Yours - No Sharing, No Selling</h2>
-                    <p>We do not and will not share or sell your data. The data is used within the app to organize and categorize transactions.</p>
-                </div>
-                <p>If you have any questions, feel free to reach out at <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
+                <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
             </div>
             <div class="gcenter">
                 <a href="{url}" class="google-button" target="_self">
@@ -423,14 +427,11 @@ def show_message(url):
                     <img src="data:image/jpeg;base64,{image_base64}" width="200">
                 </div>
                 <div class = "profile-text">
-                    <p>For over <span class ="bold-text">three years</span> , I manually categorized my bank transactions, trying to make sense of where my money was going. 
-                    It was tedious, time-consuming, and honestly—inefficient.</p>
-                    <p>At some point, I realized there had to be a <span class ="bold-text">better way</span>. So, I decided to <span class ="bold-text">automate the entire process</span>. What started as a personal tool quickly turned
-                    into something I thought could benefit others too.</p>
-                    <p>That’s why I’m sharing it with my network—if you’ve ever struggled with organizing your finances, 
-                    I hope this helps! Would love to hear your thoughts. 🚀.</p>
+                    <p>For <span class ="bold-text">3+ years</span>, I manually tracked my bank transactions—it was frustrating, inefficient, and time-consuming.
+                    So, I built a tool to <span class ="bold-text">automate the entire process.</span></p>
+                    <p>What started as a personal solution became something worth sharing. If you’ve ever struggled with organizing your finances, I hope this helps! 🚀.</p>
                     <div class = "profile-info">
-                        <p><a href="https://www.linkedin.com/in/1chintanthakkar/">Chintan Thakkar</a></p>
+                        <p class="bold"><a href="https://www.linkedin.com/in/1chintanthakkar/">Chintan Thakkar</a></p>
                     </div>     
                 </div>
             </div>
