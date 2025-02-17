@@ -337,9 +337,6 @@ def show_message(url):
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        .table-section h1{
-            margin-left:20px;
-        }
     </style>
     """
     
@@ -390,77 +387,76 @@ def show_message(url):
                     <p>That’s why I’m sharing it with my network—if you’ve ever struggled with organizing your finances, 
                     I hope this helps! Would love to hear your thoughts. 🚀.</p>
                     <div class = "profile-info">
-                        <p>Chintan Thakkar</p>
-                        <p><a href="https://www.linkedin.com/in/1chintanthakkar/">Linkedin</a></p> 
+                        <p>Chintan Thakkar (<a href="https://www.linkedin.com/in/1chintanthakkar/">Linkedin</a>)</p>
                     </div>     
                 </div>
             </div>
             </div>
-    <diV class="table-section">
-        <h1>List of supported banks</h1>
-        <table id="bank-table">
-            <tr>
-                <th>Name of the Bank</th>
-                <th>XLS or XLSX Supported</th>
-                <th>PDF Supported</th>
-            </tr>
-            <tr>
-                <td>Bank of India</td>
-                <td>Yes</td>
-                <td>Work in progress</td>
-            </tr>
-            <tr>
-                <td>HDFC Bank</td>
-                <td>Yes</td>
-                <td>Work in progress</td>
-            </tr>
-            <tr>
-                <td>Indian Overseas Bank</td>
-                <td>Yes</td>
-                <td>Work in progress</td>
-            </tr>
-            <tr>
-                <td>Axis Bank</td>
-                <td>Yes</td>
-                <td>Yes</td>
-            </tr>
-            <tr>
-                <td>ICICI Bank</td>
-                <td>Yes</td>
-                <td>Yes</td>
-            </tr>
-            <tr>
-                <td>State Bank of India</td>
-                <td>Yes</td>
-                <td>Yes</td>
-            </tr>
-            <tr>
-                <td>Bandhan Bank</td>
-                <td>Work in progress</td>
-                <td>Yes</td>
-            </tr>
-            <tr>
-                <td>Indian Bank</td>
-                <td>Work in progress</td>
-                <td>Work in progress</td>
-            </tr>
-            <tr>
-                <td>Kotak Mahindra Bank</td>
-                <td>Work in progress</td>
-                <td>Work in progress</td>
-            </tr>
-            <tr>
-                <td>Punjab National Bank</td>
-                <td>Work in progress</td>
-                <td>Work in progress</td>
-            </tr>
-            <tr>
-                <td>Union Bank of India</td>
-                <td>Work in progress</td>
-                <td>Work in progress</td>
-            </tr>
-        </table>
-    </div>
+    <div class="table-section">
+    <h1>List of supported banks</h1>
+    <table id="bank-table">
+        <tr>
+            <th>Name of the Bank</th>
+            <th>XLS or XLSX Supported</th>
+            <th>PDF Supported</th>
+        </tr>
+        <tr>
+            <td>Axis Bank</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>Bandhan Bank</td>
+            <td>Work in progress</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>Bank of India</td>
+            <td>Yes</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>HDFC Bank</td>
+            <td>Yes</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>ICICI Bank</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>Indian Bank</td>
+            <td>Work in progress</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>Indian Overseas Bank</td>
+            <td>Yes</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>Kotak Mahindra Bank</td>
+            <td>Work in progress</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>Punjab National Bank</td>
+            <td>Work in progress</td>
+            <td>Work in progress</td>
+        </tr>
+        <tr>
+            <td>State Bank of India</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>Union Bank of India</td>
+            <td>Work in progress</td>
+            <td>Work in progress</td>
+        </tr>
+    </table>
+</div>
 <div class = "space-maker"></div>
 </div>
     """
