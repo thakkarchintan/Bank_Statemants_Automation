@@ -317,26 +317,69 @@ def show_message(url):
         .bold-text{
             font-weight: bold;
         }
-         table {
-            width: 60%;
-            border-collapse: collapse;
-            margin: 20px;
-            font-family: Arial, sans-serif;
-            text-align: center; /* Ensures all text in table is centered */
+         #bank-table {
+        max-width: 60%;
+        border-collapse: collapse; /* Ensures table borders collapse together */
+    }
+
+    #bank-table th, #bank-table td {
+        border: 1px solid #ddd;
+        padding: 12px 15px;
+        text-align: left;
+        word-wrap: break-word; /* Prevents text overflow */
+    }
+
+    /* Left-align the first column */
+    #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
+        text-align: left;
+        width: 33%; /* First column takes 33% of width */
+    }
+
+    /* Center-align the second and third columns */
+    #bank-table th:nth-child(2), #bank-table th:nth-child(3),
+    #bank-table td:nth-child(2), #bank-table td:nth-child(3) {
+        text-align: center; /* Center-align text in columns 2 and 3 */
+        width: 33%; /* Distribute equal width for second and third columns */
+    }
+
+    /* Background color for cells containing 'Yes' */
+    .yes {
+        background-color: #5CB85C;
+        color: white;
+        text-align: center;
+    }
+
+    /* Background color for cells containing 'Work in progress' */
+    .work-in-progress {
+        background-color: #F08080;
+        color: white;
+        text-align: center;
+    }
+
+    /* Add a subtle hover effect for rows */
+    #bank-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Responsive behavior */
+    @media (max-width: 600px) {
+        #bank-table {
+            font-size: 12px;
         }
-        th, td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: center;
+
+        #bank-table th, #bank-table td {
+            padding: 8px;
         }
-        th {
-            background-color: #f4f4f4;
-            text-align: center;
+
+        #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
+            width: 100%; /* Make the first column take full width on smaller screens */
         }
-    
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+
+        #bank-table th:nth-child(2), #bank-table td:nth-child(2),
+        #bank-table th:nth-child(3), #bank-table td:nth-child(3) {
+            width: 50%; /* Reduce the second and third columns on smaller screens */
         }
+    }
     </style>
     """
     
@@ -402,58 +445,58 @@ def show_message(url):
         </tr>
         <tr>
             <td>Axis Bank</td>
-            <td>Yes</td>
-            <td>Yes</td>
+            <td class="yes">Yes</td>
+            <td class="yes">Yes</td>
         </tr>
         <tr>
             <td>Bandhan Bank</td>
-            <td>Work in progress</td>
-            <td>Yes</td>
+            <td class="work-in-progress">Work in progress</td>
+            <td class="yes">Yes</td>
         </tr>
         <tr>
             <td>Bank of India</td>
-            <td>Yes</td>
-            <td>Work in progress</td>
+            <td class="yes">Yes</td>
+            <td class="work-in-progress">Work in progress</td>
         </tr>
         <tr>
             <td>HDFC Bank</td>
-            <td>Yes</td>
-            <td>Work in progress</td>
+            <td class="yes">Yes</td>
+            <td class="work-in-progress">Work in progress</td>
         </tr>
         <tr>
             <td>ICICI Bank</td>
-            <td>Yes</td>
-            <td>Yes</td>
+            <td class="yes">Yes</td>
+            <td class="yes">Yes</td>
         </tr>
         <tr>
             <td>Indian Bank</td>
-            <td>Work in progress</td>
-            <td>Work in progress</td>
+            <td class="work-in-progress">Work in progress</td>
+            <td class="work-in-progress">Work in progress</td>
         </tr>
         <tr>
             <td>Indian Overseas Bank</td>
-            <td>Yes</td>
-            <td>Work in progress</td>
+            <td class="yes">Yes</td>
+            <td class="work-in-progress">Work in progress</td>
         </tr>
         <tr>
             <td>Kotak Mahindra Bank</td>
-            <td>Work in progress</td>
-            <td>Work in progress</td>
+            <td class="work-in-progress">Work in progress</td>
+            <td class="work-in-progress">Work in progress</td>
         </tr>
         <tr>
             <td>Punjab National Bank</td>
-            <td>Work in progress</td>
-            <td>Work in progress</td>
+            <td class="work-in-progress">Work in progress</td>
+            <td class="work-in-progress">Work in progress</td>
         </tr>
         <tr>
             <td>State Bank of India</td>
-            <td>Yes</td>
-            <td>Yes</td>
+            <td class="yes">Yes</td>
+            <td class="yes">Yes</td>
         </tr>
         <tr>
             <td>Union Bank of India</td>
-            <td>Work in progress</td>
-            <td>Work in progress</td>
+            <td class="work-in-progress">Work in progress</td>
+            <td class="work-in-progress">Work in progress</td>
         </tr>
     </table>
 </div>
