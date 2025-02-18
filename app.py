@@ -24,7 +24,8 @@ authenticator = Authenticator(
     secret_path = "/etc/secrets/Bank_statement.json",
     redirect_uri="https://bankstatements.onrender.com",
 )
-
+query_params = st.query_params
+page = query_params.get("page", ["home"]) 
 authenticator.check_auth()
 
 db_name=os.getenv("DATABASE")
@@ -414,4 +415,4 @@ if st.session_state["connected"]:
 
 else:
     auth_url=authenticator.login()  
-    show_message(auth_url)
+    show_message(auth_url,page)
