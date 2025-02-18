@@ -10,6 +10,8 @@ import xlrd
 from io import BytesIO
 import os
 import base64
+import streamlit.components.v1 as components
+
 
 # Function to categorize each row based on narration content
 def categorize_debit_row(narration):
@@ -224,289 +226,15 @@ def display_data(df,Height):
     # Display the grid
     AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height)  
 
-def show_message(url):
-    def get_base64_image(image_path):
-        with open(image_path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
+def show_message(url,page):
+    if page == "refund_policy":
+        refund_policy()
+    elif page == "privacy_policy":
+        privacy_policy()
+    else:
+        home_page(url)
 
-    image_base64 = get_base64_image("assets/homepage/profile_image.jpg")
-    
-    css = """
-    <style>
-        .container {
-            width:100vw;
-            height:100%;
-            display:flex;
-            flex-direction:column;
-            gap:2rem;
-        }
-        .text-section {
-            max-width: 90%;
-        }
-        .para{
-            font-size: 1.5rem;
-            margin-bottom:10px;
-        }
-        .bold {
-            font-weight:bold;
-        }
-        .section-heading{
-            font-size:1.5rem;
-        }
-        .section-subheading{
-            font-weight:bold;
-        }
         
-        .policy{
-            font-size:1.5rem;
-            display:flex;
-            flex-direction:column;
-            gap:10px;
-            justify-content:center;
-            align-items:start;
-        }
-        .gcenter {
-            width: 100%;
-            display: flex;
-            margin-top: 10px;
-        }
-        .google-button {
-            background-color: #4285F4;
-            margin-right: 5px;
-            color: white !important;
-            border-radius: 5px;
-            padding: 10px 15px;
-            font-size: 1.5rem;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            text-decoration: none !important;
-            gap:5px;
-        }
-        .google-button img {
-            width: 1.5rem;
-            height:1.5rem;
-            margin-left: 5px;
-            border-radius: 50%;
-        }
-        .profile-section{
-            display:flex;
-            gap:20px;
-            width:70%;
-            margin-top:20px;
-            margin-bottom:20px;
-            justify-content:start;
-            align-items:center;
-        }
-        .profile-image img{
-            border-radius:100%;
-            aspect-ratio: 1 / 1;        
-        }
-        .profile-text p{
-            margin-top:5px;
-            margin-bottom:5px;
-            font-size:1.5rem;
-        }
-        .profile-info{
-            margin-top:15px;
-        }
-        .profile-info p{
-            margin-top:5px;
-            margin-bottom:5px;
-            font-size:1.2rem;
-        }
-        .bold-text{
-            font-weight: bold;
-        }
-         #bank-table {
-        max-width: 60%;
-        border-collapse: collapse; /* Ensures table borders collapse together */
-    }
-    
-    .leftpad2{
-        padding-left:3px
-    }
-
-    #bank-table th, #bank-table td {
-        border: 1px solid #ddd;
-        padding: 12px 15px;
-        text-align: left;
-        word-wrap: break-word; /* Prevents text overflow */
-    }
-
-    /* Left-align the first column */
-    #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
-        text-align: left;
-        width: 33%; /* First column takes 33% of width */
-    }
-
-    /* Center-align the second and third columns */
-    #bank-table th:nth-child(2), #bank-table th:nth-child(3),
-    #bank-table td:nth-child(2), #bank-table td:nth-child(3) {
-        text-align: center; /* Center-align text in columns 2 and 3 */
-        width: 33%; /* Distribute equal width for second and third columns */
-    }
-
-    /* Background color for cells containing 'Yes' */
-    .yes {
-        background-color: #5CB85C;
-        color: white;
-        text-align: center;
-    }
-
-    /* Background color for cells containing 'Work in progress' */
-    .work-in-progress {
-        background-color: #F08080;
-        color: white;
-        text-align: center;
-    }
-
-    /* Add a subtle hover effect for rows */
-    #bank-table tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    /* Responsive behavior */
-    @media (max-width: 600px) {
-        #bank-table {
-            font-size: 12px;
-        }
-
-        #bank-table th, #bank-table td {
-            padding: 8px;
-        }
-
-        #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
-            width: 100%; /* Make the first column take full width on smaller screens */
-        }
-
-        #bank-table th:nth-child(2), #bank-table td:nth-child(2),
-        #bank-table th:nth-child(3), #bank-table td:nth-child(3) {
-            width: 50%; /* Reduce the second and third columns on smaller screens */
-        }
-    }
-    </style>
-    """
-    
-    html = f"""
-    <div class="container">
-            <div class="text-section">
-                <h1 class="section-heading">Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
-                <div class="para">Upload PDF or XLS bank statements from the <a href = "#bank-table">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
-                <div class="para bold">✅ Track Spending Patterns</div>
-                <div class="para bold">✅ Spot Hidden Charges</div>
-                <div class="para bold">✅ Gain Powerful Insights to Improve Financial Decisions</div>
-            </div>
-            <div class = "policy">
-                <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
-                <div>
-                    <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>Your data is fully encrypted using industry-leading security.</p>
-                </div>
-               <div>
-                    <p><span class="section-subheading">📂 You Upload, We Process - </span>We only process the data you provide—nothing more, nothing less.</p>
-                </div>
-               <div>
-                    <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever</p>
-                </div>
-                <div>
-                    <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
-                </div>
-                <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
-            </div>
-            <div class="gcenter">
-                <a href="{url}" class="google-button" target="_self">
-                    Login with Google
-                    <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" alt="Google logo" />
-                </a>
-            </div>
-            <div class = "profile">
-             <h1>Why I Created This App</h1>
-                <div class = "profile-section">
-                <div class = "profile-image">
-                    <img src="data:image/jpeg;base64,{image_base64}" width="200">
-                </div>
-                <div class = "profile-text">
-                    <p>For <span class ="bold-text">3+ years</span>, I manually tracked my bank transactions—it was frustrating, inefficient, and time-consuming.
-                    So, I built a tool to <span class ="bold-text">automate the entire process.</span></p>
-                    <p>What started as a personal solution became something worth sharing. If you’ve ever struggled with organizing your finances, I hope this helps! 🚀.</p>
-                    <div class = "profile-info">
-                        <p class="bold"><a href="https://www.linkedin.com/in/1chintanthakkar/">Chintan Thakkar</a></p>
-                    </div>     
-                </div>
-            </div>
-            </div>
-    <div class="table-section">
-    <h1>List of supported banks</h1>
-    <table id="bank-table">
-        <tr>
-            <th>Name of the Bank</th>
-            <th>XLS or XLSX Supported</th>
-            <th>PDF Supported</th>
-        </tr>
-        <tr>
-            <td>Axis Bank</td>
-            <td class="yes">Yes</td>
-            <td class="yes">Yes</td>
-        </tr>
-        <tr>
-            <td>Bandhan Bank</td>
-            <td class="work-in-progress">Work in progress</td>
-            <td class="yes">Yes</td>
-        </tr>
-        <tr>
-            <td>Bank of India</td>
-            <td class="yes">Yes</td>
-            <td class="work-in-progress">Work in progress</td>
-        </tr>
-        <tr>
-            <td>HDFC Bank</td>
-            <td class="yes">Yes</td>
-            <td class="work-in-progress">Work in progress</td>
-        </tr>
-        <tr>
-            <td>ICICI Bank</td>
-            <td class="yes">Yes</td>
-            <td class="yes">Yes</td>
-        </tr>
-        <tr>
-            <td>Indian Bank</td>
-            <td class="work-in-progress">Work in progress</td>
-            <td class="work-in-progress">Work in progress</td>
-        </tr>
-        <tr>
-            <td>Indian Overseas Bank</td>
-            <td class="yes">Yes</td>
-            <td class="work-in-progress">Work in progress</td>
-        </tr>
-        <tr>
-            <td>Kotak Mahindra Bank</td>
-            <td class="work-in-progress">Work in progress</td>
-            <td class="work-in-progress">Work in progress</td>
-        </tr>
-        <tr>
-            <td>Punjab National Bank</td>
-            <td class="work-in-progress">Work in progress</td>
-            <td class="work-in-progress">Work in progress</td>
-        </tr>
-        <tr>
-            <td>State Bank of India</td>
-            <td class="yes">Yes</td>
-            <td class="yes">Yes</td>
-        </tr>
-        <tr>
-            <td>Union Bank of India</td>
-            <td class="work-in-progress">Work in progress</td>
-            <td class="work-in-progress">Work in progress</td>
-        </tr>
-    </table>
-</div>
-<div class = "space-maker"></div>
-</div>
-    """
-    
-    st.markdown(css, unsafe_allow_html=True)
-    st.markdown(html, unsafe_allow_html=True)
 
 def display_graph(df,selected_name,selected_bank):
     # Extract month and year separately in the format "Jan 2024"
@@ -652,7 +380,7 @@ def display_graph2(df,selected_name,selected_bank,is_low,graph_name):
 def show_agreement():
     html_string = """
     <div class="cont">
-        <h3>Your Data, Your Control - Our Commitment to Privacy & Security</h3>
+        <h2>Your Data, Your Control - Our Commitment to Privacy & Security</h2>
         <div class="para bolda">Your Data is Yours - No Sharing, No Selling</div>
         <div class="para">We do not share or sell your data. It is only used within the app to organize and categorize your transactions.</div>
         <div class="para bolda">You Upload, We Process</div>
@@ -689,3 +417,573 @@ def show_agreement():
     st.markdown(css_string, unsafe_allow_html=True)
     st.markdown(html_string, unsafe_allow_html=True)
 
+def home_page(url):
+    def get_base64_image(image_path):
+        with open(image_path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+        
+        
+    image_base64 = get_base64_image("assets/homepage/profile_image.jpg")
+     
+    css = """
+        <style>
+            .container {
+                width:100vw;
+                height:100%;
+                display:flex;
+                flex-direction:column;
+                gap:2rem;
+            }
+            .text-section {
+                max-width: 90%;
+            }
+            .para{
+                font-size: 1.5rem;
+                margin-bottom:10px;
+            }
+            .bold {
+                font-weight:bold;
+            }
+            .section-heading{
+                font-size:1.5rem;
+            }
+            .section-subheading{
+                font-weight:bold;
+            }
+            
+            .policy{
+                font-size:1.5rem;
+                display:flex;
+                flex-direction:column;
+                gap:10px;
+                justify-content:center;
+                align-items:start;
+            }
+            .gcenter {
+                width: 100%;
+                display: flex;
+                margin-top: 10px;
+            }
+            .google-button {
+                background-color: #4285F4;
+                margin-right: 5px;
+                color: white !important;
+                border-radius: 5px;
+                padding: 10px 15px;
+                font-size: 1.5rem;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                text-decoration: none !important;
+                gap:5px;
+            }
+            .google-button img {
+                width: 1.5rem;
+                height:1.5rem;
+                margin-left: 5px;
+                border-radius: 50%;
+            }
+            .profile-section{
+                display:flex;
+                gap:20px;
+                width:70%;
+                margin-top:20px;
+                margin-bottom:20px;
+                justify-content:start;
+                align-items:center;
+            }
+            .profile-image img{
+                border-radius:100%;
+                aspect-ratio: 1 / 1;        
+            }
+            .profile-text p{
+                margin-top:5px;
+                margin-bottom:5px;
+                font-size:1.5rem;
+            }
+            .profile-info{
+                margin-top:15px;
+            }
+            .profile-info p{
+                margin-top:5px;
+                margin-bottom:5px;
+                font-size:1.5rem;
+            }
+            .bold-text{
+                font-weight: bold;
+            }
+            #bank-table {
+            max-width: 60%;
+            border-collapse: collapse; /* Ensures table borders collapse together */
+        }
+        
+        .leftpad2{
+            padding-left:3px
+        }
+
+        #bank-table th, #bank-table td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+            word-wrap: break-word; /* Prevents text overflow */
+        }
+
+        /* Left-align the first column */
+        #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
+            text-align: left;
+            width: 33%; /* First column takes 33% of width */
+        }
+
+        /* Center-align the second and third columns */
+        #bank-table th:nth-child(2), #bank-table th:nth-child(3),
+        #bank-table td:nth-child(2), #bank-table td:nth-child(3) {
+            text-align: center; /* Center-align text in columns 2 and 3 */
+            width: 33%; /* Distribute equal width for second and third columns */
+        }
+
+        /* Background color for cells containing 'Yes' */
+        .yes {
+            background-color: #5CB85C;
+            color: white;
+            text-align: center;
+        }
+
+        /* Background color for cells containing 'Work in progress' */
+        .work-in-progress {
+            background-color: #F08080;
+            color: white;
+            text-align: center;
+        }
+
+        /* Add a subtle hover effect for rows */
+        #bank-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Responsive behavior */
+        @media (max-width: 600px) {
+            #bank-table {
+                font-size: 12px;
+            }
+
+            #bank-table th, #bank-table td {
+                padding: 8px;
+            }
+
+            #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
+                width: 100%; /* Make the first column take full width on smaller screens */
+            }
+
+            #bank-table th:nth-child(2), #bank-table td:nth-child(2),
+            #bank-table th:nth-child(3), #bank-table td:nth-child(3) {
+                width: 50%; /* Reduce the second and third columns on smaller screens */
+            }
+        }
+        </style>
+        """
+        
+    html = f"""
+        <div class="container">
+                <div class="text-section">
+                    <h1 class="section-heading">Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
+                    <div class="para">Upload PDF or XLS bank statements from the <a href = "#bank-table">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
+                    <div class="para bold">✅ Track Spending Patterns</div>
+                    <div class="para bold">✅ Spot Hidden Charges</div>
+                    <div class="para bold">✅ Gain Powerful Insights to Improve Financial Decisions</div>
+                    <div class="para bold">
+                    Learn more about our 
+                    <a href="https://bankstatements.onrender.com/?page=privacy_policy">Privacy Policy</a> & 
+                    <a href="https://bankstatements.onrender.com/?page=refund_policy">Refund Policy</a>
+                    </div>
+                </div>
+                <div class = "policy">
+                    <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
+                    <div>
+                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>Your data is fully encrypted using industry-leading security.</p>
+                    </div>
+                <div>
+                        <p><span class="section-subheading">📂 You Upload, We Process - </span>We only process the data you provide—nothing more, nothing less.</p>
+                    </div>
+                <div>
+                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever</p>
+                    </div>
+                    <div>
+                        <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
+                    </div>
+                    <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
+                </div>
+                <div class="gcenter">
+                    <a href="{url}" class="google-button" target="_self">
+                        Login with Google
+                        <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" alt="Google logo" />
+                    </a>
+                </div>
+                <div class = "profile">
+                <h1>Why I Created This App</h1>
+                    <div class = "profile-section">
+                    <div class = "profile-image">
+                        <img src="data:image/jpeg;base64,{image_base64}" width="200">
+                    </div>
+                    <div class = "profile-text">
+                        <p>For <span class ="bold-text">3+ years</span>, I manually tracked my bank transactions—it was frustrating, inefficient, and time-consuming.
+                        So, I built a tool to <span class ="bold-text">automate the entire process.</span></p>
+                        <p>What started as a personal solution became something worth sharing. If you’ve ever struggled with organizing your finances, I hope this helps! 🚀.</p>
+                        <div class = "profile-info">
+                            <p class="bold"><a href="https://www.linkedin.com/in/1chintanthakkar/">Chintan Thakkar</a></p>
+                        </div>     
+                    </div>
+                </div>
+                </div>
+        <div class="table-section">
+        <h1>List of supported banks</h1>
+        <table id="bank-table">
+            <tr>
+                <th>Name of the Bank</th>
+                <th>XLS or XLSX Supported</th>
+                <th>PDF Supported</th>
+            </tr>
+            <tr>
+                <td>Axis Bank</td>
+                <td class="yes">Yes</td>
+                <td class="yes">Yes</td>
+            </tr>
+            <tr>
+                <td>Bandhan Bank</td>
+                <td class="work-in-progress">Work in progress</td>
+                <td class="yes">Yes</td>
+            </tr>
+            <tr>
+                <td>Bank of India</td>
+                <td class="yes">Yes</td>
+                <td class="work-in-progress">Work in progress</td>
+            </tr>
+            <tr>
+                <td>HDFC Bank</td>
+                <td class="yes">Yes</td>
+                <td class="work-in-progress">Work in progress</td>
+            </tr>
+            <tr>
+                <td>ICICI Bank</td>
+                <td class="yes">Yes</td>
+                <td class="yes">Yes</td>
+            </tr>
+            <tr>
+                <td>Indian Bank</td>
+                <td class="work-in-progress">Work in progress</td>
+                <td class="work-in-progress">Work in progress</td>
+            </tr>
+            <tr>
+                <td>Indian Overseas Bank</td>
+                <td class="yes">Yes</td>
+                <td class="work-in-progress">Work in progress</td>
+            </tr>
+            <tr>
+                <td>Kotak Mahindra Bank</td>
+                <td class="work-in-progress">Work in progress</td>
+                <td class="work-in-progress">Work in progress</td>
+            </tr>
+            <tr>
+                <td>Punjab National Bank</td>
+                <td class="work-in-progress">Work in progress</td>
+                <td class="work-in-progress">Work in progress</td>
+            </tr>
+            <tr>
+                <td>State Bank of India</td>
+                <td class="yes">Yes</td>
+                <td class="yes">Yes</td>
+            </tr>
+            <tr>
+                <td>Union Bank of India</td>
+                <td class="work-in-progress">Work in progress</td>
+                <td class="work-in-progress">Work in progress</td>
+            </tr>
+        </table>
+    </div>
+    <div class = "space-maker"></div>
+    </div>
+        """
+        
+    st.markdown(css, unsafe_allow_html=True)
+    st.markdown(html, unsafe_allow_html=True)
+    
+    
+def refund_policy():
+    html = """
+    <!DOCTYPE html>
+<html>
+<head>
+<style>
+        .container {
+                overflow-x: hidden;
+                max-width: 100vw;
+                max-height: 100vh;
+                background: white;
+            }
+            p , li {
+                font-size:1.5rem;
+            }
+            h2 {
+                font-size:1.8rem;
+            }
+            .center {
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+            }
+            .policy-data {
+                display:flex;
+                flex-direction:column;
+                gap:1rem;
+            }
+            .sub-heading{
+                height:3%;
+            }
+            ul{
+                display:flex;
+                flex-direction:column;
+                gap:10px;
+            }
+             .footer {
+                text-align: center;
+                font-size: 1.3rem;
+                color: #777;
+            }
+            .button {
+                position: absolute; /* or use 'fixed' to keep it fixed while scrolling */
+                top: 10px;  /* Adjust as needed */
+                left: 10px; /* Adjust as needed */
+                padding: 10px 20px;
+                background-color: #4285F4;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+    </style>
+</head>
+ <body>
+        <div class="container">
+            <p><a href="https://bankstatements.onrender.com/" target="_blank">Home</a></p>
+            <h1 class = "center top-heading">Fintellect Policies</h1>
+            
+            <div class = "center sub-heading">   
+                <h2>Refund & Cancellation Policy</h1>
+                <p><strong>Effective Date:</strong> 17-Feb-25</p>
+                <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
+            </div>
+            <div class = "policy-data">
+            <div class = "policy">
+                <h2>1. General Refund Policy</h2>
+                    <p>At Fintellect, we prioritize customer satisfaction. Users can request refunds for subscriptions or one-time purchases—no questions asked</p>
+                    <p>We also provide a <strong>2-week trial period</strong> before requiring a purchase, allowing users to evaluate the platform before committing.</p>
+                    <p>Refunds are <strong>full refunds</strong>, with the exception of third-party processing fees (if applicable).</p>
+            </div>
+
+            <div class = "policy">
+                <h2>2. Subscription Cancellations</h2>
+            <ul>
+                <li>Users can cancel their subscriptions at any time.</li>
+                <li>Upon cancellation, <strong>access is revoked immediately</strong>.</li>
+                <li>If a user cancels after being charged, a full refund will be issued, and all premium/pro features will be disabled.</li>
+            </ul>
+
+            </div >
+            <div class = "policy">
+                <h2>3. One-Time Purchase Policy</h2>
+            <ul>
+                <li>Users may request a refund for one-time purchases if they are dissatisfied with the product/service.</li>
+                <li>We do not enforce an "All Sales Are Final" policy and will honor refund requests when made in good faith.</li>
+            </ul>
+            </div>
+            
+            <div class = "policy">
+                <h2>4. Payment Gateway & Processing Fees</h2>
+            <ul>
+                <li>If a refund is granted, <strong>third-party payment processing fees (e.g., Razorpay transaction fees) are non-refundable</strong>.</li>
+                <li>We will make every effort to process refunds as soon as possible. However, the final refund timeline may depend on the payment provider.</li>
+            </ul>
+            </div>
+            <div class = "policy">
+             
+                <h2>5. Refund Request Process</h2>
+                <p>To request a refund, users must send an email to <strong>support@fintellect.co.in</strong> with relevant details.</p>
+                <p>Refund requests undergo <strong>manual review</strong> before processing.</p>
+            </div>
+
+           <div class = "policy">
+                <h2>6. Exceptional Cases</h2>
+                <ul>
+                    <li>Refunds will <strong>not be provided</strong> in cases of fraudulent transactions or unauthorized purchases.</li>
+                    <li>If a user is found to be misusing the refund policy (e.g., repeatedly requesting refunds), <strong>Fintellect reserves the right to deny future refund requests</strong> at its discretion.</li>
+                </ul>
+            </div>
+
+            <div class = "policy">
+                <h2>7. Governing Law & Dispute Resolution</h2>
+                <p>This Refund & Cancellation Policy is governed by <strong>Indian law</strong>.</p>
+                <p>Any disputes related to refunds will be handled in accordance with the laws of India.</p>
+            </div>
+            <div class="footer">
+                <p>For any questions or concerns, please contact us at <strong>support@fintellect.co.in</strong>.</p>
+                <p><strong>Last Updated:</strong> 17-Feb-25</p>
+            </div>
+            </div>
+        </div>
+    </body>
+</html>
+    """
+    components.html(html, height=2000, scrolling=True)  # Use Streamlit components for full HTML rendering
+
+    
+def privacy_policy():
+    html = """  <!DOCTYPE html>
+<html>
+<head>
+<style>
+        .container {
+                overflow-x: hidden;
+                max-width: 100vw;
+                max-height: 100vh;
+                background: white;
+                display:flex;
+                flex-direction:column;
+                gap:1rem;
+            }
+            p , li {
+                font-size:1.5rem;
+            }
+            h2 {
+                font-size:1.8rem;
+            }
+            .center {
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+            }
+            .policy-data {
+                display:flex;
+                flex-direction:column;
+                gap:1rem;
+            }
+            .sub-heading{
+                height:3%;
+            }
+            ul{
+                display:flex;
+                flex-direction:column;
+                gap:10px;
+            }
+             .footer {
+                text-align: center;
+                font-size: 1.3rem;
+                color: #777;
+                margin:1rem 0;
+            }
+            .button {
+                position: absolute; /* or use 'fixed' to keep it fixed while scrolling */
+                top: 10px;  /* Adjust as needed */
+                left: 10px; /* Adjust as needed */
+                padding: 10px 20px;
+                background-color: #4285F4;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            span {
+                font-weight:bold;
+                font-size:1.5rem;
+            }
+    </style>
+</head>
+ <body>
+        <div class="container">
+            <p><a href="https://bankstatements.onrender.com/" target="_blank">Home</a></p>
+            <h1 class = "center top-heading">Fintellect Policies</h1>
+            
+            <div class = "center sub-heading">   
+                <h2>Privacy Policy</h1>
+                <p><strong>Effective Date:</strong> 17-Feb-25</p>
+                <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
+            </div>
+            <div class = "policy-data">
+            <div class = "ploicy">
+                 <h2>1. Introduction</h2>
+                 <p>At Fintellect, we prioritize your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our application.</p>
+            </div>
+
+            <div class = "ploicy">
+              <h2>2. Data Collection & Processing</h2>
+             <ul>
+                <li>We allow users to upload bank statements in PDF, Excel, and CSV formats.</li>
+                <li>All transaction data is stored on our fully encrypted cloud servers.</li>
+                <li>We do not use any third-party OCR tools, AI models, or APIs for data processing.</li>
+             </ul>
+
+            </div >
+            <div class = "ploicy">
+             <h2>3. Data Security & Privacy</h2>
+             <p>Your data is encrypted using AES-256 and SSL encryption.</p>
+            </div>
+            
+            <div class = "ploicy">
+             <h2>4. User Rights & Data Control</h2>
+             <p>Users can view, download, and delete their transaction data at any time.</p>
+            </div>
+            <div class = "ploicy">
+                <h2>5. Payment Processing</h2>
+                <p>Payments will be processed through Razorpay.</p>
+        
+            </div>
+
+           <div class = "ploicy">
+                <h2>6. Data Usage</h2>
+                <p>We do not share or sell user data to third parties.</p>
+            </div>
+
+            <div class = "ploicy">
+                <h2>7. Changes to this Privacy Policy</h2>
+                <p>We may update this policy from time to time. Users will be notified of significant changes.</p>
+            </div>
+            </div>
+            <div class = "policy-data">
+                <h1>Acceptance of Terms</h1>
+                <h2>By using Fintellect, you agree to these Terms & Conditions.</h2>
+            <div class = "ploicy">
+             <h2>1. Usage Restrictions & Prohibited Activities</h2>
+                <ul>
+                    <li>Users must not engage in fraudulent or illegal activities.</li>
+                    <li>The app is designed for personal use only.</li>
+                </ul>
+            </div>
+
+            <div class = "ploicy">
+                <h2>2. Data Accuracy & Liability</h2>
+                <p>Fintellect is an organizational tool, not financial advice.</p>
+            </div>
+            
+            <div class = "ploicy">
+             <h2>3. Payments & Subscriptions</h2>
+             <p>Future plans may include subscription-based and one-time payment options.</p>
+            </div>
+            <div class = "ploicy">
+                 <h2>4. Termination & Data Deletion</h2>
+                <p>Users can delete their accounts and all associated data permanently at any time.</p>
+            </div>
+
+           <div class = "ploicy">
+                <h2>5. Governing Law & Dispute Resolution</h2>
+                <p>These Terms & Conditions shall be governed by the laws of India.</p>
+            </div>
+            </div>
+
+            <div class="footer">
+                <p>For any questions or concerns, please contact us at <strong>support@fintellect.co.in</strong>.</p>
+                <p><strong>Last Updated:</strong> 17-Feb-25</p>
+            </div>
+            </div>
+    </body>
+</html>
+"""
+    components.html(html, height=3000, scrolling=True)  # Use Streamlit components for full HTML rendering
