@@ -709,281 +709,263 @@ def home_page(url):
     
     
 def refund_policy():
-    html = """
-    <!DOCTYPE html>
-<html>
-<head>
-<style>
+    css = """
+    <style>
         .container {
-                overflow-x: hidden;
-                max-width: 100vw;
-                max-height: 100vh;
-                background: white;
-            }
-            p , li {
-                font-size:1.5rem;
-            }
-            h2 {
-                font-size:1.8rem;
-            }
-            .center {
-                display:flex;
-                flex-direction:column;
-                align-items:center;
-            }
-            .policy-data {
-                display:flex;
-                flex-direction:column;
-                gap:1rem;
-            }
-            .sub-heading{
-                height:3%;
-            }
-            ul{
-                display:flex;
-                flex-direction:column;
-                gap:10px;
-            }
-             .footer {
-                text-align: center;
-                font-size: 1.3rem;
-                color: #777;
-            }
-            .button {
-                position: absolute; /* or use 'fixed' to keep it fixed while scrolling */
-                top: 10px;  /* Adjust as needed */
-                left: 10px; /* Adjust as needed */
-                padding: 10px 20px;
-                background-color: #4285F4;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }
+            overflow-x: hidden;
+            min-width: 100vw;
+            min-height: 100vh;
+            background: white;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .policy p , .policy li {
+            font-size: 1.5rem;
+        } 
+        
+        h2 {
+            font-size: 1.8rem;
+        }
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .policy-data {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .sub-heading {
+            height: 3%;
+            font-size:1.3rem
+        }
+        ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #777;
+        }
+        .button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        a{
+            color: white;
+        }
     </style>
-</head>
- <body>
-        <div class="container">
-            <p><a href="https://bankstatements.onrender.com/" target="_blank">Home</a></p>
-            <h1 class = "center top-heading">Fintellect Policies</h1>
-            
-            <div class = "center sub-heading">   
-                <h2>Refund & Cancellation Policy</h1>
-                <p><strong>Effective Date:</strong> 17-Feb-25</p>
-                <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
-            </div>
-            <div class = "policy-data">
-            <div class = "policy">
+    """
+    html = f"""<body>
+    <button class="button"><a href="https://bankstatements.onrender.com/" target="_self">Home</a></button>
+    <div class="container">
+        <h1 class="center top-heading">Fintellect Policies</h1>
+        <div class="center sub-heading">
+            <h2>Refund & Cancellation Policy</h2>
+            <p><strong>Effective Date:</strong> 17-Feb-25</p>
+            <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
+        </div>
+        <div class="policy-data">
+            <div class="policy">
                 <h2>1. General Refund Policy</h2>
-                    <p>At Fintellect, we prioritize customer satisfaction. Users can request refunds for subscriptions or one-time purchases—no questions asked</p>
-                    <p>We also provide a <strong>2-week trial period</strong> before requiring a purchase, allowing users to evaluate the platform before committing.</p>
-                    <p>Refunds are <strong>full refunds</strong>, with the exception of third-party processing fees (if applicable).</p>
+                <p>At Fintellect, we prioritize customer satisfaction. Users can request refunds for subscriptions or one-time purchases—no questions asked.</p>
+                <p>We offer a <strong>2-week trial period</strong> before requiring a purchase.</p>
+                <p>Refunds are <strong>full refunds</strong>, excluding third-party processing fees.</p>
             </div>
-
-            <div class = "policy">
+            <div class="policy">
                 <h2>2. Subscription Cancellations</h2>
-            <ul>
-                <li>Users can cancel their subscriptions at any time.</li>
-                <li>Upon cancellation, <strong>access is revoked immediately</strong>.</li>
-                <li>If a user cancels after being charged, a full refund will be issued, and all premium/pro features will be disabled.</li>
-            </ul>
-
-            </div >
-            <div class = "policy">
-                <h2>3. One-Time Purchase Policy</h2>
-            <ul>
-                <li>Users may request a refund for one-time purchases if they are dissatisfied with the product/service.</li>
-                <li>We do not enforce an "All Sales Are Final" policy and will honor refund requests when made in good faith.</li>
-            </ul>
-            </div>
-            
-            <div class = "policy">
-                <h2>4. Payment Gateway & Processing Fees</h2>
-            <ul>
-                <li>If a refund is granted, <strong>third-party payment processing fees (e.g., Razorpay transaction fees) are non-refundable</strong>.</li>
-                <li>We will make every effort to process refunds as soon as possible. However, the final refund timeline may depend on the payment provider.</li>
-            </ul>
-            </div>
-            <div class = "policy">
-             
-                <h2>5. Refund Request Process</h2>
-                <p>To request a refund, users must send an email to <strong>support@fintellect.co.in</strong> with relevant details.</p>
-                <p>Refund requests undergo <strong>manual review</strong> before processing.</p>
-            </div>
-
-           <div class = "policy">
-                <h2>6. Exceptional Cases</h2>
                 <ul>
-                    <li>Refunds will <strong>not be provided</strong> in cases of fraudulent transactions or unauthorized purchases.</li>
-                    <li>If a user is found to be misusing the refund policy (e.g., repeatedly requesting refunds), <strong>Fintellect reserves the right to deny future refund requests</strong> at its discretion.</li>
+                    <li>Users can cancel their subscriptions anytime.</li>
+                    <li>Upon cancellation, <strong>access is revoked immediately</strong>.</li>
+                    <li>If a user cancels after being charged, a full refund will be issued.</li>
                 </ul>
             </div>
-
-            <div class = "policy">
+            <div class="policy">
+                <h2>3. One-Time Purchase Policy</h2>
+                <ul>
+                    <li>Users may request a refund for one-time purchases if dissatisfied.</li>
+                    <li>Refund requests made in good faith will be honored.</li>
+                </ul>
+            </div>
+            <div class="policy">
+                <h2>4. Payment Gateway & Processing Fees</h2>
+                <ul>
+                    <li>Refunds exclude <strong>third-party payment processing fees</strong>.</li>
+                    <li>Refund timelines depend on the payment provider.</li>
+                </ul>
+            </div>
+            <div class="policy">
+                <h2>5. Refund Request Process</h2>
+                <p>Email <strong>support@fintellect.co.in</strong> for a refund request.</p>
+                <p>Requests undergo <strong>manual review</strong> before processing.</p>
+            </div>
+            <div class="policy">
+                <h2>6. Exceptional Cases</h2>
+                <ul>
+                    <li>No refunds for fraudulent or unauthorized transactions.</li>
+                    <li>Fintellect may deny repeated refund requests.</li>
+                </ul>
+            </div>
+            <div class="policy">
                 <h2>7. Governing Law & Dispute Resolution</h2>
-                <p>This Refund & Cancellation Policy is governed by <strong>Indian law</strong>.</p>
-                <p>Any disputes related to refunds will be handled in accordance with the laws of India.</p>
-            </div>
-            <div class="footer">
-                <p>For any questions or concerns, please contact us at <strong>support@fintellect.co.in</strong>.</p>
-                <p><strong>Last Updated:</strong> 17-Feb-25</p>
-            </div>
+                <p>Policy governed by <strong>Indian law</strong>.</p>
+                <p>Refund disputes follow Indian legal procedures.</p>
             </div>
         </div>
-    </body>
-</html>
-    """
-    components.html(html, height=2000, scrolling=True)  # Use Streamlit components for full HTML rendering
-
+        <div class="footer">
+            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p><strong>Last Updated:</strong> 17-Feb-25</p>
+        </div>
+    </div>
+</body>"""
+    st.markdown(css, unsafe_allow_html=True)
+    st.markdown(html, unsafe_allow_html=True)
     
 def privacy_policy():
-    html = """  <!DOCTYPE html>
-<html>
-<head>
-<style>
+# CSS for styling
+ css = """
+    <style>
         .container {
-                overflow-x: hidden;
-                max-width: 100vw;
-                max-height: 100vh;
-                background: white;
-                display:flex;
-                flex-direction:column;
-                gap:1rem;
-            }
-            p , li {
-                font-size:1.5rem;
-            }
-            h2 {
-                font-size:1.8rem;
-            }
-            .center {
-                display:flex;
-                flex-direction:column;
-                align-items:center;
-            }
-            .policy-data {
-                display:flex;
-                flex-direction:column;
-                gap:1rem;
-            }
-            .sub-heading{
-                height:3%;
-            }
-            ul{
-                display:flex;
-                flex-direction:column;
-                gap:10px;
-            }
-             .footer {
-                text-align: center;
-                font-size: 1.3rem;
-                color: #777;
-                margin:1rem 0;
-            }
-            .button {
-                position: absolute; /* or use 'fixed' to keep it fixed while scrolling */
-                top: 10px;  /* Adjust as needed */
-                left: 10px; /* Adjust as needed */
-                padding: 10px 20px;
-                background-color: #4285F4;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-            span {
-                font-weight:bold;
-                font-size:1.5rem;
-            }
+            overflow-x: hidden;
+            min-width: 100vw;
+            min-height: 100vh;
+            background: white;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .policy p , .policy li {
+            font-size: 1.5rem;
+        } 
+        
+        h2 {
+            font-size: 1.8rem;
+        }
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .policy-data {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .sub-heading {
+            height: 3%;
+            font-size:1.3rem
+        }
+        ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #777;
+        }
+        .button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        a{
+            color: white;
+        }
     </style>
-</head>
- <body>
-        <div class="container">
-            <p><a href="https://bankstatements.onrender.com/" target="_blank">Home</a></p>
-            <h1 class = "center top-heading">Fintellect Policies</h1>
-            
-            <div class = "center sub-heading">   
-                <h2>Privacy Policy</h1>
-                <p><strong>Effective Date:</strong> 17-Feb-25</p>
-                <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
+    """
+ html = f"""<body>
+    <button class="button"><a href="https://bankstatements.onrender.com/" target="_self">Home</a></button>
+    <div class="container">
+        <h1 class="center top-heading">Fintellect Policies</h1>
+        <div class="center sub-heading">   
+            <h2>Privacy Policy</h2>
+            <p><strong>Effective Date:</strong> 17-Feb-25</p>
+            <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
+        </div>
+        <div class="policy-data">
+            <div class="policy">
+                <h2>1. Introduction</h2>
+                <p>At Fintellect, we prioritize your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our application.</p>
             </div>
-            <div class = "policy-data">
-            <div class = "ploicy">
-                 <h2>1. Introduction</h2>
-                 <p>At Fintellect, we prioritize your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our application.</p>
+            <div class="policy">
+                <h2>2. Data Collection & Processing</h2>
+                <ul>
+                    <li>We allow users to upload bank statements in PDF, Excel, and CSV formats.</li>
+                    <li>All transaction data is stored on our fully encrypted cloud servers.</li>
+                    <li>We do not use any third-party OCR tools, AI models, or APIs for data processing.</li>
+                </ul>
             </div>
-
-            <div class = "ploicy">
-              <h2>2. Data Collection & Processing</h2>
-             <ul>
-                <li>We allow users to upload bank statements in PDF, Excel, and CSV formats.</li>
-                <li>All transaction data is stored on our fully encrypted cloud servers.</li>
-                <li>We do not use any third-party OCR tools, AI models, or APIs for data processing.</li>
-             </ul>
-
-            </div >
-            <div class = "ploicy">
-             <h2>3. Data Security & Privacy</h2>
-             <p>Your data is encrypted using AES-256 and SSL encryption.</p>
+           <div class="policy">
+                <h2>3. Data Security & Privacy</h2>
+                <p>Your data is encrypted using AES-256 and SSL encryption.</p>
             </div>
-            
-            <div class = "ploicy">
-             <h2>4. User Rights & Data Control</h2>
-             <p>Users can view, download, and delete their transaction data at any time.</p>
+            <div class="policy">
+                <h2>4. User Rights & Data Control</h2>
+                <p>Users can view, download, and delete their transaction data at any time.</p>
             </div>
-            <div class = "ploicy">
+              <div class="policy">
                 <h2>5. Payment Processing</h2>
                 <p>Payments will be processed through Razorpay.</p>
-        
             </div>
-
-           <div class = "ploicy">
+            <div class="policy">
                 <h2>6. Data Usage</h2>
                 <p>We do not share or sell user data to third parties.</p>
             </div>
-
-            <div class = "ploicy">
+            <div class="policy">
                 <h2>7. Changes to this Privacy Policy</h2>
                 <p>We may update this policy from time to time. Users will be notified of significant changes.</p>
             </div>
-            </div>
-            <div class = "policy-data">
-                <h1>Acceptance of Terms</h1>
-                <h2>By using Fintellect, you agree to these Terms & Conditions.</h2>
-            <div class = "ploicy">
-             <h2>1. Usage Restrictions & Prohibited Activities</h2>
+        </div>
+        <div class="policy-data acceptance">
+            <h2>Acceptance of Terms</h2>
+            <h2>By using Fintellect, you agree to these Terms & Conditions.</h2>
+        <div class="policy">
+                <h2>1. Usage Restrictions & Prohibited Activities</h2>
                 <ul>
                     <li>Users must not engage in fraudulent or illegal activities.</li>
                     <li>The app is designed for personal use only.</li>
                 </ul>
-            </div>
-
-            <div class = "ploicy">
+        </div>
+        <div class="policy">
                 <h2>2. Data Accuracy & Liability</h2>
                 <p>Fintellect is an organizational tool, not financial advice.</p>
-            </div>
-            
-            <div class = "ploicy">
-             <h2>3. Payments & Subscriptions</h2>
-             <p>Future plans may include subscription-based and one-time payment options.</p>
-            </div>
-            <div class = "ploicy">
-                 <h2>4. Termination & Data Deletion</h2>
+        </div>
+        <div class="policy">
+                <h2>3. Payments & Subscriptions</h2>
+                <p>Future plans may include subscription-based and one-time payment options.</p>
+        </div>
+         <div class="policy">
+                <h2>4. Termination & Data Deletion</h2>
                 <p>Users can delete their accounts and all associated data permanently at any time.</p>
-            </div>
-
-           <div class = "ploicy">
+        </div>
+        <div class="policy">
                 <h2>5. Governing Law & Dispute Resolution</h2>
                 <p>These Terms & Conditions shall be governed by the laws of India.</p>
-            </div>
-            </div>
-
-            <div class="footer">
-                <p>For any questions or concerns, please contact us at <strong>support@fintellect.co.in</strong>.</p>
-                <p><strong>Last Updated:</strong> 17-Feb-25</p>
-            </div>
-            </div>
-    </body>
-</html>
-"""
-    components.html(html, height=3000, scrolling=True)  # Use Streamlit components for full HTML rendering
+        </div>
+        </div>
+        <div class="footer">
+            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p><strong>Last Updated:</strong> 17-Feb-25</p>
+        </div>
+    </div>
+</body>"""
+ st.markdown(css, unsafe_allow_html=True)
+ st.markdown(html, unsafe_allow_html=True)
+    
