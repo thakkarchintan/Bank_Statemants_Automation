@@ -593,8 +593,8 @@ def home_page(url):
                     <div class="para bold">✅ Gain Powerful Insights to Improve Financial Decisions</div>
                     <div class="para bold">
                     Learn more about our 
-                    <a href="https://bankstatements.onrender.com/?page=privacy_policy">Privacy Policy</a> & 
-                    <a href="https://bankstatements.onrender.com/?page=refund_policy">Refund Policy</a>
+                    <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> & 
+                    <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
                     </div>
                 </div>
                 <div class = "policy">
