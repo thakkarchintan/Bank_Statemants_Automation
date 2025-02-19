@@ -231,6 +231,8 @@ def show_message(url,page):
         refund_policy()
     elif page == "privacy_policy":
         privacy_policy()
+    elif page == "terms_condition":
+        terms_condition()
     else:
         home_page(url)
 
@@ -591,11 +593,6 @@ def home_page(url):
                     <div class="para bold">✅ Track Spending Patterns</div>
                     <div class="para bold">✅ Spot Hidden Charges</div>
                     <div class="para bold">✅ Gain Powerful Insights to Improve Financial Decisions</div>
-                    <div class="para bold">
-                    Learn more about our 
-                    <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> & 
-                    <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
-                    </div>
                 </div>
                 <div class = "policy">
                     <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
@@ -612,6 +609,12 @@ def home_page(url):
                         <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
                     </div>
                     <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
+                </div>
+                <div class="para bold">
+                    Learn more about our 
+                    <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> , 
+                    <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
+                    and <a href="https://bankstatements.onrender.com/?page=terms_condition" target="_self">Terms & Conditions</a>
                 </div>
                 <div class="gcenter">
                     <a href="{url}" class="google-button" target="_self">
@@ -965,7 +968,113 @@ def privacy_policy():
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
+    <div class="footer">
+        <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+        <p><strong>Last Updated:</strong> 17-Feb-25</p>
+    </div>
 </body>"""
  st.markdown(css, unsafe_allow_html=True)
  st.markdown(html, unsafe_allow_html=True)
     
+def terms_condition():
+    css = """
+    <style>
+        .container {
+            overflow-x: hidden;
+            min-width: 100vw;
+            min-height: 100vh;
+            background: white;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .policy p , .policy li {
+            font-size: 1.5rem;
+        } 
+        
+        h2 {
+            font-size: 1.8rem;
+        }
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .policy-data {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .sub-heading {
+            height: 3%;
+            font-size:1.3rem
+        }
+        ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #777;
+        }
+        .button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        a{
+            color: white;
+        }
+    </style>
+    """
+    html = f"""
+    <button class="button"><a href="https://bankstatements.onrender.com/" target="_self">Home</a></button>
+    <div class = "container">
+        <h1 class="center top-heading">Fintellect Policies</h1>
+        <div class="center sub-heading">   
+            <h2>Acceptance of Terms</h2>
+            <p><strong>Effective Date:</strong> 17-Feb-25</p>
+            <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
+        </div>
+        <div class="policy-data">
+            <h2>By using Fintellect, you agree to these Terms & Conditions.</h2>
+            <div class="policy">
+                <h2>1. Usage Restrictions & Prohibited Activities</h2>
+                <ul>
+                    <li>Users must not engage in fraudulent or illegal activities.</li>
+                    <li>The app is designed for personal use only.</li>
+                </ul>
+            </div>
+            <div class="policy">
+                <h2>2. Data Accuracy & Liability</h2>
+                <p>Fintellect is an organizational tool, not financial advice.</p>
+            </div>
+            <div class="policy">
+                <h2>3. Payments & Subscriptions</h2>
+                <p>Future plans may include subscription-based and one-time payment options.</p>
+            </div>
+            <div class="policy">
+                <h2>4. Termination & Data Deletion</h2>
+                <p>Users can delete their accounts and all associated data permanently at any time.</p>
+            </div>
+            <div class="policy">
+                <h2>5. Governing Law & Dispute Resolution</h2>
+                <p>These Terms & Conditions shall be governed by the laws of India.</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p><strong>Last Updated:</strong> 17-Feb-25</p>
+        </div>
+    </div>
+    """
+
+    st.markdown(css, unsafe_allow_html=True)
+    st.markdown(html, unsafe_allow_html=True)
