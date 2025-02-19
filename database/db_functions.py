@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 import datetime as dt
 import pytz
-from utils.Encryption import *
+from database.Encryption import *
 
 load_dotenv()
 
