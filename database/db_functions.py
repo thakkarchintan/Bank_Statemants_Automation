@@ -171,7 +171,6 @@ def get_transaction_data(database_name,table_name):
         return fdf
     return pd.DataFrame()
 
-
 def add_user(database_name,table_name,data):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
@@ -320,3 +319,30 @@ def get_name(database_name,table_name,user_name):
     cursor = conn.cursor()
 
     return name[0] if name else ""
+
+def get_category_df(database_name,table_name):
+    conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
+    cursor = conn.cursor()
+    create_database(database_name,cursor)
+
+    create_table_query = f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            keyword VARCHAR(255) NOT NULL,
+            category VARCHAR(255) NOT NULL
+        )
+    """
+    create_table(database_name, create_table_query, conn)
+
+    # Close the connection
+    cursor.close()
+    conn.close()
+
+    # Create database connection
+    engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+
+    with engine.connect() as Conn:
+        # Read existing data from the table
+        all_data = pd.read_sql(text(f"SELECT * FROM {table_name};"), Conn)
+        return all_data
+    return pd.DataFrame()

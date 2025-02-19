@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-# import matplotlib.pyplot as plt
 import plotly.express as px
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -14,17 +13,12 @@ import streamlit.components.v1 as components
 
 
 # Function to categorize each row based on narration content
-def categorize_debit_row(narration):
-    for key in debit_categorization_dict.keys():
+def categorize(narration,categorization_dict):
+    for key in categorization_dict.keys():
         if key.lower() in narration.lower():
-            return debit_categorization_dict[key]
+            return categorization_dict[key]
     return ""
 
-def categorize_credit_row(narration):
-    for key in credit_categorization_dict.keys():
-        if key.lower() in narration.lower():
-            return credit_categorization_dict[key]
-    return ""
 
 # Function to convert DataFrame to Excel
 def convert_df_to_excel(df):
@@ -102,9 +96,10 @@ def xlsx_to_df(uploaded_file):
     df = pd.read_excel(uploaded_file, engine='openpyxl')
     return df
 
-from utils import debit_categorization_dict,banks_date_format,table_columns_dic,table_columns_pdf_dic ,bank_status_dict, credit_categorization_dict
+from utils import banks_date_format,table_columns_dic,table_columns_pdf_dic ,bank_status_dict
+from database import get_category_df
 
-def format_uploaded_file(uploaded_file, bank):
+def format_uploaded_file(uploaded_file, bank, db_name, user_name):
     date_format=banks_date_format[bank]
     table_columns=table_columns_dic[bank]
     table_columns_pdf=table_columns_pdf_dic[bank]
@@ -192,13 +187,20 @@ def format_uploaded_file(uploaded_file, bank):
         # Add a new column 'Category'
         df['Category'] = ""
 
+        category_table=user_name if user_name!='professionalbuzz' and user_name!='shirishkumar1949' else "categories"
+        debit_categorization_df=get_category_df(db_name,category_table+"_debit")
+        credit_categorization_df=get_category_df(db_name,category_table+"_credit")
+
+        credit_categorization_dict = dict(zip(credit_categorization_df['keyword'], credit_categorization_df['category']))
+        debit_categorization_dict = dict(zip(debit_categorization_df['keyword'], debit_categorization_df['category']))
+
         df['Category'] = df.apply(
-            lambda row: categorize_credit_row(row['Narration']) if pd.notna(row['Credit']) and row['Credit'] != "" else "",
+            lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" else "",
             axis=1
         )
 
         df['Category'] = df.apply(
-            lambda row: categorize_debit_row(row['Narration']) if pd.notna(row['Debit']) and row['Debit'] != "" else row['Category'],
+            lambda row: categorize(row['Narration'],debit_categorization_dict) if pd.notna(row['Debit']) and row['Debit'] != "" else row['Category'],
             axis=1
         )
 
@@ -235,8 +237,6 @@ def show_message(url,page):
         terms_condition()
     else:
         home_page(url)
-
-        
 
 def display_graph(df,selected_name,selected_bank):
     # Extract month and year separately in the format "Jan 2024"
@@ -418,6 +418,10 @@ def show_agreement():
     """
     st.markdown(css_string, unsafe_allow_html=True)
     st.markdown(html_string, unsafe_allow_html=True)
+
+def has_common_rows(df1, df2):
+    common = pd.merge(df1, df2, how='inner')
+    return not common.empty
 
 def home_page(url):
     def get_base64_image(image_path):
@@ -709,8 +713,7 @@ def home_page(url):
         
     st.markdown(css, unsafe_allow_html=True)
     st.markdown(html, unsafe_allow_html=True)
-    
-    
+       
 def refund_policy():
     css = """
     <style>
