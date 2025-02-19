@@ -236,7 +236,6 @@ def show_message(url,page):
     else:
         home_page(url)
 
-
 def display_graph(df,selected_name,selected_bank):
     # Extract month and year separately in the format "Jan 2024"
     df["month_year"] = df["Date"].dt.strftime("%b %Y")  # "Jan 2024" format
@@ -421,7 +420,6 @@ def show_agreement():
 def has_common_rows(df1, df2):
     common = pd.merge(df1, df2, how='inner')
     return not common.empty
-
 
 def home_page(url):
     def get_base64_image(image_path):
@@ -712,8 +710,7 @@ def home_page(url):
         
     st.markdown(css, unsafe_allow_html=True)
     st.markdown(html, unsafe_allow_html=True)
-    
-    
+       
 def refund_policy():
     css = """
     <style>
