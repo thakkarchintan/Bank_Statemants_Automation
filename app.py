@@ -22,6 +22,7 @@ authenticator = Authenticator(
     secret_path = "/etc/secrets/Bank_statement.json",
     redirect_uri="https://bankstatements.onrender.com",
 )
+
 query_params = st.query_params
 page = query_params.get("page", ["home"]) 
 
@@ -198,8 +199,7 @@ if st.session_state["connected"]:
 
                 except Exception as e:
                     print(f"Error in adding data: {e}")
-                    st.toast(":red[Something went wrong.]")
-                    st.toast(":red[Ensure that the uploaded bank statement matches the selected bank.]")
+                    st.toast(":red[The uploaded bank statement does not match the selected bank.]")
             
 
             else:
