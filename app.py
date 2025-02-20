@@ -616,5 +616,53 @@ if st.session_state["connected"]:
             st.write("🎉 No keywords added yet!")
 
 else:
-    auth_url=authenticator.login()  
-    show_message(auth_url,page)
+        auth_url=authenticator.login()
+        if not auth_url:
+            st.error("Authentication URL is not available.")
+        else:
+            css = """
+                <style>
+                    .gcenter {
+                        width: 100%;
+                        display: flex;
+                        margin-top: 10px;
+                        position: absolute;
+                        top: -10vh;
+                        right: 0px;
+                        left:80vw
+                        
+                    }
+                    .google-button {
+                        background-color: #4285F4;
+                        color: white !important;
+                        border-radius: 5px;
+                        padding: 10px 15px;
+                        font-size: 1.5rem;
+                        border: none;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        text-decoration: none !important;
+                        gap: 5px;
+                    }
+                    .google-button img {
+                        width: 1.5rem;
+                        height: 1.5rem;
+                        margin-left: 5px;
+                        border-radius: 50%;
+                    }
+                </style>
+            """
+
+            html = f"""
+                <div class="gcenter">
+                    <a href="{auth_url}" class="google-button" target="_self">
+                        Login with Google
+                        <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp"  alt="Google logo" />
+                    </a>
+                </div>
+            """
+
+            st.markdown(css, unsafe_allow_html=True)
+            st.markdown(html, unsafe_allow_html=True)
+        show_message(page)
