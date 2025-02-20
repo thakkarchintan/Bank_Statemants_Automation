@@ -247,7 +247,7 @@ def display_data(df,Height,db_name="",user_name="",category_present=False):
                 add_data(updated_df,False,db_name,user_name)
                 st.toast(":green[Data saved successfully.]")
 
-def show_message(url,page):
+def show_message(page):
     if page == "refund_policy":
         refund_policy()
     elif page == "privacy_policy":
@@ -255,7 +255,7 @@ def show_message(url,page):
     elif page == "terms_condition":
         terms_condition()
     else:
-        home_page(url)
+        home_page()
 
 def display_graph(df,selected_name,selected_bank):
     # Extract month and year separately in the format "Jan 2024"
@@ -442,7 +442,7 @@ def has_common_rows(df1, df2):
     common = pd.merge(df1, df2, how='inner')
     return not common.empty
 
-def home_page(url):
+def home_page():
     def get_base64_image(image_path):
         with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode()
@@ -484,31 +484,6 @@ def home_page(url):
                 justify-content:center;
                 align-items:start;
             }
-            .gcenter {
-                width: 100%;
-                display: flex;
-                margin-top: 10px;
-            }
-            .google-button {
-                background-color: #4285F4;
-                margin-right: 5px;
-                color: white !important;
-                border-radius: 5px;
-                padding: 10px 15px;
-                font-size: 1.5rem;
-                border: none;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                text-decoration: none !important;
-                gap:5px;
-            }
-            .google-button img {
-                width: 1.5rem;
-                height:1.5rem;
-                margin-left: 5px;
-                border-radius: 50%;
-            }
             .profile-section{
                 display:flex;
                 gap:20px;
@@ -520,6 +495,7 @@ def home_page(url):
             }
             .profile-image img{
                 border-radius:100%;
+                width:400px;
                 aspect-ratio: 1 / 1;        
             }
             .profile-text p{
@@ -538,7 +514,7 @@ def home_page(url):
             .bold-text{
                 font-weight: bold;
             }
-            #bank-table {
+            #list_of_supported_banks {
             max-width: 60%;
             border-collapse: collapse; /* Ensures table borders collapse together */
         }
@@ -547,7 +523,7 @@ def home_page(url):
             padding-left:3px
         }
 
-        #bank-table th, #bank-table td {
+        #list_of_supported_banks th, #list_of_supported_banks td {
             border: 1px solid #ddd;
             padding: 12px 15px;
             text-align: left;
@@ -555,14 +531,14 @@ def home_page(url):
         }
 
         /* Left-align the first column */
-        #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
+        #list_of_supported_banks th:nth-child(1), #list_of_supported_banks td:nth-child(1) {
             text-align: left;
             width: 33%; /* First column takes 33% of width */
         }
 
         /* Center-align the second and third columns */
-        #bank-table th:nth-child(2), #bank-table th:nth-child(3),
-        #bank-table td:nth-child(2), #bank-table td:nth-child(3) {
+        #list_of_supported_banks th:nth-child(2), #list_of_supported_banks th:nth-child(3),
+        #list_of_supported_banks td:nth-child(2), #list_of_supported_banks td:nth-child(3) {
             text-align: center; /* Center-align text in columns 2 and 3 */
             width: 33%; /* Distribute equal width for second and third columns */
         }
@@ -580,28 +556,32 @@ def home_page(url):
             color: white;
             text-align: center;
         }
+        
+        .guidelines{
+            text-align:center;
+        }
 
         /* Add a subtle hover effect for rows */
-        #bank-table tr:hover {
+        #list_of_supported_banks tr:hover {
             background-color: #f1f1f1;
         }
 
         /* Responsive behavior */
         @media (max-width: 600px) {
-            #bank-table {
+            #list_of_supported_banks {
                 font-size: 12px;
             }
 
-            #bank-table th, #bank-table td {
+            #list_of_supported_banks th, #list_of_supported_banks td {
                 padding: 8px;
             }
 
-            #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
+            #list_of_supported_banks th:nth-child(1), #list_of_supported_banks td:nth-child(1) {
                 width: 100%; /* Make the first column take full width on smaller screens */
             }
 
-            #bank-table th:nth-child(2), #bank-table td:nth-child(2),
-            #bank-table th:nth-child(3), #bank-table td:nth-child(3) {
+            #list_of_supported_banks th:nth-child(2), #list_of_supported_banks td:nth-child(2),
+            #list_of_supported_banks th:nth-child(3), #list_of_supported_banks td:nth-child(3) {
                 width: 50%; /* Reduce the second and third columns on smaller screens */
             }
         }
@@ -614,37 +594,8 @@ def home_page(url):
                     <h1 class="section-heading">Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
                     <div class="para">Upload PDF or XLS bank statements from the <a href = "#list_of_supported_banks">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
                     <div class="para bold">✅ Track Spending Patterns</div>
-                    <div class="para bold">✅ Spot Hidden Charges</div>
-                    <div class="para bold">✅ Gain Powerful Insights to Improve Financial Decisions</div>
-                </div>
-                <div class = "policy">
-                    <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
-                    <div>
-                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>Your data is fully encrypted using industry-leading security.</p>
-                    </div>
-                <div>
-                        <p><span class="section-subheading">📂 You Upload, We Process - </span>We only process the data you provide—nothing more, nothing less.</p>
-                    </div>
-                <div>
-                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever</p>
-                    </div>
-                    <div>
-                        <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
-                    </div>
-                    <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
-                </div>
-                <div class="para bold">
-                    Learn more about our 
-                    <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> , 
-                    <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
-                    and <a href="https://bankstatements.onrender.com/?page=terms_condition" target="_self">Terms & Conditions</a>
-                </div>
-                <div class="gcenter">
-                    <a href="{url}" class="google-button" target="_self">
-                        Login with Google
-                        <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp" alt="Google logo" />
-                    </a>
-                </div>
+                    <div class="para bold">✅ Gain Intelligent Insights</div>
+                </div>  
                 <div class = "profile">
                 <h1>Why I Created This App</h1>
                     <div class = "profile-section">
@@ -654,7 +605,7 @@ def home_page(url):
                     <div class = "profile-text">
                         <p>For <span class ="bold-text">3+ years</span>, I manually tracked my bank transactions—it was frustrating, inefficient, and time-consuming.
                         So, I built a tool to <span class ="bold-text">automate the entire process.</span></p>
-                        <p>What started as a personal solution became something worth sharing. If you’ve ever struggled with organizing your finances, I hope this helps! 🚀.</p>
+                        <p>What started as a personal solution became something worth sharing. If you’ve ever struggled with organizing your finances, I hope this helps!.</p>
                         <div class = "profile-info">
                             <p class="bold"><a href="https://www.linkedin.com/in/1chintanthakkar/">Chintan Thakkar</a></p>
                         </div>     
@@ -725,6 +676,28 @@ def home_page(url):
                 <td class="work-in-progress">Work in progress</td>
             </tr>
         </table>
+        <div class = "policy">
+                    <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
+                    <div>
+                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>Your data is fully encrypted using industry-leading security.</p>
+                    </div>
+                <div>
+                        <p><span class="section-subheading">📂 You Upload, We Process - </span>We only process the data you provide—nothing more, nothing less.</p>
+                    </div>
+                <div>
+                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever</p>
+                    </div>
+                    <div>
+                        <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
+                    </div>
+                    <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
+                </div>
+                <div class="para bold guidelines">
+                    Learn more about our 
+                    <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> , 
+                    <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
+                    and <a href="https://bankstatements.onrender.com/?page=terms_condition" target="_self">Terms & Conditions</a>
+                </div>
     </div>
     <div class = "space-maker"></div>
     </div>
