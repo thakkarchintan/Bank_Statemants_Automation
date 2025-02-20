@@ -15,10 +15,9 @@ import streamlit.components.v1 as components
 # Function to categorize each row based on narration content
 def categorize(narration,categorization_dict):
     for key in categorization_dict.keys():
-        if key.lower() in narration.lower():
+        if key.lower() in str(narration).lower():
             return categorization_dict[key]
     return ""
-
 
 # Function to convert DataFrame to Excel
 def convert_df_to_excel(df):
@@ -99,7 +98,7 @@ def xlsx_to_df(uploaded_file):
 from utils import banks_date_format,table_columns_dic,table_columns_pdf_dic ,bank_status_dict
 from database import get_category_df
 
-def format_uploaded_file(uploaded_file, bank, db_name, user_name):
+def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categorization):
     date_format=banks_date_format[bank]
     table_columns=table_columns_dic[bank]
     table_columns_pdf=table_columns_pdf_dic[bank]
@@ -186,14 +185,19 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name):
         # print(df)
         # Add a new column 'Category'
         df['Category'] = ""
+        
+        if not global_categorization:
+            category_table=user_name if user_name!='professionalbuzz' and user_name!='shirishkumar1949' else "categories"
 
-        category_table=user_name if user_name!='professionalbuzz' and user_name!='shirishkumar1949' else "categories"
+        else:
+            category_table="categories"
+
         debit_categorization_df=get_category_df(db_name,category_table+"_debit")
         credit_categorization_df=get_category_df(db_name,category_table+"_credit")
 
         credit_categorization_dict = dict(zip(credit_categorization_df['keyword'], credit_categorization_df['category']))
         debit_categorization_dict = dict(zip(debit_categorization_df['keyword'], debit_categorization_df['category']))
-
+        print(df.dtypes)
         df['Category'] = df.apply(
             lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" else "",
             axis=1
@@ -1081,3 +1085,4 @@ def terms_condition():
 
     st.markdown(css, unsafe_allow_html=True)
     st.markdown(html, unsafe_allow_html=True)
+
