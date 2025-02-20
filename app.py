@@ -22,6 +22,7 @@ authenticator = Authenticator(
     secret_path = "/etc/secrets/Bank_statement.json",
     redirect_uri="https://bankstatements.onrender.com",
 )
+
 query_params = st.query_params
 page = query_params.get("page", ["home"]) 
 
@@ -63,6 +64,37 @@ if st.session_state["connected"]:
 
     override=False
 
+    # Sidebar elements
+    with st.sidebar:
+        global_categorization = st.toggle("Global Categorization")
+        if st.button(f"Apply {'Global'if global_categorization else 'Personal'} Categorization"):
+            if not global_categorization:
+                category_table=user_name if user_name!='professionalbuzz' and user_name!='shirishkumar1949' else "categories"
+
+            else:
+                category_table="categories"
+
+            debit_categorization_df=get_category_df(db_name,category_table+"_debit")
+            credit_categorization_df=get_category_df(db_name,category_table+"_credit")
+
+            credit_categorization_dict = dict(zip(credit_categorization_df['keyword'], credit_categorization_df['category']))
+            debit_categorization_dict = dict(zip(debit_categorization_df['keyword'], debit_categorization_df['category']))
+            
+            # get data from db
+            existing_df=get_transaction_data(db_name,user_name)
+            
+            existing_df['Category'] = existing_df.apply(
+                lambda row: categorize(row['Narration'],credit_categorization_dict) if row['Credit'] > 0 else "",
+                axis=1
+            )
+
+            existing_df['Category'] = existing_df.apply(
+                lambda row: categorize(row['Narration'],debit_categorization_dict) if row['Debit'] >0 else row['Category'],
+                axis=1
+            )
+            delete_data(db_name,user_name,"1=1")
+            add_data(existing_df,override,db_name,user_name)
+
     # Initialize session state for confirmation popup
     if "ok" not in st.session_state:
         st.session_state.ok = False
@@ -72,7 +104,6 @@ if st.session_state["connected"]:
 
     # Sidebar elements
     with st.sidebar:
-
         # Submit button inside sidebar
         st.button("Add data", on_click=ok_submission)
 
@@ -82,7 +113,10 @@ if st.session_state["connected"]:
             if uploaded_files:
                 try:
                     for uploaded_file in uploaded_files:
-                        df=format_uploaded_file(uploaded_file,bank,db_name,user_name)
+                        # get data from db
+                        existing_df=get_transaction_data(db_name,user_name)
+
+                        df=format_uploaded_file(uploaded_file,bank,db_name,user_name,global_categorization)
                         df = df[df['Narration'] != 'OPENINGBALANCE...']
                         # Default name if ac_name is not entered
                         if not ac_name:
@@ -96,9 +130,6 @@ if st.session_state["connected"]:
                         df['Bank'] = bank
 
                         df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
-
-                        # get data from db
-                        existing_df=get_transaction_data(db_name,user_name)
 
                         # Ensure Date column is in the same format
                         df['Date'] = pd.to_datetime(df['Date'])
@@ -168,8 +199,7 @@ if st.session_state["connected"]:
 
                 except Exception as e:
                     print(f"Error in adding data: {e}")
-                    st.toast(":red[Something went wrong.]")
-                    st.toast(":red[Ensure that the uploaded bank statement matches the selected bank.]")
+                    st.toast(":red[The uploaded bank statement does not match the selected bank.]")
             
 
             else:
@@ -284,6 +314,7 @@ if st.session_state["connected"]:
             else:
                 st.toast(":red[There are no transactions in your account. No data to delete!]")
 
+    
     # Create tabs
     tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback","Razorpay","Categories"])
 
@@ -532,14 +563,13 @@ if st.session_state["connected"]:
         # Input field
         c1, c2, c3 = st.columns(3)
         with c1:
-            type = st.selectbox("Select Transaction type",['debit','credit'])
+            type = st.selectbox("Select Transaction type",['credit','debit'])
         with c2:            
-            category_list=["Salary","Cash Deposit" ,"Refunds","Loan","Others","Personal Expenses","Utility Payments","Transportation","Healthcare","Education","Housing","Digital & Online","Business","Cash Withdrawal"]
+            category_list=["Books", "Cash Withdrawal", "Credit Card Payments", "Education", "EMI Payments", "Food & Beverage", "Health & Fitness", "Healthcare", "Investments & Trading", "Online Shopping", "Rent & Housing", "Subscriptions & Entertainment", "TDS & Tax", "Technology", "Transport & Fuel", "Travel", "Utilities"]
             category_list.sort()
             category = st.selectbox("Select category",category_list)
         with c3:
             keyword = st.text_input("Enter a keyword:", "")
-
 
         category_table=user_name if user_name!='professionalbuzz' and user_name!='shirishkumar1949' else "categories"
 
@@ -547,62 +577,43 @@ if st.session_state["connected"]:
         initialize_db(category_table+"_debit")
         initialize_db(category_table+"_credit")
         # Add category button
-        if st.button("➕ Add category"):
+        if st.button("Add keyword"):
             if category.strip():
                 add_category(keyword,category,category_table+"_"+type)
                 st.rerun()
 
-        st.subheader("Your categories:")
-        col1, col2, col3,col4, col5, col6 = st.columns([0.25,0.25,0.05,0.25,0.25,0.05])
-        col1.write(f"Keyword")
-        col2.write(f"Category")
-        col4.write(f"Keyword")
-        col5.write(f"Category")
-        
-        # # Custom CSS to style all buttons in the app
-        # st.markdown(
-        #     """
-        #     <style>
-        #     /* Adjust the button inside st.button containers */
-        #     div.stButton > button {
-        #         height: 5px !important;         /* Set a fixed height */
-        #         width: 100% !important;           /* Make buttons take full width of the column */
-        #         font-size: 2px !important;       /* Increase font size for consistency */
-        #         margin-top: 0 !important;         /* Remove top margin */
-        #         margin-bottom: 0 !important;      /* Remove bottom margin */
-        #     }
-        #     </style>
-        #     """,
-        #     unsafe_allow_html=True
-        # )
+        st.subheader("Your keywords & categories:")
+        col1, col2, col3, col4 = st.columns([0.3,0.3,0.3,0.1])
+        col1.write(f"Type")
+        col2.write(f"Category") 
+        col3.write(f"Keyword")
 
         # Display categories
         categories_debit = get_categories(category_table+"_debit")
         categories_credit = get_categories(category_table+"_credit")
-        col1, col2 = st.columns(2)
-        with col1:
-            if categories_credit:
-                c1, c2, c3 = st.columns([0.45,0.45,0.1])
-                for category in categories_credit:
-                    c1.write(f"{category[1]}\n")
-                    c2.write(f"{category[2]}\n")
-                    if c3.button("❌", key=f"del_{category[0]}"):
-                        delete_category(category[0],category_table+"_credit")
-                        st.rerun()
-            else:
-                st.write("🎉 No categories added yet!")
         
-        with col2:
-            if categories_debit:
-                c1, c2, c3 = st.columns([0.45,0.45,0.1])
-                for category in categories_debit:
-                    c1.write(f"{category[1]}\n")
-                    c2.write(f"{category[2]}\n")
-                    if c3.button("❌", key=f"dell_{category[0]}"):
-                        delete_category(category[0],category_table+"_debit")
-                        st.rerun()
-            else:
-                st.write("🎉 No categories added yet!")
+        if categories_credit:
+            for category in categories_credit:
+                col1, col2, col3, col4 = st.columns([0.3,0.3,0.3,0.1])
+                col1.write("Credit")
+                col2.write(f"{category[2]}")
+                col3.write(f"{category[1]}")
+                if col4.button("❌", key=f"del_{category[0]}"):
+                    delete_category(category[0],category_table+"_credit")
+                    st.rerun()
+
+        if categories_debit:
+            for category in categories_debit:
+                col1, col2, col3, col4 = st.columns([0.3,0.3,0.3,0.1])
+                col1.write("Debit")
+                col2.write(f"{category[2]}")
+                col3.write(f"{category[1]}")
+                if col4.button("❌", key=f"dell_{category[0]}"):
+                    delete_category(category[0],category_table+"_debit")
+                    st.rerun()
+
+        elif not categories_credit:
+            st.write("🎉 No keywords added yet!")
 
 else:
     auth_url=authenticator.login()  
