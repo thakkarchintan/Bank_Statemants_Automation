@@ -99,7 +99,7 @@ if st.session_state["connected"]:
     def ok_submission():
         st.session_state.ok = True
 
-    # Sidebar elements
+    # Sidebar elements to add data
     with st.sidebar:
         # Submit button inside sidebar
         st.button("Add data", on_click=ok_submission)
@@ -193,17 +193,27 @@ if st.session_state["connected"]:
                     print(f"Error in adding data: {e}")
                     st.toast(":red[The uploaded bank statement does not match the selected bank.]")
             
-
             else:
                 # Display an error message if there is no data
                 st.toast("Choose a Bank from the dropdown and upload the bank statement to get started.")
-            
-            
+
     # get data from db
     db_df=get_transaction_data(db_name,user_name)
 
     # Convert the Date column to datetime
     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
+
+    # Calculate sums
+    debit_sum = db_df['Debit'].sum()
+    credit_sum = db_df['Credit'].sum()
+
+    user_balance=0
+
+    # Sidebar elements to add data
+    with st.sidebar:            
+        opening_balance = st.number_input("Enter Opening balance", min_value=0, value=0, step=1)
+        if st.button("Update Balance"):
+            user_balance=credit_sum-debit_sum+opening_balance
 
     # Initialize session state for confirmation popup
     if "confirm" not in st.session_state:
@@ -212,7 +222,7 @@ if st.session_state["connected"]:
     def confirm_submission():
         st.session_state.confirm = True
 
-    # Sidebar elements
+    # Sidebar elements to delete data
     with st.sidebar:
 
         # Submit button inside sidebar
@@ -381,6 +391,9 @@ if st.session_state["connected"]:
 
                     display_data(dummy_summary_data,300)
 
+            # display user_balance
+            if user_balance!=0:
+                st.write(f"User balance : {user_balance}")
 
         except Exception as e:
             print(f"Error in fetching summary data: {e}")
@@ -552,53 +565,53 @@ if st.session_state["connected"]:
             st.write("Please Login as Admin.")
 
 else:
-        auth_url=authenticator.login()
-        if not auth_url:
-            st.error("Authentication URL is not available.")
-        else:
-            css = """
-                <style>
-                    .gcenter {
-                        width: 100%;
-                        display: flex;
-                        margin-top: 10px;
-                        position: absolute;
-                        top: -10vh;
-                        right: 0px;
-                        left:65vw
-                        
-                    }
-                    .google-button {
-                        background-color: #4285F4;
-                        color: white !important;
-                        border-radius: 5px;
-                        padding: 10px 15px;
-                        font-size: 1.5rem;
-                        border: none;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        text-decoration: none !important;
-                        gap: 5px;
-                    }
-                    .google-button img {
-                        width: 1.5rem;
-                        height: 1.5rem;
-                        margin-left: 5px;
-                        border-radius: 50%;
-                    }
-                </style>
-            """
+    auth_url=authenticator.login()
+    if not auth_url:
+        st.error("Authentication URL is not available.")
+    else:
+        css = """
+            <style>
+                .gcenter {
+                    width: 100%;
+                    display: flex;
+                    margin-top: 10px;
+                    position: absolute;
+                    top: -10vh;
+                    right: 0px;
+                    left:65vw
+                    
+                }
+                .google-button {
+                    background-color: #4285F4;
+                    color: white !important;
+                    border-radius: 5px;
+                    padding: 10px 15px;
+                    font-size: 1.5rem;
+                    border: none;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    text-decoration: none !important;
+                    gap: 5px;
+                }
+                .google-button img {
+                    width: 1.5rem;
+                    height: 1.5rem;
+                    margin-left: 5px;
+                    border-radius: 50%;
+                }
+            </style>
+        """
 
-            html = f"""
-                <div class="gcenter">
-                    <a href="{auth_url}" class="google-button" target="_self">
-                        Login with Google
-                        <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp"  alt="Google logo" />
-                    </a>
-                </div>
-            """
+        html = f"""
+            <div class="gcenter">
+                <a href="{auth_url}" class="google-button" target="_self">
+                    Login with Google
+                    <img src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp"  alt="Google logo" />
+                </a>
+            </div>
+        """
 
-            st.markdown(css, unsafe_allow_html=True)
-            st.markdown(html, unsafe_allow_html=True)
-        show_message(page)
+        st.markdown(css, unsafe_allow_html=True)
+        st.markdown(html, unsafe_allow_html=True)
+    show_message(page)

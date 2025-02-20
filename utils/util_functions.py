@@ -187,27 +187,24 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
         # Add a new column 'Category'
         df['Category'] = ""
         
-        if not global_categorization:
-            category_table=user_name if user_name!='professionalbuzz' and user_name!='shirishkumar1949' else "categories"
-
-        else:
+        if global_categorization:
             category_table="categories"
 
-        debit_categorization_df=get_category_df(db_name,category_table+"_debit")
-        credit_categorization_df=get_category_df(db_name,category_table+"_credit")
+            debit_categorization_df=get_category_df(db_name,category_table+"_debit")
+            credit_categorization_df=get_category_df(db_name,category_table+"_credit")
 
-        credit_categorization_dict = dict(zip(credit_categorization_df['keyword'], credit_categorization_df['category']))
-        debit_categorization_dict = dict(zip(debit_categorization_df['keyword'], debit_categorization_df['category']))
-        
-        df['Category'] = df.apply(
-            lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" else "",
-            axis=1
-        )
+            credit_categorization_dict = dict(zip(credit_categorization_df['keyword'], credit_categorization_df['category']))
+            debit_categorization_dict = dict(zip(debit_categorization_df['keyword'], debit_categorization_df['category']))
+            
+            df['Category'] = df.apply(
+                lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" else "",
+                axis=1
+            )
 
-        df['Category'] = df.apply(
-            lambda row: categorize(row['Narration'],debit_categorization_dict) if pd.notna(row['Debit']) and row['Debit'] != "" else row['Category'],
-            axis=1
-        )
+            df['Category'] = df.apply(
+                lambda row: categorize(row['Narration'],debit_categorization_dict) if pd.notna(row['Debit']) and row['Debit'] != "" else row['Category'],
+                axis=1
+            )
 
         df.fillna(0, inplace=True)        
 
