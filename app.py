@@ -17,6 +17,17 @@ from utils import *
 
 load_dotenv()
 
+st.markdown(
+    """
+    <style>
+        /* Hide the three-dot menu */
+        [data-testid="stToolbar"] {visibility: hidden;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
     secret_path = "/etc/secrets/Bank_statement.json",
@@ -629,7 +640,7 @@ else:
                         position: absolute;
                         top: -10vh;
                         right: 0px;
-                        left:80vw
+                        left:65vw
                         
                     }
                     .google-button {
