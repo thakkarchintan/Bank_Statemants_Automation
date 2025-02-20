@@ -597,7 +597,7 @@ def home_page(url):
         <div class="container">
                 <div class="text-section">
                     <h1 class="section-heading">Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
-                    <div class="para">Upload PDF or XLS bank statements from the <a href = "#bank-table">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
+                    <div class="para">Upload PDF or XLS bank statements from the <a href = "#list_of_supported_banks">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
                     <div class="para bold">✅ Track Spending Patterns</div>
                     <div class="para bold">✅ Spot Hidden Charges</div>
                     <div class="para bold">✅ Gain Powerful Insights to Improve Financial Decisions</div>
@@ -648,7 +648,7 @@ def home_page(url):
                 </div>
         <div class="table-section">
         <h1>List of supported banks</h1>
-        <table id="bank-table">
+        <table id="list_of_supported_banks">
             <tr>
                 <th>Name of the Bank</th>
                 <th>XLS or XLSX Supported</th>
@@ -692,7 +692,7 @@ def home_page(url):
             <tr>
                 <td>Kotak Mahindra Bank</td>
                 <td class="work-in-progress">Work in progress</td>
-                <td class="work-in-progress">Work in progress</td>
+                <td class="yes">Yes</td>
             </tr>
             <tr>
                 <td>Punjab National Bank</td>
