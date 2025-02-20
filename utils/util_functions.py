@@ -1076,4 +1076,13 @@ def terms_condition():
 
 def refresh_page():
     st.markdown('<meta http-equiv="refresh" content="0">', unsafe_allow_html=True)
-    
+
+def hide_3_dot_menu():
+    st.markdown(
+        """
+        <style>
+            [data-testid="stToolbar"] {visibility: hidden;}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )

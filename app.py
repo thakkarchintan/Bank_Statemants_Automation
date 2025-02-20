@@ -17,16 +17,7 @@ from utils import *
 
 load_dotenv()
 
-st.markdown(
-    """
-    <style>
-        /* Hide the three-dot menu */
-        [data-testid="stToolbar"] {visibility: hidden;}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
+hide_3_dot_menu()
 
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
