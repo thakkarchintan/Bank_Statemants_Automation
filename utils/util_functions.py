@@ -10,6 +10,7 @@ from io import BytesIO
 import os
 import base64
 import streamlit.components.v1 as components
+from database import *
 
 
 # Function to categorize each row based on narration content
@@ -197,7 +198,7 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
 
         credit_categorization_dict = dict(zip(credit_categorization_df['keyword'], credit_categorization_df['category']))
         debit_categorization_dict = dict(zip(debit_categorization_df['keyword'], debit_categorization_df['category']))
-        print(df.dtypes)
+        
         df['Category'] = df.apply(
             lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" else "",
             axis=1
@@ -216,11 +217,14 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
         print(f"Error cleaning Excel file: {e}")
     return pd.DataFrame()
    
-def display_data(df,Height):
+def display_data(df,Height,db_name="",user_name="",category_present=False):
     # Configure the ag-Grid options without pagination
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_side_bar()  # Add a sidebar
-    
+    if category_present:
+        category_list=["Books", "Cash Withdrawal", "Credit Card Payments", "Education", "EMI Payments", "Food & Beverage", "Health & Fitness", "Healthcare", "Investments & Trading", "Online Shopping", "Rent & Housing", "Subscriptions & Entertainment", "TDS & Tax", "Technology", "Transport & Fuel", "Travel", "Utilities"]
+        gb.configure_column("Category", editable=True, cellEditor="agSelectCellEditor", cellEditorParams={"values": category_list})
+
     # Automatically configure columns to fit content dynamically
     for column in df.columns:
         gb.configure_column(column, minWidth=100,wrapText=True)
@@ -230,7 +234,18 @@ def display_data(df,Height):
     gridOptions = gb.build()
 
     # Display the grid
-    AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height)  
+    grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height) 
+
+    if category_present:
+        if st.button("Save Changes"):
+            # Update session state when selection changes
+            if grid_response["data"] is not None:
+                updated_df = pd.DataFrame(grid_response["data"])
+                print(updated_df)
+                updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
+                delete_data(db_name,user_name,"1=1")
+                add_data(updated_df,False,db_name,user_name)
+                st.toast(":green[Data saved successfully.]")
 
 def show_message(url,page):
     if page == "refund_policy":
@@ -1086,3 +1101,6 @@ def terms_condition():
     st.markdown(css, unsafe_allow_html=True)
     st.markdown(html, unsafe_allow_html=True)
 
+def refresh_page():
+    st.markdown('<meta http-equiv="refresh" content="0">', unsafe_allow_html=True)
+    
