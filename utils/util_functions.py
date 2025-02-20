@@ -499,7 +499,7 @@ def home_page():
             .bold-text{
                 font-weight: bold;
             }
-            #bank-table {
+            #list_of_supported_banks {
             max-width: 60%;
             border-collapse: collapse; /* Ensures table borders collapse together */
         }
@@ -508,7 +508,7 @@ def home_page():
             padding-left:3px
         }
 
-        #bank-table th, #bank-table td {
+        #list_of_supported_banks th, #list_of_supported_banks td {
             border: 1px solid #ddd;
             padding: 12px 15px;
             text-align: left;
@@ -516,14 +516,14 @@ def home_page():
         }
 
         /* Left-align the first column */
-        #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
+        #list_of_supported_banks th:nth-child(1), #list_of_supported_banks td:nth-child(1) {
             text-align: left;
             width: 33%; /* First column takes 33% of width */
         }
 
         /* Center-align the second and third columns */
-        #bank-table th:nth-child(2), #bank-table th:nth-child(3),
-        #bank-table td:nth-child(2), #bank-table td:nth-child(3) {
+        #list_of_supported_banks th:nth-child(2), #list_of_supported_banks th:nth-child(3),
+        #list_of_supported_banks td:nth-child(2), #list_of_supported_banks td:nth-child(3) {
             text-align: center; /* Center-align text in columns 2 and 3 */
             width: 33%; /* Distribute equal width for second and third columns */
         }
@@ -541,28 +541,32 @@ def home_page():
             color: white;
             text-align: center;
         }
+        
+        .guidelines{
+            text-align:center;
+        }
 
         /* Add a subtle hover effect for rows */
-        #bank-table tr:hover {
+        #list_of_supported_banks tr:hover {
             background-color: #f1f1f1;
         }
 
         /* Responsive behavior */
         @media (max-width: 600px) {
-            #bank-table {
+            #list_of_supported_banks {
                 font-size: 12px;
             }
 
-            #bank-table th, #bank-table td {
+            #list_of_supported_banks th, #list_of_supported_banks td {
                 padding: 8px;
             }
 
-            #bank-table th:nth-child(1), #bank-table td:nth-child(1) {
+            #list_of_supported_banks th:nth-child(1), #list_of_supported_banks td:nth-child(1) {
                 width: 100%; /* Make the first column take full width on smaller screens */
             }
 
-            #bank-table th:nth-child(2), #bank-table td:nth-child(2),
-            #bank-table th:nth-child(3), #bank-table td:nth-child(3) {
+            #list_of_supported_banks th:nth-child(2), #list_of_supported_banks td:nth-child(2),
+            #list_of_supported_banks th:nth-child(3), #list_of_supported_banks td:nth-child(3) {
                 width: 50%; /* Reduce the second and third columns on smaller screens */
             }
         }
@@ -673,7 +677,7 @@ def home_page():
                     </div>
                     <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
                 </div>
-                <div class="para bold">
+                <div class="para bold guidelines">
                     Learn more about our 
                     <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> , 
                     <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
