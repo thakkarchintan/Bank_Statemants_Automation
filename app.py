@@ -17,7 +17,7 @@ from utils import *
 
 load_dotenv()
 
-hide_3_dot_menu()
+# hide_3_dot_menu()
 
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
@@ -110,85 +110,91 @@ if st.session_state["connected"]:
             if uploaded_files:
                 try:
                     n=len(uploaded_files)
+                    df=pd.DataFrame()
                     for i in range(n):
-                        # get data from db
-                        existing_df=get_transaction_data(db_name,user_name)
+                        tdf=format_uploaded_file(uploaded_files[i],bank,
+                        db_name,user_name,global_categorization)
+                        df=pd.concat([df,tdf])
 
-                        df=format_uploaded_file(uploaded_files[i],bank,db_name,user_name,global_categorization)
-                        df = df[df['Narration'] != 'OPENINGBALANCE...']
-                        # Default name if ac_name is not entered
-                        if not ac_name:
-                            ac_name=name
-                        df['Name'] = ac_name
+                    # get data from db
+                    existing_df=get_transaction_data(db_name,user_name)
 
-                        From=min(pd.to_datetime(df['Date'],errors='coerce'))
-                        Till=max(pd.to_datetime(df['Date'],errors='coerce'))
+                    df = df[df['Narration'] != 'OPENINGBALANCE...']
+                    # Default name if ac_name is not entered
+                    if not ac_name:
+                        ac_name=name
+                    df['Name'] = ac_name
 
-                        # Add a new columna 'Bank' and 'Name'
-                        df['Bank'] = bank
+                    From=min(pd.to_datetime(df['Date'],errors='coerce'))
+                    Till=max(pd.to_datetime(df['Date'],errors='coerce'))
 
-                        df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
+                    # Add a new columna 'Bank' and 'Name'
+                    df['Bank'] = bank
 
-                        # Ensure Date column is in the same format
-                        df['Date'] = pd.to_datetime(df['Date'])
-                        existing_df['Date'] = pd.to_datetime(existing_df['Date'])
+                    df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
 
-                        # Ensure numeric columns have consistent types
-                        df['Debit'] = df['Debit'].astype(float)
-                        df['Credit'] = df['Credit'].astype(float)
-                        existing_df['Debit'] = existing_df['Debit'].astype(float)
-                        existing_df['Credit'] = existing_df['Credit'].astype(float)
+                    # Ensure Date column is in the same format
+                    df['Date'] = pd.to_datetime(df['Date'])
+                    existing_df['Date'] = pd.to_datetime(existing_df['Date'])
 
-                        # Strip whitespace and standardize text columns (optional)
-                        text_cols = ['Name', 'Bank', 'Narration', 'Category']
-                        for col in text_cols:
-                            df[col] = df[col].str.strip()
-                            existing_df[col] = existing_df[col].str.strip()
+                    # Ensure numeric columns have consistent types
+                    df['Debit'] = df['Debit'].astype(float)
+                    df['Credit'] = df['Credit'].astype(float)
+                    existing_df['Debit'] = existing_df['Debit'].astype(float)
+                    existing_df['Credit'] = existing_df['Credit'].astype(float)
 
-                        if has_common_rows(df,existing_df):
-                            st.warning("These transactions already exists. What would you like to do?")
-                            c1, c2 = st.columns(2)
+                    # Strip whitespace and standardize text columns (optional)
+                    text_cols = ['Name', 'Bank', 'Narration', 'Category']
+                    for col in text_cols:
+                        df[col] = df[col].str.strip()
+                        existing_df[col] = existing_df[col].str.strip()
 
-                            with c1:
-                                # Remove exact matches
-                                df_filtered=df.copy()
-                                df_filtered = df_filtered.merge(existing_df, on=df_filtered.columns.tolist(), how='left', indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
+                    common_data = has_common_rows(df,existing_df)
+                    if not common_data.empty:
+                        st.warning("These transactions already exists. What would you like to do?")
+                        c1, c2, c3 = st.columns(3)
+                        with c1:
+                            overwrite = st.button("Overwrite")
+                        with c2:
+                            keep = st.button("Keep Both")
+                        with c3:
+                            cancel = st.button("Cancel")
 
-                                if st.button("Overwrite"):
-                                    if not df_filtered.empty:    
-                                        no_of_transactions=df_filtered.shape[0]
-                                        update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
+                        display_data(common_data,400)
 
-                                        add_data(df_filtered,override,db_name,user_name)
-                                    st.toast(":green[Data updated successfully]")
-                                    if i==n-1:
-                                        st.session_state.ok = False
-                                        refresh_page()
+                        if overwrite:
+                            # Remove exact matches
+                            df_filtered=df.copy()
+                            df_filtered = df_filtered.merge(existing_df, on=df_filtered.columns.tolist(), how='left', indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
+                            if not df_filtered.empty:    
+                                no_of_transactions=df_filtered.shape[0]
+                                update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
 
-                            with c2:
-                                if st.button("Keep Both"):
-                                    if not df.empty:
-                                        no_of_transactions=df.shape[0]
-                                        update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
+                                add_data(df_filtered,override,db_name,user_name)
+                            st.toast(":green[Data updated successfully]")   
+                            refresh_page()                                
 
-                                        add_data(df,override,db_name,user_name)
-                                    st.toast(":green[Data updated successfully]")
-                                    if i==n-1:
-                                        st.session_state.ok = False
-                                        refresh_page()
-    
-                        else:
-                            if not df.empty:    
+                        elif keep:
+                            if not df.empty:
                                 no_of_transactions=df.shape[0]
                                 update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
 
                                 add_data(df,override,db_name,user_name)
                             st.toast(":green[Data updated successfully]")
-                            if i==n-1:
-                                st.session_state.ok = False
-                                refresh_page()
-                            
+                            refresh_page()
 
+                        elif cancel:
+                            refresh_page()
+
+                    else:
+                        if not df.empty:    
+                            no_of_transactions=df.shape[0]
+                            update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
+
+                            add_data(df,override,db_name,user_name)
+                        st.toast(":green[Data updated successfully]")
+                        refresh_page()
+                            
                 except Exception as e:
                     print(f"Error in adding data: {e}")
                     st.toast(":red[The uploaded bank statement does not match the selected bank.]")
@@ -202,18 +208,6 @@ if st.session_state["connected"]:
 
     # Convert the Date column to datetime
     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
-
-    # Calculate sums
-    debit_sum = db_df['Debit'].sum()
-    credit_sum = db_df['Credit'].sum()
-
-    user_balance=0
-
-    # Sidebar elements to add data
-    with st.sidebar:            
-        opening_balance = st.number_input("Enter Opening balance", min_value=0, value=0, step=1)
-        if st.button("Update Balance"):
-            user_balance=credit_sum-debit_sum+opening_balance
 
     # Initialize session state for confirmation popup
     if "confirm" not in st.session_state:
@@ -390,10 +384,6 @@ if st.session_state["connected"]:
                     dummy_summary_data['End_Date'] = pd.to_datetime(dummy_summary_data['End_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
 
                     display_data(dummy_summary_data,300)
-
-            # display user_balance
-            if user_balance!=0:
-                st.write(f"User balance : {user_balance}")
 
         except Exception as e:
             print(f"Error in fetching summary data: {e}")
@@ -615,3 +605,4 @@ else:
         st.markdown(css, unsafe_allow_html=True)
         st.markdown(html, unsafe_allow_html=True)
     show_message(page)
+    

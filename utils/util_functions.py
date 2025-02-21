@@ -435,10 +435,9 @@ def show_agreement():
     st.markdown(css_string, unsafe_allow_html=True)
     st.markdown(html_string, unsafe_allow_html=True)
 
-def has_common_rows(df1, df2):
-    common = pd.merge(df1, df2, how='inner')
-    return not common.empty
-
+def has_common_rows(df1, df2, col=['Name','Bank','Date','Narration','Debit','Credit']):
+    return pd.merge(df1, df2, on=col, how='inner')
+     
 def home_page():
     def get_base64_image(image_path):
         with open(image_path, "rb") as f:
