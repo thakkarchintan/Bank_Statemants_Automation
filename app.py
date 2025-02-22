@@ -19,6 +19,7 @@ load_dotenv()
 
 # hide_3_dot_menu()
 
+
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
     secret_path = "/etc/secrets/Bank_statement.json",
@@ -266,7 +267,11 @@ if st.session_state["connected"]:
 
     
     if st.sidebar.button("Log out",use_container_width=True):
-        authenticator.logout()
+        user_info=st.session_state['user_info']
+        user_email = str(user_info.get('email'))
+        user_name = user_email[:-10]
+        user_name = user_name.replace('.','__')
+        authenticator.logout( )
 
     # Create tabs
     tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback","Razorpay","Categories"])
@@ -582,10 +587,10 @@ else:
                         width: 100%;
                         display: flex;
                         position:fixed;
-                        top:10vh;
-                        left:75vw;
+                        top:5vh;
+                        left:85vw;
                         backfround-color:white;
-                        z-index: 1000;
+                        z-index: 100000000000;
                     }
                     .google-button {
                         background-color: #4285F4;
