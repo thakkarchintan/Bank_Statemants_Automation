@@ -459,6 +459,9 @@ def home_page():
             .text-section {
                 max-width: 90%;
             }
+            h1{
+                font-size:1.6rem;
+            }
             .para{
                 font-size: 1.5rem;
                 margin-bottom:10px;
@@ -679,7 +682,7 @@ def home_page():
                         <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
                     </div>
                 <div>
-                        <p><span class="section-subheading">📂 You Upload - The App processes - The app only processes the data your provide - nothing more, nothing less.</p>
+                        <p><span class="section-subheading">📂 You Upload - The App processes - </span>The app only processes the data your provide - nothing more, nothing less.</p>
                     </div>
                 <div>
                         <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever.</p>
