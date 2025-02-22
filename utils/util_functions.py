@@ -457,7 +457,7 @@ def home_page():
                 gap:2rem;
             }
             .text-section {
-                max-width: 90%;
+                max-width: 70%;
             }
             h1{
                 font-size:1.6rem;
