@@ -60,7 +60,7 @@ class Authenticator:
             <style>
                 .custom-toast {{
                     position: fixed;
-                    top: 5vh; left: 20px;
+                    top: 10vh; left: 20px;
                     background-color: white;
                     color: green;
                     padding: 15px 25px;
