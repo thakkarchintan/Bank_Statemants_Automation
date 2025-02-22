@@ -587,7 +587,7 @@ else:
                         width: 100%;
                         display: flex;
                         position:fixed;
-                        top:9vh;
+                        top:9.6vh;
                         left:75vw;
                         backfround-color:white;
                         z-index: 1000;
