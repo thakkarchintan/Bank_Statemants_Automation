@@ -963,10 +963,6 @@ def privacy_policy():
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
-    <div class="footer">
-        <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
-        <p><strong>Last Updated:</strong> 17-Feb-25</p>
-    </div>
 </body>"""
  st.markdown(css, unsafe_allow_html=True)
  st.markdown(html, unsafe_allow_html=True)
