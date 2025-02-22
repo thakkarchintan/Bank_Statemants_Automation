@@ -677,7 +677,7 @@ def home_page():
             </tr>
         </table>
         <div class = "policy">
-                    <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
+                    <h1 class="section-heading">Commitment to Privacy & Security</h1>
                     <div>
                         <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
                     </div>
@@ -693,7 +693,6 @@ def home_page():
                     <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
                 </div>
                 <div class="para bold guidelines footer">
-                    Learn more about our 
                     <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> , 
                     <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
                     and <a href="https://bankstatements.onrender.com/?page=terms_condition" target="_self">Terms & Conditions</a>
