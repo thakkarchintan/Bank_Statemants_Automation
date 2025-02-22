@@ -18,6 +18,7 @@ from utils import *
 load_dotenv()
 
 # hide_3_dot_menu()
+
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
     secret_path = "/etc/secrets/Bank_statement.json",
@@ -238,6 +239,8 @@ if st.session_state["connected"]:
     with st.sidebar:
 
         # Submit button inside sidebar
+        for _ in range(20):  
+            st.markdown("<br>", unsafe_allow_html=True)
         st.button("Delete my data", on_click=confirm_submission)
 
         # Show confirmation inside sidebar
@@ -584,8 +587,8 @@ else:
                         width: 100%;
                         display: flex;
                         position:fixed;
-                        top:7vh;
-                        left:85vw;
+                        top:9vh;
+                        left:75vw;
                         backfround-color:white;
                         z-index: 1000;
                     }
