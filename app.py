@@ -121,7 +121,7 @@ if st.session_state["connected"]:
     # Sidebar elements to add data
     with st.sidebar:
         # Submit button inside sidebar
-        st.button("Add data", on_click=ok_submission)
+        st.button("Add data", on_click=ok_submission  ,use_container_width=True)
 
         # Show confirmation inside sidebar
         if st.session_state.ok:
@@ -237,12 +237,7 @@ if st.session_state["connected"]:
 
     # Sidebar elements to delete data
     with st.sidebar:
-
-        # Submit button inside sidebar
-        for _ in range(20):  
-            st.markdown("<br>", unsafe_allow_html=True)
-        st.button("Delete my data", on_click=confirm_submission)
-
+        st.button("Delete my data", on_click=confirm_submission,use_container_width=True)
         # Show confirmation inside sidebar
         if st.session_state.confirm:
             if not db_df.empty:
@@ -270,7 +265,7 @@ if st.session_state["connected"]:
                 st.toast(":red[There are no transactions in your account. No data to delete!]")
 
     
-    if st.sidebar.button("Log out"):
+    if st.sidebar.button("Log out",use_container_width=True):
         authenticator.logout()
 
     # Create tabs

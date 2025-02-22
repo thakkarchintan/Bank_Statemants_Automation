@@ -594,7 +594,7 @@ def home_page():
     html = f"""
         <div class="container">
                 <div class="text-section">
-                    <h1 class="section-heading">Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
+                    <h1>Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
                     <div class="para">Upload PDF or XLS bank statements from the <a href = "#list_of_supported_banks">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
                     <div class="para bold">✅ Track Spending Patterns</div>
                     <div class="para bold">✅ Gain Intelligent Insights</div>
