@@ -231,7 +231,7 @@ def display_data(df,Height,db_name="",user_name="",category_present=False):
     gridOptions = gb.build()
 
     # Display the grid
-    grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height) 
+    grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
 
     if category_present:
         if st.button("Save Changes"):
@@ -588,6 +588,14 @@ def home_page():
                 width: 50%; /* Reduce the second and third columns on smaller screens */
             }
         }
+        @media (max-width: 768px) {
+            .text-section {
+                max-width:100%
+            }
+            .profile-section{
+                max-width:100%
+            }
+        } 
         </style>
         """
         

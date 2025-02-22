@@ -19,12 +19,12 @@ load_dotenv()
 
 # hide_3_dot_menu()
 
-
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
     secret_path = "/etc/secrets/Bank_statement.json",
     redirect_uri="https://bankstatements.onrender.com",
 )
+
 
 st.markdown(
     """
@@ -588,7 +588,7 @@ else:
                         display: flex;
                         position:fixed;
                         top:5vh;
-                        left:78vw;
+                        left:85vw;
                         backfround-color:white;
                         z-index: 100000000000;
                     }
@@ -610,6 +610,30 @@ else:
                         height: 1.5rem;
                         margin-left: 5px;
                         border-radius: 50%;
+                    }
+                    /* Media query for screens 768px and smaller */
+                    @media (max-width: 768px) {
+                        .gcenter {
+                            position: fixed;
+                            top: 5vh;
+                            left: 50%;
+                            transform: translateX(-50%); /* Moves it to center */
+                            width: max-content; /* Adjust width based on content */
+                            display: flex;
+                            justify-content: center; /* Ensures content is centered */
+                            align-items: center; /* Vertically aligns the button */
+                        }
+                        .google-button {
+                            padding: 8px 12px;
+                            font-size: 1.2rem;
+                        }
+                    }
+                                        /* Media query for mobile-sized screens */
+                    @media (max-width: 480px) {
+                        .google-button {
+                            padding: 6px 10px;
+                            font-size: 1rem;
+                        }
                     }
                 </style>
             """
