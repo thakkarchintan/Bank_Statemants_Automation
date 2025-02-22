@@ -449,8 +449,9 @@ def home_page():
     css = """
         <style>
             .container {
-                width:100vw;
-                height:100%;
+                overflow-x:hidden;
+                max-width:100vw;
+                max-height:100%;
                 display:flex;
                 flex-direction:column;
                 gap:2rem;
@@ -464,9 +465,6 @@ def home_page():
             }
             .bold {
                 font-weight:bold;
-            }
-            .section-heading{
-                font-size:1.5rem;
             }
             .section-subheading{
                 font-weight:bold;
@@ -553,8 +551,14 @@ def home_page():
             text-align: center;
         }
         
-        .guidelines{
+        .footer{
+            width:100%;
+            height:fit-content;
+            text-align: center;
+            font-size: 1.3rem;
+            color: #777;
             text-align:center;
+            margin-top:3rem;
         }
 
         /* Add a subtle hover effect for rows */
@@ -595,9 +599,6 @@ def home_page():
                 <div class = "profile">
                 <h1>Why I Created This App</h1>
                     <div class = "profile-section">
-                    <div class = "profile-image">
-                        <img src="data:image/jpeg;base64,{image_base64}" width="200">
-                    </div>
                     <div class = "profile-text">
                         <p>For <span class ="bold-text">3+ years</span>, I manually tracked my bank transactions—it was frustrating, inefficient, and time-consuming.
                         So, I built a tool to <span class ="bold-text">automate the entire process.</span></p>
@@ -675,20 +676,20 @@ def home_page():
         <div class = "policy">
                     <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
                     <div>
-                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>Your data is fully encrypted using industry-leading security.</p>
+                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
                     </div>
                 <div>
-                        <p><span class="section-subheading">📂 You Upload, We Process - </span>We only process the data you provide—nothing more, nothing less.</p>
+                        <p><span class="section-subheading">📂 You Upload - The App processes - The app only processes the data your provide - nothing more, nothing less.</p>
                     </div>
                 <div>
-                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever</p>
+                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever.</p>
                     </div>
                     <div>
                         <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
                     </div>
                     <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
                 </div>
-                <div class="para bold guidelines">
+                <div class="para bold guidelines footer">
                     Learn more about our 
                     <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> , 
                     <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>

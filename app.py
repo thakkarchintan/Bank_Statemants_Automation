@@ -18,12 +18,30 @@ from utils import *
 load_dotenv()
 
 # hide_3_dot_menu()
-
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
     secret_path = "/etc/secrets/Bank_statement.json",
     redirect_uri="https://bankstatements.onrender.com",
 )
+
+st.markdown(
+    """
+    <style>
+        /* Hide the three-dot menu */
+        [data-testid="stToolbar"] {visibility: hidden;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown("""
+    <style>
+        /* Remove top and bottom padding */
+        .block-container {
+            padding-bottom: 10px !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 query_params = st.query_params
 page = query_params.get("page", ["home"]) 
@@ -560,38 +578,38 @@ else:
         st.error("Authentication URL is not available.")
     else:
         css = """
-            <style>
-                .gcenter {
-                    width: 100%;
-                    display: flex;
-                    margin-top: 10px;
-                    position: absolute;
-                    top: -10vh;
-                    right: 0px;
-                    left:65vw
-                    
-                }
-                .google-button {
-                    background-color: #4285F4;
-                    color: white !important;
-                    border-radius: 5px;
-                    padding: 10px 15px;
-                    font-size: 1.5rem;
-                    border: none;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    text-decoration: none !important;
-                    gap: 5px;
-                }
-                .google-button img {
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    margin-left: 5px;
-                    border-radius: 50%;
-                }
-            </style>
-        """
+                <style>
+                    .gcenter {
+                        overflow-x:hidden;
+                        width: 100%;
+                        display: flex;
+                        position:fixed;
+                        top:7vh;
+                        left:85vw;
+                        backfround-color:white;
+                        z-index: 1000;
+                    }
+                    .google-button {
+                        background-color: #4285F4;
+                        color: white !important;
+                        border-radius: 5px;
+                        padding: 10px 15px;
+                        font-size: 1.5rem;
+                        border: none;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        text-decoration: none !important;
+                        gap: 5px;
+                    }
+                    .google-button img {
+                        width: 1.5rem;
+                        height: 1.5rem;
+                        margin-left: 5px;
+                        border-radius: 50%;
+                    }
+                </style>
+            """
 
         html = f"""
             <div class="gcenter">
