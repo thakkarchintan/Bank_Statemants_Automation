@@ -438,7 +438,7 @@ def show_agreement():
 def has_common_rows(df1, df2, col=['Name','Bank','Date','Narration','Debit','Credit']):
     return pd.merge(df1, df2, on=col, how='inner')
      
-def home_page():
+def   home_page():
     def get_base64_image(image_path):
         with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode()
@@ -448,6 +448,9 @@ def home_page():
      
     css = """
         <style>
+            *{
+                font-family:sans-serif;
+            }
             .container {
                 overflow-x:hidden;
                 max-width:100vw;
@@ -511,6 +514,7 @@ def home_page():
             .bold-text{
                 font-weight: bold;
             }
+            
             #list_of_supported_banks {
             max-width: 60%;
             border-collapse: collapse; /* Ensures table borders collapse together */
@@ -571,29 +575,22 @@ def home_page():
 
         /* Responsive behavior */
         @media (max-width: 600px) {
+
             #list_of_supported_banks {
                 font-size: 12px;
+                max-width:100%;
             }
 
             #list_of_supported_banks th, #list_of_supported_banks td {
                 padding: 8px;
-            }
-
-            #list_of_supported_banks th:nth-child(1), #list_of_supported_banks td:nth-child(1) {
-                width: 100%; /* Make the first column take full width on smaller screens */
-            }
-
-            #list_of_supported_banks th:nth-child(2), #list_of_supported_banks td:nth-child(2),
-            #list_of_supported_banks th:nth-child(3), #list_of_supported_banks td:nth-child(3) {
-                width: 50%; /* Reduce the second and third columns on smaller screens */
             }
         }
         @media (max-width: 768px) {
             .text-section {
                 max-width:100%
             }
-            .profile-section{
-                max-width:100%
+            .profile-section {
+                width:100%
             }
         } 
         </style>
@@ -716,6 +713,9 @@ def home_page():
 def refund_policy():
     css = """
     <style>
+        *{
+            font-family:sans-serif;
+        }
         .container {
             overflow-x: hidden;
             min-width: 100vw;
@@ -840,6 +840,9 @@ def privacy_policy():
 # CSS for styling
  css = """
     <style>
+        *{
+            font-family:sans-serif;
+        }
         .container {
             overflow-x: hidden;
             min-width: 100vw;
@@ -977,6 +980,9 @@ def privacy_policy():
 def terms_condition():
     css = """
     <style>
+        *{
+            font-family:sans-serif;
+        }
         .container {
             overflow-x: hidden;
             min-width: 100vw;
