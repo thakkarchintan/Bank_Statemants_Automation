@@ -87,7 +87,7 @@ if st.session_state["connected"]:
     with st.sidebar:
         global_categorization = st.toggle("Global Categorization")
         if global_categorization:
-            if st.button("Apply Global Categorization"):
+            if st.button("Apply Global Categorization",use_container_width=True):
 
                 category_table="categories"
 
