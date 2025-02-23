@@ -589,7 +589,7 @@ else:
                         display: flex;
                         position:fixed;
                         top:5vh;
-                        left:85vw;
+                        left:78vw;
                         backfround-color:white;
                         z-index: 100000000000;
                     }
