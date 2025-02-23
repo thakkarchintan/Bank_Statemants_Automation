@@ -25,7 +25,6 @@ authenticator = Authenticator(
     redirect_uri="https://bankstatements.onrender.com",
 )
 
-
 st.markdown(
     """
     <style>
@@ -62,12 +61,14 @@ if st.session_state["connected"]:
     user_name = user_name.replace('.','__')
     summ_table = user_name+'_summary'
     name=user_info.get('name')
-
+    first_name = get_name(db_name,'users',user_name)
     if name:
         user_data = (user_name,user_info.get('name'),user_email)
         add_user(db_name,'users',user_data)
     else:
         name=get_name(db_name,'users',user_name)
+        
+    st.sidebar.write(f"Logged in as {first_name}")
         
     # sorting list of banks
     bank_list.sort()
@@ -421,7 +422,7 @@ if st.session_state["connected"]:
         SMTP_USER = os.getenv("SMTP_USER")  # Replace with your Gmail
         SMTP_PASSWORD = os.getenv("email_pass")  # Use an App Password, not your main password
         feedback_table='Feedback'
-        st.subheader("User Feedback Form")
+        st.subheader("We value your thoughts! Feel free to share any feedback, ideas, or suggestions to help us improve. Your insights make a difference!")
 
         # Text area for feedback
         feedback = st.text_area("Your Feedback:", placeholder="Write your feedback here...")
@@ -588,7 +589,7 @@ else:
                         display: flex;
                         position:fixed;
                         top:5vh;
-                        left:78vw;
+                        left:85vw;
                         backfround-color:white;
                         z-index: 100000000000;
                     }
