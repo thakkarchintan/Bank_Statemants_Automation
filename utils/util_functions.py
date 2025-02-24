@@ -828,7 +828,7 @@ def refund_policy():
             </div>
         </div>
         <div class="footer">
-            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
@@ -969,7 +969,7 @@ def privacy_policy():
         </div>
         </div>
         <div class="footer">
-            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
@@ -1074,7 +1074,7 @@ def terms_condition():
             </div>
         </div>
         <div class="footer">
-            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
