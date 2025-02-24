@@ -463,18 +463,16 @@ def home_page():
             }
            
         h1 {
-                all: unset;
-                font-size:1.5rem;
-                font-style:bold;
-                margin:20px 0;
-                font-weight:bold;
+                font-size:1.5rem;!important
+                font-style:bold;!important
+                margin:20px 0;!important
+                font-weight:bold;!important
             }
         h2 {
-                all: unset;
-                font-size:1.2rem;
-                font-style:bold;
-                margin:20px 0;
-                font-weight:bold;
+                font-size:1.2rem;!important
+                font-style:bold;!important
+                margin:20px 0;!important
+                font-weight:bold;!important
             }
             .para{
                 font-size: 1rem;
@@ -739,21 +737,20 @@ def refund_policy():
             font-size: 1rem;
         } 
         
-         
+          
         h1 {
-                all: unset;
-                font-size:1.5rem;
-                font-style:bold;
-                margin:20px 0;
-                font-weight:bold;
+                font-size:1.5rem;!important
+                font-style:bold;!important
+                margin:20px 0;!important
+                font-weight:bold;!important
             }
         h2 {
-                all: unset;
-                font-size:1.2rem;
-                font-style:bold;
-                margin:20px 0;
-                font-weight:bold;
+                font-size:1.2rem;!important
+                font-style:bold;!important
+                margin:20px 0;!important
+                font-weight:bold;!important
             }
+            
         .center {
             display: flex;
             flex-direction: column;
@@ -878,19 +875,18 @@ def privacy_policy():
             font-size: 1rem;
         } 
         
+              
         h1 {
-                all: unset;
-                font-size:1.5rem;
-                font-style:bold;
-                margin:20px 0;
-                font-weight:bold;
+                font-size:1.5rem;!important
+                font-style:bold;!important
+                margin:20px 0;!important
+                font-weight:bold;!important
             }
         h2 {
-                all: unset;
-                font-size:1.2rem;
-                font-style:bold;
-                margin:20px 0;
-                font-weight:bold;
+                font-size:1.2rem;!important
+                font-style:bold;!important
+                margin:20px 0;!important
+                font-weight:bold;!important
             }
         .center {
             display: flex;
@@ -1028,20 +1024,18 @@ def terms_condition():
         .policy p , .policy li {
             font-size: 1rem;
         } 
-        
+          
         h1 {
-                all: unset;
-                font-size:1.5rem;
-                font-style:bold;
-                margin:20px 0;
-                font-weight:bold;
+                font-size:1.5rem;!important
+                font-style:bold;!important
+                margin:20px 0;!important
+                font-weight:bold;!important
             }
         h2 {
-                all: unset;
-                font-size:1.2rem;
-                font-style:bold;
-                margin:20px 0;
-                font-weight:bold;
+                font-size:1.2rem;!important
+                font-style:bold;!important
+                margin:20px 0;!important
+                font-weight:bold;!important
             }
         .center {
             display: flex;
