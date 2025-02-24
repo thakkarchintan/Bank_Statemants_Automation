@@ -245,7 +245,6 @@ if st.session_state["connected"]:
 
     # Sidebar elements to delete data
     with st.sidebar:
-
         # Submit button inside sidebar
         st.button("Delete my data", on_click=confirm_submission)
 
