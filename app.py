@@ -11,6 +11,19 @@ from dotenv import load_dotenv
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Bank Statements Automation",layout="wide")
 
+st.markdown(
+    """
+    <style>
+        /* Remove default padding and margin */
+        .main .block-container {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 from auth import Authenticator
 from database import *
 from utils import *
@@ -68,7 +81,7 @@ if st.session_state["connected"]:
     else:
         name=get_name(db_name,'users',user_name)
         
-    st.sidebar.write(f"Logged in as {first_name}")
+    st.sidebar.write(f"Logged in - **{first_name}**")
         
     # sorting list of banks
     bank_list.sort()
@@ -140,9 +153,6 @@ if st.session_state["connected"]:
                     # get data from db
                     existing_df=get_transaction_data(db_name,user_name)
 
-                    # print(df)
-                    df = df[['Date','Narration','Debit','Credit','Category']]
-                    # ,'Balance'
                     df = df[df['Narration'] != 'OPENINGBALANCE...']
                     # Default name if ac_name is not entered
                     if not ac_name:
@@ -196,7 +206,6 @@ if st.session_state["connected"]:
 
                                 add_data(df_filtered,override,db_name,user_name)
                             st.toast(":green[Data updated successfully]")   
-                            time.sleep(3)
                             refresh_page()                                
 
                         elif keep:
@@ -206,7 +215,6 @@ if st.session_state["connected"]:
 
                                 add_data(df,override,db_name,user_name)
                             st.toast(":green[Data updated successfully]")
-                            time.sleep(3)
                             refresh_page()
 
                         elif cancel:
@@ -219,7 +227,6 @@ if st.session_state["connected"]:
 
                             add_data(df,override,db_name,user_name)
                         st.toast(":green[Data updated successfully]")
-                        time.sleep(3)
                         refresh_page()
                             
                 except Exception as e:
@@ -245,9 +252,7 @@ if st.session_state["connected"]:
 
     # Sidebar elements to delete data
     with st.sidebar:
-        # Submit button inside sidebar
         st.button("Delete my data", on_click=confirm_submission,use_container_width=True)
-
         # Show confirmation inside sidebar
         if st.session_state.confirm:
             if not db_df.empty:
@@ -280,7 +285,7 @@ if st.session_state["connected"]:
         user_email = str(user_info.get('email'))
         user_name = user_email[:-10]
         user_name = user_name.replace('.','__')
-        authenticator.logout()
+        authenticator.logout( )
 
     # Create tabs
     tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback","Razorpay","Categories"])
@@ -430,7 +435,7 @@ if st.session_state["connected"]:
         SMTP_USER = os.getenv("SMTP_USER")  # Replace with your Gmail
         SMTP_PASSWORD = os.getenv("email_pass")  # Use an App Password, not your main password
         feedback_table='Feedback'
-        st.subheader("We value your thoughts! Feel free to share any feedback, ideas, or suggestions to help us improve. Your insights make a difference!")
+        st.write("**We value your thoughts! Feel free to share any feedback, ideas, or suggestions to help us improve. Your insights make a difference!**")
 
         # Text area for feedback
         feedback = st.text_area("Your Feedback:", placeholder="Write your feedback here...")
