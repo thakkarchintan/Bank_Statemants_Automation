@@ -103,7 +103,7 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
     date_format=banks_date_format[bank]
     table_columns=table_columns_dic[bank]
     table_columns_pdf=table_columns_pdf_dic[bank]
-    new_table_columns = ['Date','Narration','Debit','Credit']
+    new_table_columns = ['Date','Narration','Debit','Credit','Balance']
     isCrDr=bank_status_dict[bank]
     df = pd.DataFrame()
     try:
@@ -142,6 +142,7 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
         
         for i in range(2):
             df = df.rename(columns={table_columns[i]:new_table_columns[i]})
+        df = df.rename(columns={table_columns[4]:new_table_columns[4]})
 
         # print(df.dtypes)
 
@@ -181,6 +182,8 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
         
         df['Debit'] = df['Debit'].astype(str).str.replace(r'[^0-9.]', '', regex=True)
         df['Credit'] = df['Credit'].astype(str).str.replace(r'[^0-9.]', '', regex=True)
+        df['Balance'] = df['Balance'].astype(str).str.replace(r'[^0-9.]', '', regex=True)
+        df['Balance'] = pd.to_numeric(df['Balance'], errors='coerce')
         df['Debit'] = pd.to_numeric(df['Debit'], errors='coerce')
         df['Credit'] = pd.to_numeric(df['Credit'], errors='coerce')
         # print(df)

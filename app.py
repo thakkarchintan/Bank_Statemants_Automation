@@ -140,6 +140,9 @@ if st.session_state["connected"]:
                     # get data from db
                     existing_df=get_transaction_data(db_name,user_name)
 
+                    # print(df)
+                    df = df[['Date','Narration','Debit','Credit','Category']]
+                    # ,'Balance'
                     df = df[df['Narration'] != 'OPENINGBALANCE...']
                     # Default name if ac_name is not entered
                     if not ac_name:
@@ -193,6 +196,7 @@ if st.session_state["connected"]:
 
                                 add_data(df_filtered,override,db_name,user_name)
                             st.toast(":green[Data updated successfully]")   
+                            time.sleep(3)
                             refresh_page()                                
 
                         elif keep:
@@ -202,6 +206,7 @@ if st.session_state["connected"]:
 
                                 add_data(df,override,db_name,user_name)
                             st.toast(":green[Data updated successfully]")
+                            time.sleep(3)
                             refresh_page()
 
                         elif cancel:
@@ -214,6 +219,7 @@ if st.session_state["connected"]:
 
                             add_data(df,override,db_name,user_name)
                         st.toast(":green[Data updated successfully]")
+                        time.sleep(3)
                         refresh_page()
                             
                 except Exception as e:
@@ -239,7 +245,9 @@ if st.session_state["connected"]:
 
     # Sidebar elements to delete data
     with st.sidebar:
+        # Submit button inside sidebar
         st.button("Delete my data", on_click=confirm_submission,use_container_width=True)
+
         # Show confirmation inside sidebar
         if st.session_state.confirm:
             if not db_df.empty:
@@ -272,7 +280,7 @@ if st.session_state["connected"]:
         user_email = str(user_info.get('email'))
         user_name = user_email[:-10]
         user_name = user_name.replace('.','__')
-        authenticator.logout( )
+        authenticator.logout()
 
     # Create tabs
     tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback","Razorpay","Categories"])

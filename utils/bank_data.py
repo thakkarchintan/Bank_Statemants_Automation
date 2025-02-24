@@ -59,17 +59,17 @@ bank_list = [
 ]
 
 table_columns_dic = {
-    'HDFC Bank': ['Date', 'Narration', 'Withdrawal Amt.', 'Deposit Amt.'],
-    'State Bank of India': ['Date', 'Details', 'Debit', 'Credit'],
-    'ICICI Bank': ['Transaction Date','Transaction Remarks','Withdrawal Amount (INR )','Deposit Amount (INR )'],
-    'Bank of Baroda': ['TRAN DATE', 'NARRATION', 'WITHDRAWAL(DR)', 'DEPOSIT(CR)'],
-    'Bank of India': ['Date','Remarks','Debit','Credit'],
-    'Indian Overseas Bank': ['DATE','NARATION','DEBIT','CREDIT'],
+    'HDFC Bank': ['Date', 'Narration', 'Withdrawal Amt.', 'Deposit Amt.','Closing Balance'],
+    'State Bank of India': ['Date', 'Details', 'Debit', 'Credit','Balance'],
+    'ICICI Bank': ['Transaction Date','Transaction Remarks','Withdrawal Amount (INR )','Deposit Amount (INR )','Balance (INR )'],
+    'Bank of Baroda': ['TRAN DATE', 'NARRATION', 'WITHDRAWAL(DR)', 'DEPOSIT(CR)','BALANCE(INR)'],
+    'Bank of India': ['Date','Remarks','Debit','Credit','Balance Amount'],
+    'Indian Overseas Bank': ['DATE','NARATION','DEBIT','CREDIT','BALANCE'],
     
-    'Bandhan Bank': ['Transaction Date','Description','Amount (INR)','Cr/Dr'],
-    'Kotak Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
+    'Bandhan Bank': ['Transaction Date','Description','Amount (INR)','Cr/Dr','Balance'],
+    'Kotak Bank': ['Transaction Date','Description','Amount','Dr / Cr','Balance'],
 
-    'Axis Bank': ["Tran Date","PARTICULARS","DR","CR"],
+    'Axis Bank': ["Tran Date","PARTICULARS","DR","CR","BAL"],
     'Union Bank of India': [],
     'Punjab National Bank': [],
     'Canara Bank': [],
@@ -89,20 +89,20 @@ table_columns_dic = {
 }
 
 table_columns_pdf_dic = {
-    'HDFC Bank': ['Date', 'Narration', 'Withdrawal Amt.', 'Deposit Amt.'],
-    'State Bank of India': ['Date', 'Details', 'Debit', 'Credit'],
-    'ICICI Bank': ['Transaction Date','Transaction Remarks','Withdrawal Amount\n(INR )', 'Deposit Amount\n(INR )'],
-    'Bank of Baroda': ['TRAN DATE', 'NARRATION', 'WITHDRAWAL(DR)', 'DEPOSIT(CR)'],
-    'Bank of India': ['Date','Remarks','Debit','Credit'],
-    'Indian Overseas Bank': ['DATE','NARATION','DEBIT','CREDIT'],
+    'HDFC Bank': ['Date', 'Narration', 'Withdrawal Amt.', 'Deposit Amt.','Closing Balance'],
+    'State Bank of India': ['Date', 'Details', 'Debit', 'Credit','Balance'],
+    'ICICI Bank': ['Transaction Date','Transaction Remarks','Withdrawal Amount\n(INR )', 'Deposit Amount\n(INR )','Balance (INR )'],
+    'Bank of Baroda': ['TRAN DATE', 'NARRATION', 'WITHDRAWAL(DR)', 'DEPOSIT(CR)','BALANCE(INR)'],
+    'Bank of India': ['Date','Remarks','Debit','Credit','Balance Amount'],
+    'Indian Overseas Bank': ['DATE','NARATION','DEBIT','CREDIT','BALANCE'],
     
-    'Bandhan Bank': ['Transaction Date','Description','Amount','Dr / Cr'],
+    'Bandhan Bank': ['Transaction Date','Description','Amount','Dr / Cr','Balance'],
                     #  ['Transaction Date','Description','Amount','Cr/Dr']],
     'Kotak Bank': 
     # ['TRANSACTION DATE','TRANSACTION DETAILS','BALANCE(₹)','DEBIT/CREDIT(₹)'],
-    ['Date', 'Narration', 'Withdrawal(Dr)', 'Deposit(Cr)'],
+    ['Date', 'Narration', 'Withdrawal(Dr)', 'Deposit(Cr)','Balance'],
 
-    'Axis Bank': ["Tran Date", "Particulars", "Debit", "Credit"],
+    'Axis Bank': ["Tran Date", "Particulars", "Debit", "Credit","Balance"],
     'Union Bank of India': [],
     'Punjab National Bank': [],
     'Canara Bank': [],
@@ -162,16 +162,3 @@ banks_date_format = {
     # 'df3': '%m/%d/%Y',  # mm/dd/yyyy
     # 'df4': '%m-%d-%Y',  # mm-dd-yyyy
     # 'df5': '%d-%b-%Y',  # dd-MMM-yyyy (e.g., 13-Jan-2025)
-
-# import os
-# import pandas as pd
-
-# categorization_file_path = os.path.join("assets","other","categorization.xlsx")
-
-# debit_categorization_df = pd.read_excel(categorization_file_path, sheet_name='debit')
-
-# debit_categorization_dict = dict(zip(debit_categorization_df['Narration Reference'], debit_categorization_df['Category Reference']))
-
-# credit_categorization_df = pd.read_excel(categorization_file_path, sheet_name='credit')
-
-# credit_categorization_dict = dict(zip(credit_categorization_df['Narration Reference'], credit_categorization_df['Category Reference']))
