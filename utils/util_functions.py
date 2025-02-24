@@ -441,13 +441,9 @@ def show_agreement():
 def has_common_rows(df1, df2, col=['Name','Bank','Date','Narration','Debit','Credit']):
     return pd.merge(df1, df2, on=col, how='inner')
      
-def   home_page():
-    def get_base64_image(image_path):
-        with open(image_path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
+def home_page():
+   
         
-        
-    image_base64 = get_base64_image("assets/homepage/profile_image.jpg")
      
     css = """
         <style>
@@ -466,7 +462,18 @@ def   home_page():
                 max-width: 70%;
             }
             h1{
-                font-size:1.1rem;
+                all: unset;
+                font-size:1.8rem;
+                font-style:bold;
+                margin:20px 0;
+                font-weight:bold;
+            }
+            h2{
+                all: unset;
+                font-size:1.5rem;
+                font-style:bold;
+                margin:20px 0;
+                font-weight:bold;
             }
             .para{
                 font-size: 1rem;
@@ -731,13 +738,20 @@ def refund_policy():
             font-size: 1rem;
         } 
         
-        h1 {
-            font-size: 1.1rem;
-        }
-        
-        h2 {
-            font-size: 1.1rem;
-        }
+        h1{
+                all: unset;
+                font-size:1.8rem;
+                font-style:bold;
+                margin:20px 0;
+                font-weight:bold;
+            }
+            h2 {
+                all: unset;
+                font-size:1.5rem;
+                font-style:bold;
+                margin:20px 0;
+                font-weight:bold;
+            }
         .center {
             display: flex;
             flex-direction: column;
@@ -861,14 +875,20 @@ def privacy_policy():
         .policy p , .policy li {
             font-size: 1rem;
         } 
-        
         h1 {
-            font-size: 1.1rem;
-        }
-        
+                all: unset;
+                font-size:1.8rem;
+                font-style:bold;
+                margin:20px 0;
+                font-weight:bold;
+            }
         h2 {
-            font-size: 1.1rem;
-        }
+                all: unset;
+                font-size:1.5rem;
+                font-style:bold;
+                margin:20px 0;
+                font-weight:bold;
+            }
         .center {
             display: flex;
             flex-direction: column;
@@ -1007,12 +1027,19 @@ def terms_condition():
         } 
         
         h1 {
-            font-size: 1.1rem;
-        }
-        
+                all: unset;
+                font-size:1.8rem;
+                font-style:bold;
+                margin:20px 0;
+                font-weight:bold;
+            }
         h2 {
-            font-size: 1.1rem;
-        }
+                all: unset;
+                font-size:1.5rem;
+                font-style:bold;
+                margin:20px 0;
+                font-weight:bold;
+            }
         .center {
             display: flex;
             flex-direction: column;
