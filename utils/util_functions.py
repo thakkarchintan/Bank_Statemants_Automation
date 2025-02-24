@@ -466,10 +466,10 @@ def   home_page():
                 max-width: 70%;
             }
             h1{
-                font-size:1.6rem;
+                font-size:1.8rem;
             }
             .para{
-                font-size: 1.5rem;
+                font-size: 1rem;
                 margin-bottom:10px;
             }
             .bold {
@@ -480,7 +480,7 @@ def   home_page():
             }
             
             .policy{
-                font-size:1.5rem;
+                font-size:1rem;
                 display:flex;
                 flex-direction:column;
                 gap:10px;
@@ -504,7 +504,7 @@ def   home_page():
             .profile-text p{
                 margin-top:5px;
                 margin-bottom:5px;
-                font-size:1.5rem;
+                font-size:1rem;
             }
             .profile-info{
                 margin-top:15px;
@@ -512,7 +512,7 @@ def   home_page():
             .profile-info p{
                 margin-top:5px;
                 margin-bottom:5px;
-                font-size:1.5rem;
+                font-size:1rem;
             }
             .bold-text{
                 font-weight: bold;
@@ -565,7 +565,7 @@ def   home_page():
             width:100%;
             height:fit-content;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: #777;
             text-align:center;
             margin-top:3rem;
@@ -728,11 +728,15 @@ def refund_policy():
             padding: 20px;
         }
         .policy p , .policy li {
-            font-size: 1.5rem;
+            font-size: 1rem;
         } 
         
-        h2 {
+        h1 {
             font-size: 1.8rem;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
         }
         .center {
             display: flex;
@@ -746,7 +750,7 @@ def refund_policy():
         }
         .sub-heading {
             height: 3%;
-            font-size:1.3rem
+            font-size:1rem
         }
         ul {
             display: flex;
@@ -755,7 +759,7 @@ def refund_policy():
         }
         .footer {
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: #777;
         }
         .button {
@@ -855,11 +859,15 @@ def privacy_policy():
             padding: 20px;
         }
         .policy p , .policy li {
-            font-size: 1.5rem;
+            font-size: 1rem;
         } 
         
-        h2 {
+        h1 {
             font-size: 1.8rem;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
         }
         .center {
             display: flex;
@@ -873,7 +881,7 @@ def privacy_policy():
         }
         .sub-heading {
             height: 3%;
-            font-size:1.3rem
+            font-size:1rem
         }
         ul {
             display: flex;
@@ -882,7 +890,7 @@ def privacy_policy():
         }
         .footer {
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: #777;
         }
         .button {
@@ -995,11 +1003,11 @@ def terms_condition():
             padding: 20px;
         }
         .policy p , .policy li {
-            font-size: 1.5rem;
+            font-size: 1rem;
         } 
         
         h2 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
         }
         .center {
             display: flex;
@@ -1013,7 +1021,7 @@ def terms_condition():
         }
         .sub-heading {
             height: 3%;
-            font-size:1.3rem
+            font-size:1rem
         }
         ul {
             display: flex;
@@ -1022,7 +1030,7 @@ def terms_condition():
         }
         .footer {
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: #777;
         }
         .button {

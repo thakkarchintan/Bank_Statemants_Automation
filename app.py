@@ -53,7 +53,9 @@ st.markdown("""
     <style>
         /* Remove top and bottom padding */
         .block-container {
-            padding-bottom: 10px !important;
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            margin: 0rem !important;
         }
     </style>
 """, unsafe_allow_html=True)
