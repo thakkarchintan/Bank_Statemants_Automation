@@ -466,7 +466,7 @@ def   home_page():
                 max-width: 70%;
             }
             h1{
-                font-size:1.3rem;
+                font-size:1.1rem;
             }
             .para{
                 font-size: 1rem;
@@ -732,7 +732,7 @@ def refund_policy():
         } 
         
         h1 {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
         
         h2 {
@@ -863,7 +863,7 @@ def privacy_policy():
         } 
         
         h1 {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
         
         h2 {
@@ -1007,7 +1007,7 @@ def terms_condition():
         } 
         
         h1 {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
         
         h2 {
