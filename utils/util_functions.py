@@ -461,16 +461,17 @@ def home_page():
             .text-section {
                 max-width: 70%;
             }
-            h1{
+           
+        h1 {
                 all: unset;
-                font-size:1.8rem;
+                font-size:1.5rem;
                 font-style:bold;
                 margin:20px 0;
                 font-weight:bold;
             }
-            h2{
+        h2 {
                 all: unset;
-                font-size:1.5rem;
+                font-size:1.2rem;
                 font-style:bold;
                 margin:20px 0;
                 font-weight:bold;
@@ -738,16 +739,17 @@ def refund_policy():
             font-size: 1rem;
         } 
         
-        h1{
+         
+        h1 {
                 all: unset;
-                font-size:1.8rem;
+                font-size:1.5rem;
                 font-style:bold;
                 margin:20px 0;
                 font-weight:bold;
             }
-            h2 {
+        h2 {
                 all: unset;
-                font-size:1.5rem;
+                font-size:1.2rem;
                 font-style:bold;
                 margin:20px 0;
                 font-weight:bold;
@@ -875,16 +877,17 @@ def privacy_policy():
         .policy p , .policy li {
             font-size: 1rem;
         } 
+        
         h1 {
                 all: unset;
-                font-size:1.8rem;
+                font-size:1.5rem;
                 font-style:bold;
                 margin:20px 0;
                 font-weight:bold;
             }
         h2 {
                 all: unset;
-                font-size:1.5rem;
+                font-size:1.2rem;
                 font-style:bold;
                 margin:20px 0;
                 font-weight:bold;
@@ -1028,14 +1031,14 @@ def terms_condition():
         
         h1 {
                 all: unset;
-                font-size:1.8rem;
+                font-size:1.5rem;
                 font-style:bold;
                 margin:20px 0;
                 font-weight:bold;
             }
         h2 {
                 all: unset;
-                font-size:1.5rem;
+                font-size:1.2rem;
                 font-style:bold;
                 margin:20px 0;
                 font-weight:bold;
