@@ -18,6 +18,7 @@ st.markdown(
         .main .block-container {
             padding-top: 0rem !important;
             padding-bottom: 0rem !important;
+            margin: 0rem !important;
         }
     </style>
     """,
@@ -81,7 +82,7 @@ if st.session_state["connected"]:
     else:
         name=get_name(db_name,'users',user_name)
         
-    st.sidebar.write(f"Logged in - **{first_name}**")
+    st.sidebar.write(f"Logged in as - **{first_name}**")
         
     # sorting list of banks
     bank_list.sort()
