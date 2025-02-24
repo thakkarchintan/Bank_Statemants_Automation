@@ -466,7 +466,7 @@ def   home_page():
                 max-width: 70%;
             }
             h1{
-                font-size:1.5rem;
+                font-size:1.3rem;
             }
             .para{
                 font-size: 1rem;
@@ -732,11 +732,11 @@ def refund_policy():
         } 
         
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
         }
         
         h2 {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
         }
         .center {
             display: flex;
@@ -863,11 +863,11 @@ def privacy_policy():
         } 
         
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
         }
         
         h2 {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
         }
         .center {
             display: flex;
@@ -1007,11 +1007,11 @@ def terms_condition():
         } 
         
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
         }
         
         h2 {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
         }
         .center {
             display: flex;
