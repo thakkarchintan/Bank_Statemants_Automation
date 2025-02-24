@@ -462,17 +462,20 @@ def home_page():
                 max-width: 70%;
             }
            
-        h1 {
-                font-size:1.5rem;!important
-                font-style:bold;!important
-                margin:20px 0;!important
-                font-weight:bold;!important
+            h1 {
+                all: unset;
+                font-size: 1.5rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
-        h2 {
-                font-size:1.2rem;!important
-                font-style:bold;!important
-                margin:20px 0;!important
-                font-weight:bold;!important
+
+            h2 {
+                all: unset;
+                font-size: 1.3rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
             .para{
                 font-size: 1rem;
@@ -739,16 +742,19 @@ def refund_policy():
         
           
         h1 {
-                font-size:1.5rem;!important
-                font-style:bold;!important
-                margin:20px 0;!important
-                font-weight:bold;!important
+                all: unset;
+                font-size: 1.5rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
-        h2 {
-                font-size:1.2rem;!important
-                font-style:bold;!important
-                margin:20px 0;!important
-                font-weight:bold;!important
+
+            h2 {
+                all: unset;
+                font-size: 1.3rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
             
         .center {
@@ -877,17 +883,21 @@ def privacy_policy():
         
               
         h1 {
-                font-size:1.5rem;!important
-                font-style:bold;!important
-                margin:20px 0;!important
-                font-weight:bold;!important
+                all: unset;
+                font-size: 1.5rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
-        h2 {
-                font-size:1.2rem;!important
-                font-style:bold;!important
-                margin:20px 0;!important
-                font-weight:bold;!important
+
+            h2 {
+                all: unset;
+                font-size: 1.3rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
+            
         .center {
             display: flex;
             flex-direction: column;
@@ -1026,17 +1036,21 @@ def terms_condition():
         } 
           
         h1 {
-                font-size:1.5rem;!important
-                font-style:bold;!important
-                margin:20px 0;!important
-                font-weight:bold;!important
+                all: unset;
+                font-size: 1.5rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
-        h2 {
-                font-size:1.2rem;!important
-                font-style:bold;!important
-                margin:20px 0;!important
-                font-weight:bold;!important
+
+            h2 {
+                all: unset;
+                font-size: 1.3rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
+            
         .center {
             display: flex;
             flex-direction: column;
