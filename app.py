@@ -119,6 +119,9 @@ if st.session_state["connected"]:
                     # get data from db
                     existing_df=get_transaction_data(db_name,user_name)
 
+                    # print(df)
+                    df = df[['Date','Narration','Debit','Credit','Category']]
+                    # ,'Balance'
                     df = df[df['Narration'] != 'OPENINGBALANCE...']
                     # Default name if ac_name is not entered
                     if not ac_name:
@@ -172,6 +175,7 @@ if st.session_state["connected"]:
 
                                 add_data(df_filtered,override,db_name,user_name)
                             st.toast(":green[Data updated successfully]")   
+                            time.sleep(3)
                             refresh_page()                                
 
                         elif keep:
@@ -181,6 +185,7 @@ if st.session_state["connected"]:
 
                                 add_data(df,override,db_name,user_name)
                             st.toast(":green[Data updated successfully]")
+                            time.sleep(3)
                             refresh_page()
 
                         elif cancel:
@@ -193,6 +198,7 @@ if st.session_state["connected"]:
 
                             add_data(df,override,db_name,user_name)
                         st.toast(":green[Data updated successfully]")
+                        time.sleep(3)
                         refresh_page()
                             
                 except Exception as e:
@@ -218,7 +224,7 @@ if st.session_state["connected"]:
 
     # Sidebar elements to delete data
     with st.sidebar:
-
+        st.markdown("<div style='margin-top: 50px;'></div>", unsafe_allow_html=True)
         # Submit button inside sidebar
         st.button("Delete my data", on_click=confirm_submission)
 
@@ -251,6 +257,7 @@ if st.session_state["connected"]:
     
     if st.sidebar.button("Log out"):
         authenticator.logout()
+        
 
     # Create tabs
     tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback","Razorpay","Categories"])
