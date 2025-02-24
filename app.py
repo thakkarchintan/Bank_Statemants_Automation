@@ -25,6 +25,25 @@ authenticator = Authenticator(
     redirect_uri="https://bankstatements.onrender.com",
 )
 
+st.markdown(
+    """
+    <style>
+        /* Hide the three-dot menu */
+        [data-testid="stToolbar"] {visibility: hidden;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown("""
+    <style>
+        /* Remove top and bottom padding */
+        .block-container {
+            padding-bottom: 10px !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 query_params = st.query_params
 page = query_params.get("page", ["home"]) 
 
@@ -42,12 +61,14 @@ if st.session_state["connected"]:
     user_name = user_name.replace('.','__')
     summ_table = user_name+'_summary'
     name=user_info.get('name')
-
+    first_name = get_name(db_name,'users',user_name)
     if name:
         user_data = (user_name,user_info.get('name'),user_email)
         add_user(db_name,'users',user_data)
     else:
         name=get_name(db_name,'users',user_name)
+        
+    st.sidebar.write(f"Logged in as {first_name}")
         
     # sorting list of banks
     bank_list.sort()
@@ -67,7 +88,7 @@ if st.session_state["connected"]:
     with st.sidebar:
         global_categorization = st.toggle("Global Categorization")
         if global_categorization:
-            if st.button("Apply Global Categorization"):
+            if st.button("Apply Global Categorization",use_container_width=True):
 
                 category_table="categories"
 
@@ -102,7 +123,7 @@ if st.session_state["connected"]:
     # Sidebar elements to add data
     with st.sidebar:
         # Submit button inside sidebar
-        st.button("Add data", on_click=ok_submission)
+        st.button("Add data", on_click=ok_submission  ,use_container_width=True)
 
         # Show confirmation inside sidebar
         if st.session_state.ok:
@@ -224,7 +245,7 @@ if st.session_state["connected"]:
 
     # Sidebar elements to delete data
     with st.sidebar:
-        st.markdown("<div style='margin-top: 50px;'></div>", unsafe_allow_html=True)
+
         # Submit button inside sidebar
         st.button("Delete my data", on_click=confirm_submission)
 
@@ -255,9 +276,12 @@ if st.session_state["connected"]:
                 st.toast(":red[There are no transactions in your account. No data to delete!]")
 
     
-    if st.sidebar.button("Log out"):
+    if st.sidebar.button("Log out",use_container_width=True):
+        user_info=st.session_state['user_info']
+        user_email = str(user_info.get('email'))
+        user_name = user_email[:-10]
+        user_name = user_name.replace('.','__')
         authenticator.logout()
-        
 
     # Create tabs
     tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback","Razorpay","Categories"])
@@ -407,7 +431,7 @@ if st.session_state["connected"]:
         SMTP_USER = os.getenv("SMTP_USER")  # Replace with your Gmail
         SMTP_PASSWORD = os.getenv("email_pass")  # Use an App Password, not your main password
         feedback_table='Feedback'
-        st.subheader("User Feedback Form")
+        st.subheader("We value your thoughts! Feel free to share any feedback, ideas, or suggestions to help us improve. Your insights make a difference!")
 
         # Text area for feedback
         feedback = st.text_area("Your Feedback:", placeholder="Write your feedback here...")
@@ -567,38 +591,62 @@ else:
         st.error("Authentication URL is not available.")
     else:
         css = """
-            <style>
-                .gcenter {
-                    width: 100%;
-                    display: flex;
-                    margin-top: 10px;
-                    position: absolute;
-                    top: -10vh;
-                    right: 0px;
-                    left:65vw
-                    
-                }
-                .google-button {
-                    background-color: #4285F4;
-                    color: white !important;
-                    border-radius: 5px;
-                    padding: 10px 15px;
-                    font-size: 1.5rem;
-                    border: none;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    text-decoration: none !important;
-                    gap: 5px;
-                }
-                .google-button img {
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    margin-left: 5px;
-                    border-radius: 50%;
-                }
-            </style>
-        """
+                <style>
+                    .gcenter {
+                        overflow-x:hidden;
+                        width: 100%;
+                        display: flex;
+                        position:fixed;
+                        top:5vh;
+                        left:78vw;
+                        backfround-color:white;
+                        z-index: 100000000000;
+                    }
+                    .google-button {
+                        background-color: #4285F4;
+                        color: white !important;
+                        border-radius: 5px;
+                        padding: 10px 15px;
+                        font-size: 1.5rem;
+                        border: none;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        text-decoration: none !important;
+                        gap: 5px;
+                    }
+                    .google-button img {
+                        width: 1.5rem;
+                        height: 1.5rem;
+                        margin-left: 5px;
+                        border-radius: 50%;
+                    }
+                    /* Media query for screens 768px and smaller */
+                    @media (max-width: 768px) {
+                        .gcenter {
+                            position: fixed;
+                            top: 5vh;
+                            left: 50%;
+                            transform: translateX(-50%); /* Moves it to center */
+                            width: max-content; /* Adjust width based on content */
+                            display: flex;
+                            justify-content: center; /* Ensures content is centered */
+                            align-items: center; /* Vertically aligns the button */
+                        }
+                        .google-button {
+                            padding: 8px 12px;
+                            font-size: 1.2rem;
+                        }
+                    }
+                                        /* Media query for mobile-sized screens */
+                    @media (max-width: 480px) {
+                        .google-button {
+                            padding: 6px 10px;
+                            font-size: 1rem;
+                        }
+                    }
+                </style>
+            """
 
         html = f"""
             <div class="gcenter">

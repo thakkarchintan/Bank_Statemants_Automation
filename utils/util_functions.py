@@ -234,7 +234,7 @@ def display_data(df,Height,db_name="",user_name="",category_present=False):
     gridOptions = gb.build()
 
     # Display the grid
-    grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height) 
+    grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
 
     if category_present:
         if st.button("Save Changes"):
@@ -441,7 +441,7 @@ def show_agreement():
 def has_common_rows(df1, df2, col=['Name','Bank','Date','Narration','Debit','Credit']):
     return pd.merge(df1, df2, on=col, how='inner')
      
-def home_page():
+def   home_page():
     def get_base64_image(image_path):
         with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode()
@@ -451,15 +451,22 @@ def home_page():
      
     css = """
         <style>
+            *{
+                font-family:sans-serif;
+            }
             .container {
-                width:100vw;
-                height:100%;
+                overflow-x:hidden;
+                max-width:100vw;
+                max-height:100%;
                 display:flex;
                 flex-direction:column;
                 gap:2rem;
             }
             .text-section {
-                max-width: 90%;
+                max-width: 70%;
+            }
+            h1{
+                font-size:1.6rem;
             }
             .para{
                 font-size: 1.5rem;
@@ -467,9 +474,6 @@ def home_page():
             }
             .bold {
                 font-weight:bold;
-            }
-            .section-heading{
-                font-size:1.5rem;
             }
             .section-subheading{
                 font-weight:bold;
@@ -513,6 +517,7 @@ def home_page():
             .bold-text{
                 font-weight: bold;
             }
+            
             #list_of_supported_banks {
             max-width: 60%;
             border-collapse: collapse; /* Ensures table borders collapse together */
@@ -556,8 +561,14 @@ def home_page():
             text-align: center;
         }
         
-        .guidelines{
+        .footer{
+            width:100%;
+            height:fit-content;
+            text-align: center;
+            font-size: 1.3rem;
+            color: #777;
             text-align:center;
+            margin-top:3rem;
         }
 
         /* Add a subtle hover effect for rows */
@@ -567,30 +578,31 @@ def home_page():
 
         /* Responsive behavior */
         @media (max-width: 600px) {
+
             #list_of_supported_banks {
                 font-size: 12px;
+                max-width:100%;
             }
 
             #list_of_supported_banks th, #list_of_supported_banks td {
                 padding: 8px;
             }
-
-            #list_of_supported_banks th:nth-child(1), #list_of_supported_banks td:nth-child(1) {
-                width: 100%; /* Make the first column take full width on smaller screens */
-            }
-
-            #list_of_supported_banks th:nth-child(2), #list_of_supported_banks td:nth-child(2),
-            #list_of_supported_banks th:nth-child(3), #list_of_supported_banks td:nth-child(3) {
-                width: 50%; /* Reduce the second and third columns on smaller screens */
-            }
         }
+        @media (max-width: 768px) {
+            .text-section {
+                max-width:100%
+            }
+            .profile-section {
+                width:100%
+            }
+        } 
         </style>
         """
         
     html = f"""
         <div class="container">
                 <div class="text-section">
-                    <h1 class="section-heading">Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
+                    <h1>Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
                     <div class="para">Upload PDF or XLS bank statements from the <a href = "#list_of_supported_banks">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
                     <div class="para bold">✅ Track Spending Patterns</div>
                     <div class="para bold">✅ Gain Intelligent Insights</div>
@@ -598,9 +610,6 @@ def home_page():
                 <div class = "profile">
                 <h1>Why I Created This App</h1>
                     <div class = "profile-section">
-                    <div class = "profile-image">
-                        <img src="data:image/jpeg;base64,{image_base64}" width="200">
-                    </div>
                     <div class = "profile-text">
                         <p>For <span class ="bold-text">3+ years</span>, I manually tracked my bank transactions—it was frustrating, inefficient, and time-consuming.
                         So, I built a tool to <span class ="bold-text">automate the entire process.</span></p>
@@ -676,23 +685,22 @@ def home_page():
             </tr>
         </table>
         <div class = "policy">
-                    <h1 class="section-heading">Our Commitment to Privacy & Security</h1>
+                    <h1 class="section-heading">Commitment to Privacy & Security</h1>
                     <div>
-                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>Your data is fully encrypted using industry-leading security.</p>
+                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
                     </div>
                 <div>
-                        <p><span class="section-subheading">📂 You Upload, We Process - </span>We only process the data you provide—nothing more, nothing less.</p>
+                        <p><span class="section-subheading">📂 You Upload - The App processes - </span>The app only processes the data your provide - nothing more, nothing less.</p>
                     </div>
                 <div>
-                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever</p>
+                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever.</p>
                     </div>
                     <div>
                         <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
                     </div>
                     <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
                 </div>
-                <div class="para bold guidelines">
-                    Learn more about our 
+                <div class="para bold guidelines footer">
                     <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> , 
                     <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
                     and <a href="https://bankstatements.onrender.com/?page=terms_condition" target="_self">Terms & Conditions</a>
@@ -708,6 +716,9 @@ def home_page():
 def refund_policy():
     css = """
     <style>
+        *{
+            font-family:sans-serif;
+        }
         .container {
             overflow-x: hidden;
             min-width: 100vw;
@@ -832,6 +843,9 @@ def privacy_policy():
 # CSS for styling
  css = """
     <style>
+        *{
+            font-family:sans-serif;
+        }
         .container {
             overflow-x: hidden;
             min-width: 100vw;
@@ -962,10 +976,6 @@ def privacy_policy():
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
-    <div class="footer">
-        <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
-        <p><strong>Last Updated:</strong> 17-Feb-25</p>
-    </div>
 </body>"""
  st.markdown(css, unsafe_allow_html=True)
  st.markdown(html, unsafe_allow_html=True)
@@ -973,6 +983,9 @@ def privacy_policy():
 def terms_condition():
     css = """
     <style>
+        *{
+            font-family:sans-serif;
+        }
         .container {
             overflow-x: hidden;
             min-width: 100vw;

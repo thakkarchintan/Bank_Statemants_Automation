@@ -1,5 +1,5 @@
 import time
-
+from database import *
 import streamlit as st
 import google_auth_oauthlib.flow
 from googleapiclient.discovery import build
@@ -50,16 +50,48 @@ class Authenticator:
             return auth_url
             # css_button(auth_url)
             # st.sidebar.link_button("login with google", auth_url)
+            
+    
 
     def check_auth(self):
-
+        def show_custom_toast(message):
+            """Displays a toast message at a custom position."""
+            toast_style = f"""
+            <style>
+                .custom-toast {{
+                    position: fixed;
+                    top: 10vh; left: 20px;
+                    background-color: white;
+                    color: green;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                }}
+            </style>
+            <div class="custom-toast">{message} ✅ </div>
+            """
+            toast_container = st.empty()
+            toast_container.markdown(toast_style, unsafe_allow_html=True)
+            time.sleep(3)
+            toast_container.empty()
+       
         if st.session_state["connected"]:
             # st.toast(":green[user is authenticated]")
             return
 
         if st.session_state.get("logout"):
-            st.toast(":green[user logged out]")
-            return
+                db_name=os.getenv("DATABASE")
+                user_info=st.session_state['user_info']
+                user_email = str(user_info.get('email'))
+                user_name = user_email[:-10]
+                user_name = user_name.replace('.','__')
+                #st.toast(f":green[{get_name(db_name,'users',user_name)},logged out]")
+                message = f"{get_name(db_name,'users',user_name)} , Successfully logged out"
+                show_custom_toast(message)
+                return
 
         token = self.auth_token_manager.get_decoded_token()
         if token is not None:
@@ -93,7 +125,6 @@ class Authenticator:
 
     def logout(self):
         st.session_state["logout"] = True
-        st.session_state["user_info"] = None
         st.session_state["connected"] = None
         self.auth_token_manager.delete_token()
         # no rerun
