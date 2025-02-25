@@ -11,20 +11,6 @@ from dotenv import load_dotenv
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Bank Statements Automation",layout="wide")
 
-st.markdown(
-    """
-    <style>
-        /* Remove default padding and margin */
-        .main .block-container {
-            padding-top: 0rem !important;
-            padding-bottom: 0rem !important;
-            margin: 0rem !important;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 from auth import Authenticator
 from database import *
 from utils import *
@@ -132,22 +118,23 @@ if st.session_state["connected"]:
             if file_size_in_limit:
                 category_table="categories"
 
-                debit_categorization_df=get_category_df(db_name,category_table+"_debit")
-                credit_categorization_df=get_category_df(db_name,category_table+"_credit")
+                categorization_df=get_categories(category_table)
+                debit_categorization_df = categorization_df[categorization_df['Type'] == 'Debit']
+                credit_categorization_df = categorization_df[categorization_df['Type'] == 'Credit']
 
-                credit_categorization_dict = dict(zip(credit_categorization_df['keyword'], credit_categorization_df['category']))
-                debit_categorization_dict = dict(zip(debit_categorization_df['keyword'], debit_categorization_df['category']))
+                credit_categorization_dict = dict(zip(credit_categorization_df['Keyword'], credit_categorization_df['Category']))
+                debit_categorization_dict = dict(zip(debit_categorization_df['Keyword'], debit_categorization_df['Category']))
                 
                 # get data from db
                 existing_df=get_transaction_data(db_name,user_name)
                 
                 existing_df['Category'] = existing_df.apply(
-                    lambda row: categorize(row['Narration'],credit_categorization_dict) if row['Credit'] > 0 else "",
+                    lambda row: categorize(row['Narration'],credit_categorization_dict) if row['Credit'] > 0 and row['Category']=="" else row['Category'],
                     axis=1
                 )
 
                 existing_df['Category'] = existing_df.apply(
-                    lambda row: categorize(row['Narration'],debit_categorization_dict) if row['Debit'] >0 else row['Category'],
+                    lambda row: categorize(row['Narration'],debit_categorization_dict) if row['Debit'] >0 and row['Category']=="" else row['Category'],
                     axis=1
                 )
                 delete_data(db_name,user_name,"1=1")
@@ -629,60 +616,106 @@ if st.session_state["connected"]:
                         st.error("Please enter all details before proceeding.")
 
             with tab6:
-                # Input field
-                c1, c2, c3 = st.columns(3)
-                with c1:
-                    type = st.selectbox("Select Transaction type",['credit','debit'])
-                with c2:            
-                    category_list=["Books", "Cash Withdrawal", "Credit Card Payments", "Education", "EMI Payments", "Food & Beverage", "Health & Fitness", "Healthcare", "Investments & Trading", "Online Shopping", "Rent & Housing", "Subscriptions & Entertainment", "TDS & Tax", "Technology", "Transport & Fuel", "Travel", "Utilities"]
-                    category_list.sort()
-                    category = st.selectbox("Select category",category_list)
-                with c3:
-                    keyword = st.text_input("Enter a keyword:", "")
+                table_nm="Categories"
+                initialize_db(table_nm)
+                # Initialize session state for table data
+                if "table_data" not in st.session_state:
+                    st.session_state.table_data = get_categories(table_nm)
 
-                category_table="categories"
+                # Session state to track replace prompt
+                if "replace_prompt" not in st.session_state:
+                    st.session_state.replace_prompt = False
+                    st.session_state.pending_category = None
+                    st.session_state.pending_keyword = None
+                    st.session_state.existing_category = None
 
-                # Initialize database
-                initialize_db(category_table+"_debit")
-                initialize_db(category_table+"_credit")
-                # Add category button
-                if st.button("Add keyword"):
-                    if category.strip():
-                        add_category(keyword,category,category_table+"_"+type)
-                        st.rerun()
+                # Function to refresh the table
+                def refresh_table():
+                    st.rerun()
 
-                st.subheader("Your keywords & categories:")
-                col1, col2, col3, col4 = st.columns([0.3,0.3,0.3,0.1])
-                col1.write(f"Type")
-                col2.write(f"Category") 
-                col3.write(f"Keyword")
+                # Add New Entry Section
+                st.subheader("➕ Add New Item")
 
-                # Display categories
-                categories_debit = get_categories(category_table+"_debit")
-                categories_credit = get_categories(category_table+"_credit")
+                col = st.columns([2.8,2.8,2.8,1.6])  # Layout columns
+
+                # Unique categories sorted A-Z
+                unique_categories = sorted(st.session_state.table_data["Category"].unique())
+                new_category = col[0].selectbox("Select Category", unique_categories + ["Other"], index=0)
+
+                if new_category == "Other":
+                    new_category = col[0].text_input("Enter New Category")
+
+                new_keyword = col[1].text_input("Enter Keyword")
+                type = col[2].selectbox("Select Transaction type",["Credit","Debit"])
                 
-                if categories_credit:
-                    for category in categories_credit:
-                        col1, col2, col3, col4 = st.columns([0.3,0.3,0.3,0.1])
-                        col1.write("Credit")
-                        col2.write(f"{category[2]}")
-                        col3.write(f"{category[1]}")
-                        if col4.button("❌", key=f"del_{category[0]}"):
-                            delete_category(category[0],category_table+"_credit")
-                            st.rerun()
+                        
+                with col[3]:
+                    # Move button slightly up
+                    st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
+                    # Check for duplicate and show prompt
+                    if st.button("➕ Add", use_container_width=True):
+                        if new_category and new_keyword:
+                            existing_entry = st.session_state.table_data[(st.session_state.table_data["Keyword"] == new_keyword) & (type==st.session_state.table_data["Type"])]
 
-                if categories_debit:
-                    for category in categories_debit:
-                        col1, col2, col3, col4 = st.columns([0.3,0.3,0.3,0.1])
-                        col1.write("Debit")
-                        col2.write(f"{category[2]}")
-                        col3.write(f"{category[1]}")
-                        if col4.button("❌", key=f"dell_{category[0]}"):
-                            delete_category(category[0],category_table+"_debit")
-                            st.rerun()
+                            if not existing_entry.empty:
+                                # Store the existing keyword/category in session state
+                                st.session_state.pending_category = new_category
+                                st.session_state.pending_keyword = new_keyword
+                                st.session_state.existing_category = existing_entry.iloc[0]["Category"]
+                                st.session_state.replace_prompt = True
+                                refresh_table()
+                            else:
+                                # Add new entry since no duplicate exists
+                                new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
+                                st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
+                                st.success(f"✅ Added: {new_category} - {new_keyword}")
+                                delete_all(table_nm)
+                                add_category_df(st.session_state.table_data,table_nm)
+                                refresh_table()
+                        else:
+                            st.error("⚠ Please enter both Category and Keyword!")
 
-                elif not categories_credit:
-                    st.write("🎉 No keywords added yet!")
+                # Display the table
+                st.header("📋 Category & Keyword Table")
+
+                gb = GridOptionsBuilder.from_dataframe(st.session_state.table_data)
+
+                # Add checkbox selection
+                gb.configure_selection(selection_mode="multiple", use_checkbox=True)
+
+                # Build grid options
+                grid_options = gb.build()
+
+                # Render AgGrid
+                grid_response = AgGrid(
+                    st.session_state.table_data,
+                    gridOptions=grid_options,
+                    height=300,
+                    fit_columns_on_grid_load=True
+                )
+
+                # Get selected rows as a DataFrame
+                selected_rows = pd.DataFrame(grid_response["selected_rows"])
+
+                # Delete Selected Rows
+                if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
+                    st.session_state.table_data = st.session_state.table_data.merge(selected_rows, how="left", indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
+                    refresh_table()
+
+                # Handle Replace Prompt
+                if st.session_state.replace_prompt:
+                    st.warning(f"⚠ The keyword **'{st.session_state.pending_keyword}'** already exists under **'{st.session_state.existing_category}'** category.")
+                    
+                    colA, colB = st.columns(2)
+                    
+                    if colA.button("🔄 Replace Existing"):
+                        st.session_state.table_data.loc[st.session_state.table_data["Keyword"] == st.session_state.pending_keyword, "Category"] = st.session_state.pending_category
+                        st.session_state.replace_prompt = False
+                        refresh_table()
+                    
+                    if colB.button("❌ Cancel"):
+                        st.session_state.replace_prompt = False
+                        refresh_table()
 
 else:
     auth_url=authenticator.login()
@@ -759,5 +792,4 @@ else:
         st.markdown(css, unsafe_allow_html=True)
         st.markdown(html, unsafe_allow_html=True)
     show_message(page)
-    
     

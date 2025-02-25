@@ -18,11 +18,6 @@ USER = os.getenv("USER")
 PASSWORD = os.getenv("PASSWORD")
 DATABASE = os.getenv("DATABASE")
 PORT = 3306
-# int(os.getenv("PORT"))
-
-# Table name
-# user_name='user1'
-# table_name = user_name+'_table'
 
 # 1. Create a new database
 def create_database(database_name,cursor):
@@ -420,3 +415,19 @@ def update_summary1(database_name,table_name,ac_name,bank,From,Till,no_of_transa
         conn.close()
     except Exception as e:
         print(f"Error in updating summary data: {e}")
+
+# Function to get all categories
+def get_categories(table_name):
+    # Create database connection
+    engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+
+    with engine.connect() as Conn:
+        # Read existing data from the table
+        all_data = pd.read_sql(text(f"SELECT * FROM {table_name};"), Conn)
+        # print(all_data)
+        return all_data
+    return pd.DataFrame({
+        "Keyword": [],
+        "Category": [],
+        "Type": []
+    })
