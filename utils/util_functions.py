@@ -191,8 +191,7 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
         df['Category'] = ""
         
         if global_categorization:
-            category_table="categories"
-
+            category_table="Categories"
             categorization_df=get_categories(category_table)
             debit_categorization_df = categorization_df[categorization_df['Type'] == 'Debit']
             credit_categorization_df = categorization_df[categorization_df['Type'] == 'Credit']

@@ -116,8 +116,8 @@ if st.session_state["connected"]:
                     file_size_in_limit=False
                     break
             if file_size_in_limit:
-                category_table="categories"
-
+                category_table="Categories"
+                initialize_db(category_table)
                 categorization_df=get_categories(category_table)
                 debit_categorization_df = categorization_df[categorization_df['Type'] == 'Debit']
                 credit_categorization_df = categorization_df[categorization_df['Type'] == 'Credit']
@@ -792,4 +792,3 @@ else:
         st.markdown(css, unsafe_allow_html=True)
         st.markdown(html, unsafe_allow_html=True)
     show_message(page)
-    
