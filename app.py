@@ -11,6 +11,20 @@ from dotenv import load_dotenv
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Bank Statements Automation",layout="wide")
 
+st.markdown(
+    """
+    <style>
+        /* Remove default padding and margin */
+        .main .block-container {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            margin: 0rem !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 from auth import Authenticator
 from database import *
 from utils import *
@@ -711,4 +725,5 @@ else:
         st.markdown(css, unsafe_allow_html=True)
         st.markdown(html, unsafe_allow_html=True)
     show_message(page)
+    
     

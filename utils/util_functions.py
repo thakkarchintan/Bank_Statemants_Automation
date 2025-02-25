@@ -442,12 +442,6 @@ def has_common_rows(df1, df2, col=['Name','Bank','Date','Narration','Debit','Cre
     return pd.merge(df1, df2, on=col, how='inner')
      
 def home_page():
-    def get_base64_image(image_path):
-        with open(image_path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
-             
-    image_base64 = get_base64_image("assets/homepage/profile_image.jpg")
-     
     css = """
         <style>
             *{
@@ -464,11 +458,24 @@ def home_page():
             .text-section {
                 max-width: 70%;
             }
-            h1{
-                font-size:1.6rem;
+           
+            h1 {
+                all: unset;
+                font-size: 1.5rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
+            }
+
+            h2 {
+                all: unset;
+                font-size: 1.3rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
             }
             .para{
-                font-size: 1.5rem;
+                font-size: 1rem;
                 margin-bottom:10px;
             }
             .bold {
@@ -479,7 +486,7 @@ def home_page():
             }
             
             .policy{
-                font-size:1.5rem;
+                font-size:1rem;
                 display:flex;
                 flex-direction:column;
                 gap:10px;
@@ -503,7 +510,7 @@ def home_page():
             .profile-text p{
                 margin-top:5px;
                 margin-bottom:5px;
-                font-size:1.5rem;
+                font-size:1rem;
             }
             .profile-info{
                 margin-top:15px;
@@ -511,7 +518,7 @@ def home_page():
             .profile-info p{
                 margin-top:5px;
                 margin-bottom:5px;
-                font-size:1.5rem;
+                font-size:1rem;
             }
             .bold-text{
                 font-weight: bold;
@@ -564,7 +571,7 @@ def home_page():
             width:100%;
             height:fit-content;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: #777;
             text-align:center;
             margin-top:3rem;
@@ -727,12 +734,26 @@ def refund_policy():
             padding: 20px;
         }
         .policy p , .policy li {
-            font-size: 1.5rem;
+            font-size: 1rem;
         } 
         
-        h2 {
-            font-size: 1.8rem;
-        }
+          
+        h1 {
+                all: unset;
+                font-size: 1.5rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
+            }
+
+            h2 {
+                all: unset;
+                font-size: 1.3rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
+            }
+            
         .center {
             display: flex;
             flex-direction: column;
@@ -745,7 +766,7 @@ def refund_policy():
         }
         .sub-heading {
             height: 3%;
-            font-size:1.3rem
+            font-size:1rem
         }
         ul {
             display: flex;
@@ -754,7 +775,7 @@ def refund_policy():
         }
         .footer {
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: #777;
         }
         .button {
@@ -830,7 +851,7 @@ def refund_policy():
             </div>
         </div>
         <div class="footer">
-            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
@@ -854,12 +875,26 @@ def privacy_policy():
             padding: 20px;
         }
         .policy p , .policy li {
-            font-size: 1.5rem;
+            font-size: 1rem;
         } 
         
-        h2 {
-            font-size: 1.8rem;
-        }
+              
+        h1 {
+                all: unset;
+                font-size: 1.5rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
+            }
+
+            h2 {
+                all: unset;
+                font-size: 1.3rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
+            }
+            
         .center {
             display: flex;
             flex-direction: column;
@@ -872,7 +907,7 @@ def privacy_policy():
         }
         .sub-heading {
             height: 3%;
-            font-size:1.3rem
+            font-size:1rem
         }
         ul {
             display: flex;
@@ -881,7 +916,7 @@ def privacy_policy():
         }
         .footer {
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: #777;
         }
         .button {
@@ -971,7 +1006,7 @@ def privacy_policy():
         </div>
         </div>
         <div class="footer">
-            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
@@ -994,12 +1029,25 @@ def terms_condition():
             padding: 20px;
         }
         .policy p , .policy li {
-            font-size: 1.5rem;
+            font-size: 1rem;
         } 
-        
-        h2 {
-            font-size: 1.8rem;
-        }
+          
+        h1 {
+                all: unset;
+                font-size: 1.5rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
+            }
+
+            h2 {
+                all: unset;
+                font-size: 1.3rem !important;
+                margin: 20px 0 !important;
+                font-weight: bold !important;
+                color: black;
+            }
+            
         .center {
             display: flex;
             flex-direction: column;
@@ -1012,7 +1060,7 @@ def terms_condition():
         }
         .sub-heading {
             height: 3%;
-            font-size:1.3rem
+            font-size:1rem
         }
         ul {
             display: flex;
@@ -1021,7 +1069,7 @@ def terms_condition():
         }
         .footer {
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: #777;
         }
         .button {
@@ -1076,7 +1124,7 @@ def terms_condition():
             </div>
         </div>
         <div class="footer">
-            <p>For queries, contact <strong>support@fintellect.co.in</strong>.</p>
+            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
             <p><strong>Last Updated:</strong> 17-Feb-25</p>
         </div>
     </div>
