@@ -441,12 +441,11 @@ def show_agreement():
 def has_common_rows(df1, df2, col=['Name','Bank','Date','Narration','Debit','Credit']):
     return pd.merge(df1, df2, on=col, how='inner')
      
-def   home_page():
+def home_page():
     def get_base64_image(image_path):
         with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode()
-        
-        
+             
     image_base64 = get_base64_image("assets/homepage/profile_image.jpg")
      
     css = """
