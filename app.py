@@ -195,7 +195,8 @@ if st.session_state["connected"]:
                         for col in text_cols:
                             df[col] = df[col].str.strip()
                             existing_df[col] = existing_df[col].str.strip()
-
+                       
+                        ex_balance_sum = existing_df['Credit'].sum() - existing_df['Debit'].sum()
                         common_data = has_common_rows(df,existing_df)
                         if not common_data.empty:
                             st.warning("These transactions already exists. What would you like to do?")
@@ -213,21 +214,40 @@ if st.session_state["connected"]:
                                 # Remove exact matches
                                 df_filtered=df.copy()
                                 df_filtered = df_filtered.merge(existing_df, on=df_filtered.columns.tolist(), how='left', indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
-                                if not df_filtered.empty:    
-                                    no_of_transactions=df_filtered.shape[0]
-                                    update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
-
+                                if not df_filtered.empty:
+                                    ex_balance_sum += df_filtered['Credit'].sum() - df_filtered['Debit'].sum()
                                     add_data(df_filtered,override,db_name,user_name)
+                                    condition_summ = f"Name='{ac_name}' and Bank='{bank}';"
+                                    delete_data(db_name,summ_table,condition_summ)
+                                    res = get_oldest_latest_date(ac_name,bank,user_name)
+
+                                    if res:
+                                        row_condition=f"where Date='{res['oldest_date']}' limit 1"
+                                        row = get_transaction_data(db_name,user_name,row_condition)
+                                        res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
+                                        row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
+                                        row.loc[0, 'Balance']+=ex_balance_sum
+                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'])
+
                                 st.toast(":green[Data updated successfully]")   
                                 time.sleep(3)
                                 refresh_page()                                
 
                             elif keep:
                                 if not df.empty:
-                                    no_of_transactions=df.shape[0]
-                                    update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
+                                    ex_balance_sum += df['Credit'].sum() - df['Debit'].sum()
+                                    add_data(df,override,db_name,user_name)                                    
+                                    condition_summ = f"Name='{ac_name}' and Bank='{bank}';"
+                                    delete_data(db_name,summ_table,condition_summ)
+                                    res = get_oldest_latest_date(ac_name,bank,user_name)
 
-                                    add_data(df,override,db_name,user_name)
+                                    if res:
+                                        row_condition=f"where Date='{res['oldest_date']}' limit 1"
+                                        row = get_transaction_data(db_name,user_name,row_condition)
+                                        res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
+                                        row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
+                                        row.loc[0, 'Balance']+=ex_balance_sum
+                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'])
                                 st.toast(":green[Data updated successfully]")
                                 time.sleep(3)
                                 refresh_page()
@@ -236,11 +256,22 @@ if st.session_state["connected"]:
                                 refresh_page()
 
                         else:
-                            if not df.empty:    
-                                no_of_transactions=df.shape[0]
-                                update_summary(db_name,summ_table,ac_name,bank,From,Till,no_of_transactions)
-
+                            if not df.empty:
+                                ex_balance_sum += df['Credit'].sum() - df['Debit'].sum()
                                 add_data(df,override,db_name,user_name)
+                                if not existing_df.empty:
+                                    condition_summ = f"Name='{ac_name}' and Bank='{bank}';"
+                                    delete_data(db_name,summ_table,condition_summ)
+                                res = get_oldest_latest_date(ac_name,bank,user_name)
+
+                                if res:
+                                    row_condition=f"where Date='{res['oldest_date']}' limit 1"
+                                    row = get_transaction_data(db_name,user_name,row_condition)
+                                    res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
+                                    row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
+                                    row.loc[0, 'Balance']+=ex_balance_sum
+                                    update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'])
+                                
                             st.toast(":green[Data updated successfully]")
                             time.sleep(3)
                             refresh_page()
@@ -328,7 +359,11 @@ if st.session_state["connected"]:
                                 row = get_transaction_data(db_name,user_name,row_condition)
                                 res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
                                 row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
-                                update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'])
+                                cred_deb_condition=f"where Bank='{bank_selected}' and Name='{name_selected}'"
+                                cred_deb_df=get_transaction_data(db_name,user_name,cred_deb_condition)
+                                cred_deb_sum = cred_deb_df['Credit'].sum() - cred_deb_df['Debit'].sum() + row.loc[0, 'Balance']
+                                    
+                                update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],cred_deb_sum)
                             st.toast(":green[Data deleted successfully]")
                         except Exception as e:
                             print(f"Error in deleting: {e}")
@@ -594,7 +629,6 @@ if st.session_state["connected"]:
                         st.error("Please enter all details before proceeding.")
 
             with tab6:
-            
                 # Input field
                 c1, c2, c3 = st.columns(3)
                 with c1:

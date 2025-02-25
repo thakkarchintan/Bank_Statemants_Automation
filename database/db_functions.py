@@ -262,7 +262,8 @@ def get_summary_data(database_name,table_name):
             Start_Date DATE,
             End_Date DATE,
             Pending_days INT,
-            Transactions INT
+            Transactions INT,
+            Balance float
         );
     """
     create_table(database_name,create_table_query,conn)
@@ -388,9 +389,22 @@ def get_oldest_latest_date(name,bank_name,table_name):
             cursor.close()
             conn.close()
 
-def update_summary1(database_name,table_name,ac_name,bank,From,Till,no_of_transactions):
+def update_summary1(database_name,table_name,ac_name,bank,From,Till,no_of_transactions,balance):
     try:
-        conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)  
+        conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
+        create_table_query = f"""
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                Name VARCHAR(50), 
+                Bank VARCHAR(50), 
+                Start_Date DATE,
+                End_Date DATE,
+                Pending_days INT,
+                Transactions INT,
+                Balance float
+            );
+        """
+        create_table(database_name,create_table_query,conn)
+        
         cursor = conn.cursor()
         no_of_transactions=int(no_of_transactions)
         ist = pytz.timezone('Asia/Kolkata')
@@ -400,7 +414,7 @@ def update_summary1(database_name,table_name,ac_name,bank,From,Till,no_of_transa
         pending_days=dt.datetime.now(ist) - ist.localize(Till)
         Till=pd.to_datetime(Till,errors='coerce')
 
-        data=(ac_name,bank,From,Till,pending_days.days,no_of_transactions)
+        data=(ac_name,bank,From,Till,pending_days.days,no_of_transactions,balance)
         insert_data(database_name,table_name,data,conn,cursor)
         cursor.close()
         conn.close()
