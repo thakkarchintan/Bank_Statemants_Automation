@@ -1,3 +1,5 @@
+admins = ['professionalbuzz','shirishkumar1949']
+
 bank_status_dict = {
     'Axis Bank': False,
     'HDFC Bank': False,

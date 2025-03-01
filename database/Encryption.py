@@ -32,7 +32,6 @@ def aws_config():
         logging.error("Error: AWS credentials not found or incorrect.")
         return None
 
-
 def get_encrypt_key():
     """Generates a data key using AWS KMS and returns the plaintext & encrypted key."""
     try:
@@ -56,11 +55,6 @@ def get_encrypt_key():
         logging.error(f"Unexpected error: {e}")
 
     return None, None
-
-
-import base64
-import logging
-from Crypto.Cipher import AES
 
 def encrypt_aes_gcm(data, aes_key, aad=None):
     """Encrypts a given value using AES-GCM with Base64 encoding and optional AAD."""
@@ -97,8 +91,6 @@ def encrypt_aes_gcm(data, aes_key, aad=None):
         logging.error(f"Encryption failed for data: {data}. Error: {e}")
         return None
 
-
-
 def decrypt_aes_gcm(encrypted_data, aes_key, aad=None):
     """Decrypts a given string using AES-GCM while handling Base64 encoding issues."""
     try:
@@ -120,8 +112,6 @@ def decrypt_aes_gcm(encrypted_data, aes_key, aad=None):
     except Exception as e:
         logging.error(f"Unexpected decryption error: {e}")
         return None
-
-
 
 def encrypt_dataframe(df, encrypt_columns):
     """Encrypts specified columns in a dataframe using AES-GCM."""
@@ -145,7 +135,6 @@ def encrypt_dataframe(df, encrypt_columns):
     encrypted_df["EncryptedKey"] = encrypted_key
     logging.info("Data encryption completed successfully.")
     return encrypted_df
-
 
 def decrypt_dataframe(df, decrypt_columns):
     """Decrypts specified columns in a dataframe using AES-GCM."""

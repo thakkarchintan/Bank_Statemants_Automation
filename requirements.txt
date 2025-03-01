@@ -19,7 +19,6 @@ matplotlib
 plotly
 plotly-express
 joblib
-logging
 boto3
 pycryptodome
 razorpay

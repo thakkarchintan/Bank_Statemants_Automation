@@ -1,5 +1,6 @@
 import pandas as pd
 import pymysql
+import mysql.connector
 from sqlalchemy import create_engine, text
 import os
 from dotenv import load_dotenv
@@ -17,11 +18,6 @@ USER = os.getenv("USER")
 PASSWORD = os.getenv("PASSWORD")
 DATABASE = os.getenv("DATABASE")
 PORT = 3306
-# int(os.getenv("PORT"))
-
-# Table name
-# user_name='user1'
-# table_name = user_name+'_table'
 
 # 1. Create a new database
 def create_database(database_name,cursor):
@@ -53,6 +49,8 @@ def insert_data(database_name, table_name, data, conn, cursor, col_names=""):
         s+=' )'
         conn.select_db(database_name)
         insert_query = f"INSERT IGNORE INTO {table_name} {col_names} VALUES {s};"
+        # print(insert_query)
+        # print(data)
         cursor.execute(insert_query, data)  
         conn.commit()
         print(f"Data inserted successfully into table '{table_name}'.")
@@ -100,7 +98,8 @@ def add_data(df,override,database_name, table_name):
             Debit TEXT, 
             Credit TEXT, 
             Category TEXT,
-            EncryptedKey TEXT
+            EncryptedKey TEXT,
+            Balance float
         )
     """
     create_table(database_name, create_table_query, conn)
@@ -118,7 +117,7 @@ def add_data(df,override,database_name, table_name):
     # Close the connection
     cursor.close()
     conn.close()
-    encrypt_columns = ["Bank", "Narration", "Debit", "Credit", "Category"]
+    encrypt_columns = ["Narration", "Debit", "Credit", "Category"]
     edf = encrypt_dataframe(df,encrypt_columns)
     # Create database connection
     engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
@@ -135,7 +134,7 @@ def add_data(df,override,database_name, table_name):
     except Exception as e:
         print(f"Error occurred: {e}")
 
-def get_transaction_data(database_name,table_name):
+def get_transaction_data(database_name,table_name,condition=""):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()
     create_database(database_name,cursor)
@@ -149,7 +148,8 @@ def get_transaction_data(database_name,table_name):
             Debit TEXT, 
             Credit TEXT, 
             Category TEXT,
-            EncryptedKey TEXT
+            EncryptedKey TEXT,
+            Balance float
         )
     """
     create_table(database_name, create_table_query, conn)
@@ -163,9 +163,9 @@ def get_transaction_data(database_name,table_name):
 
     with engine.connect() as Conn:
         # Read existing data from the table
-        all_data = pd.read_sql(text(f"SELECT * FROM {table_name} order by Date;"), Conn)
+        all_data = pd.read_sql(text(f"SELECT * FROM {table_name} {condition};"), Conn)
         # print(all_data)
-        decrypt_columns = ["Bank", "Narration", "Debit", "Credit", "Category"]
+        decrypt_columns = ["Narration", "Debit", "Credit", "Category"]
         ddf = decrypt_dataframe(all_data,decrypt_columns)
         fdf = convert_debit_credit_to_float(ddf)
         return fdf
@@ -257,7 +257,8 @@ def get_summary_data(database_name,table_name):
             Start_Date DATE,
             End_Date DATE,
             Pending_days INT,
-            Transactions INT
+            Transactions INT,
+            Balance float
         );
     """
     create_table(database_name,create_table_query,conn)
@@ -346,3 +347,87 @@ def get_category_df(database_name,table_name):
         all_data = pd.read_sql(text(f"SELECT * FROM {table_name};"), Conn)
         return all_data
     return pd.DataFrame()
+
+def get_oldest_latest_date(name,bank_name,table_name):
+    try:
+        # Connect to MySQL
+        conn = mysql.connector.connect(
+            host=HOST,
+            user=USER,
+            password=PASSWORD,
+            database=DATABASE
+        )
+        cursor = conn.cursor()
+
+        # Query to fetch the oldest date, latest date, and amount at the oldest date
+        query = f"""
+        SELECT 
+            (SELECT MIN(Date) FROM {table_name} WHERE Bank = %s and Name= %s) AS oldest_date,
+            (SELECT MAX(Date) FROM {table_name} WHERE Bank = %s and Name= %s) AS latest_date,
+            (SELECT count(Date) FROM {table_name} WHERE Bank = %s and Name= %s) AS no_of_transactions
+        """
+        
+        cursor.execute(query, (bank_name, name, bank_name, name, bank_name, name))
+        result = cursor.fetchone()
+
+        if result and result[0] and result[1]:
+            oldest_date, latest_date, no_of_transactions = result
+            return {"oldest_date": oldest_date.strftime('%Y-%m-%d'), "latest_date": latest_date.strftime('%Y-%m-%d'), "no_of_transactions":no_of_transactions}
+        else:
+            return None
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+
+def update_summary1(database_name,table_name,ac_name,bank,From,Till,no_of_transactions,balance):
+    try:
+        conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
+        create_table_query = f"""
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                Name VARCHAR(50), 
+                Bank VARCHAR(50), 
+                Start_Date DATE,
+                End_Date DATE,
+                Pending_days INT,
+                Transactions INT,
+                Balance float
+            );
+        """
+        create_table(database_name,create_table_query,conn)
+        
+        cursor = conn.cursor()
+        no_of_transactions=int(no_of_transactions)
+        ist = pytz.timezone('Asia/Kolkata')
+        # print(dt.datetime.now(ist))
+        
+        Till=dt.datetime.strptime(Till,'%Y-%m-%d')
+        pending_days=dt.datetime.now(ist) - ist.localize(Till)
+        Till=pd.to_datetime(Till,errors='coerce')
+
+        data=(ac_name,bank,From,Till,pending_days.days,no_of_transactions,balance)
+        insert_data(database_name,table_name,data,conn,cursor)
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error in updating summary data: {e}")
+
+# Function to get all categories
+def get_categories(table_name):
+    # Create database connection
+    engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+
+    with engine.connect() as Conn:
+        # Read existing data from the table
+        all_data = pd.read_sql(text(f"SELECT * FROM {table_name};"), Conn)
+        # print(all_data)
+        return all_data
+    return pd.DataFrame({
+        "Keyword": [],
+        "Category": [],
+        "Type": []
+    })

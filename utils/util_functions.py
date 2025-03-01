@@ -97,7 +97,7 @@ def xlsx_to_df(uploaded_file):
     return df
 
 from utils import banks_date_format,table_columns_dic,table_columns_pdf_dic ,bank_status_dict
-from database import get_category_df
+from database import get_categories
 
 def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categorization):
     date_format=banks_date_format[bank]
@@ -191,21 +191,21 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
         df['Category'] = ""
         
         if global_categorization:
-            category_table="categories"
+            category_table="Categories"
+            categorization_df=get_categories(category_table)
+            debit_categorization_df = categorization_df[categorization_df['Type'] == 'Debit']
+            credit_categorization_df = categorization_df[categorization_df['Type'] == 'Credit']
 
-            debit_categorization_df=get_category_df(db_name,category_table+"_debit")
-            credit_categorization_df=get_category_df(db_name,category_table+"_credit")
-
-            credit_categorization_dict = dict(zip(credit_categorization_df['keyword'], credit_categorization_df['category']))
-            debit_categorization_dict = dict(zip(debit_categorization_df['keyword'], debit_categorization_df['category']))
+            credit_categorization_dict = dict(zip(credit_categorization_df['Keyword'], credit_categorization_df['Category']))
+            debit_categorization_dict = dict(zip(debit_categorization_df['Keyword'], debit_categorization_df['Category']))
             
             df['Category'] = df.apply(
-                lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" else "",
+                lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" and row['Category']=="" else row['Category'],
                 axis=1
             )
 
             df['Category'] = df.apply(
-                lambda row: categorize(row['Narration'],debit_categorization_dict) if pd.notna(row['Debit']) and row['Debit'] != "" else row['Category'],
+                lambda row: categorize(row['Narration'],debit_categorization_dict) if pd.notna(row['Debit']) and row['Debit'] != ""  and row['Category']=="" else row['Category'],
                 axis=1
             )
 
@@ -442,9 +442,6 @@ def has_common_rows(df1, df2, col=['Name','Bank','Date','Narration','Debit','Cre
     return pd.merge(df1, df2, on=col, how='inner')
      
 def home_page():
-   
-        
-     
     css = """
         <style>
             *{
