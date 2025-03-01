@@ -461,8 +461,8 @@ def home_page():
            
             h1 {
                 all: unset;
-                font-size: 1.5rem !important;
-                margin: 20px 0 !important;
+                font-size: 1.8rem !important;
+                margin-bottom:1rem !important;
                 font-weight: bold !important;
                 color: black;
             }
@@ -500,6 +500,7 @@ def home_page():
                 margin-bottom:20px;
                 justify-content:start;
                 align-items:center;
+                margin-top:15px;
             }
             .profile-image img{
                 border-radius:100%;
@@ -525,11 +526,15 @@ def home_page():
             #list_of_supported_banks {
             max-width: 60%;
             border-collapse: collapse; /* Ensures table borders collapse together */
-            margin-top:10px;
+            margin-top:30px;
         }
         
         .leftpad2{
             padding-left:3px
+        }
+        
+        .para-section{
+            margin-top:15px;
         }
 
         #list_of_supported_banks th, #list_of_supported_banks td {
@@ -608,9 +613,11 @@ def home_page():
         <div class="container">
                 <div class="text-section">
                     <h1>Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
-                    <div class="para">Upload PDF or XLS bank statements from the <a href = "#list_of_supported_banks">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
-                    <div class="para bold">✅ Track Spending Patterns</div>
-                    <div class="para bold">✅ Gain Intelligent Insights</div>
+                    <div class="para-section">
+                        <div class="para">Upload PDF or XLS bank statements from the <a href = "#list_of_supported_banks">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
+                        <div class="para bold">✅ Track Spending Patterns</div>
+                        <div class="para bold">✅ Gain Intelligent Insights</div>
+                    </div>
                 </div>  
                 <div class = "profile">
                 <h1>Why I Created This App</h1>
