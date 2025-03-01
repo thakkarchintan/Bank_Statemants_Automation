@@ -23,4 +23,3 @@ boto3
 pycryptodome
 razorpay
 mysql-connector-python
-logging
