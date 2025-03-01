@@ -500,7 +500,6 @@ def home_page():
                 display:flex;
                 gap:20px;
                 width:70%;
-                margin-top:20px;
                 margin-bottom:20px;
                 justify-content:start;
                 align-items:center;
@@ -519,7 +518,6 @@ def home_page():
                 margin-top:15px;
             }
             .profile-info p{
-                margin-top:5px;
                 margin-bottom:5px;
                 font-size:1rem;
             }
@@ -530,6 +528,7 @@ def home_page():
             #list_of_supported_banks {
             max-width: 60%;
             border-collapse: collapse; /* Ensures table borders collapse together */
+            margin-top:10px;
         }
         
         .leftpad2{
