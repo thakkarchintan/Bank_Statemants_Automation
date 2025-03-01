@@ -107,7 +107,7 @@ if st.session_state["connected"]:
     with st.sidebar:
         global_categorization = st.toggle("Enable Categorization")
         # Submit button inside sidebar
-        st.button("Add data", on_click=ok_submission ,use_container_width=True)
+        st.button("Add dataaaa", on_click=ok_submission ,use_container_width=True)
 
         # Show confirmation inside sidebar
         if st.session_state.ok:
