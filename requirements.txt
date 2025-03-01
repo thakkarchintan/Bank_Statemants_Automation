@@ -19,8 +19,8 @@ matplotlib
 plotly
 plotly-express
 joblib
-logging
 boto3
 pycryptodome
 razorpay
 mysql-connector-python
+logging
