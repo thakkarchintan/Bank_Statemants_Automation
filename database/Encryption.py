@@ -13,6 +13,7 @@ load_dotenv(dotenv_path=os.path.join("home","ec2-user","app",".env"))
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+
 def aws_config():
     """Configures AWS credentials and creates a KMS client."""
     aws_access_key = os.getenv("AWS_ACCESS_KEY")
