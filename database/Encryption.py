@@ -8,7 +8,7 @@ import pandas as pd
 from Crypto.Cipher import AES
 
 # Load environment variables
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join("home","ec2-user","app",".env"))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

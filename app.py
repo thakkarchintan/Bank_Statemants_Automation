@@ -15,7 +15,7 @@ from auth import Authenticator
 from database import *
 from utils import *
 
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join("home","ec2-user","app",".env"))
 
 # hide_3_dot_menu()
 
@@ -53,7 +53,7 @@ db_name=os.getenv("DATABASE")
 
 if st.session_state["connected"]:
     db_df=pd.DataFrame()
-    dummy_data_file_path = os.path.join("assets","other","dummy_data.xlsx")
+    dummy_data_file_path = os.path.join("home","ec2-user","app","assets","other","dummy_data.xlsx")
     dummy_data = pd.read_excel(dummy_data_file_path)
     user_info=st.session_state['user_info']
     user_email = str(user_info.get('email'))

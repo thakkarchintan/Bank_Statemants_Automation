@@ -8,7 +8,7 @@ import datetime as dt
 import pytz
 from database.Encryption import *
 
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join("home","ec2-user","app",".env"))
 
 # MySQL database credentials
 DATABASE_TYPE = os.getenv("DATABASE_TYPE")
