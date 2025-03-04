@@ -372,38 +372,42 @@ if st.session_state["connected"]:
                     condition = f"Date between '{s_date}' and '{e_date}' and Name='{name_selected}' and Bank='{bank_selected}';"
                     condition_summ = f"Name='{name_selected}' and Bank='{bank_selected}';"
                     
-                    st.warning("This will delete your all data and cannot be undone. Are you sure to proceed?")
+                    st.warning(f"This will delete your data Date between '{s_date}' and '{e_date}' for Name='{name_selected}' & Bank='{bank_selected} and cannot be undone. Are you sure to proceed?")
                     col1, col2 = st.columns(2)
-
+                    yp_button=False
+                    can_button=False
                     with col1:
-                        if st.button("Yes, Proceed", key="yp1"):
-                            try:
-                                delete_data(db_name,user_name,condition)
-                                delete_data(db_name,summ_table,condition_summ)
-                                res = get_oldest_latest_date(name_selected,bank_selected,user_name)
-
-                                if res:
-                                    row_condition=f"where Date='{res['oldest_date']}' limit 1"
-                                    row = get_transaction_data(db_name,user_name,row_condition)
-                                    res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
-                                    row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
-                                    cred_deb_condition=f"where Bank='{bank_selected}' and Name='{name_selected}'"
-                                    cred_deb_df=get_transaction_data(db_name,user_name,cred_deb_condition)
-                                    cred_deb_sum = cred_deb_df['Credit'].sum() - cred_deb_df['Debit'].sum() + row.loc[0, 'Balance']
-                                        
-                                    update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],cred_deb_sum)
-                                st.toast(":green[Data deleted successfully]")
-                            except Exception as e:
-                                print(f"Error in deleting: {e}")
-                                st.toast(":red[Something went wrong.Please try again.]")
-                            st.session_state.confirm = False
-                            time.sleep(2)
-                            refresh_page()
-                            
+                        yp_button=st.button("Yes, Proceed", key="yp1")
                     with col2:
-                        if st.button("Cancel",key="can1"):
-                            st.session_state.confirm = False
-                            refresh_page()
+                        can_button=st.button("Cancel",key="can1")
+                    
+                    if yp_button:
+                        try:
+                            delete_data(db_name,user_name,condition)
+                            delete_data(db_name,summ_table,condition_summ)
+                            res = get_oldest_latest_date(name_selected,bank_selected,user_name)
+
+                            if res:
+                                row_condition=f"where Date='{res['oldest_date']}' limit 1"
+                                row = get_transaction_data(db_name,user_name,row_condition)
+                                res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
+                                row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
+                                cred_deb_condition=f"where Bank='{bank_selected}' and Name='{name_selected}'"
+                                cred_deb_df=get_transaction_data(db_name,user_name,cred_deb_condition)
+                                cred_deb_sum = cred_deb_df['Credit'].sum() - cred_deb_df['Debit'].sum() + row.loc[0, 'Balance']
+                                    
+                                update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],cred_deb_sum)
+                            st.toast(":green[Data deleted successfully]")
+                        except Exception as e:
+                            print(f"Error in deleting: {e}")
+                            st.toast(":red[Something went wrong.Please try again.]")
+                        st.session_state.confirm = False
+                        time.sleep(2)
+                        refresh_page()
+                            
+                    if can_button:
+                        st.session_state.confirm = False
+                        refresh_page()
                 else:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
 
