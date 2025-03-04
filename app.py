@@ -339,8 +339,11 @@ if st.session_state["connected"]:
                             refresh_page()
                 else:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
-            Select_data_button=st.button("Select data to Delete")
-            if Select_data_button:
+
+            if "Select_data_button" not in st.session_state:
+                st.session_state.Select_data_button = False
+            st.session_state.Select_data_button=st.button("Select data to Delete")
+            if st.session_state.Select_data_button:
                 if not db_df.empty:
                     name_options = list(db_df["Name"].unique())
                     bank_options = list(db_df["Bank"].unique())
