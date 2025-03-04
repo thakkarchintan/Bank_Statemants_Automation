@@ -311,6 +311,9 @@ if st.session_state["connected"]:
         user_name = user_email[:-10]
         user_name = user_name.replace('.','__')
         authenticator.logout()
+    
+    if "Select_data_button" not in st.session_state:
+        st.session_state.Select_data_button = False
 
     if st.session_state.confirm:
         tab=st.tabs(["Delete"])
@@ -340,8 +343,6 @@ if st.session_state["connected"]:
                 else:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
 
-            if "Select_data_button" not in st.session_state:
-                st.session_state.Select_data_button = False
             st.session_state.Select_data_button=st.button("Select data to Delete")
             if st.session_state.Select_data_button:
                 if not db_df.empty:
