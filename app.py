@@ -15,7 +15,7 @@ from auth import Authenticator
 from database import *
 from utils import *
 
-load_dotenv(dotenv_path=os.path.join("home","ec2-user","app",".env"))
+load_dotenv(dotenv_path="/"+os.path.join("home","ec2-user","app",".env"))
 
 # hide_3_dot_menu()
 
@@ -53,7 +53,7 @@ db_name=os.getenv("DATABASE")
 
 if st.session_state["connected"]:
     db_df=pd.DataFrame()
-    dummy_data_file_path = os.path.join("home","ec2-user","app","assets","other","dummy_data.xlsx")
+    dummy_data_file_path = "/"+os.path.join("home","ec2-user","app","assets","other","dummy_data.xlsx")
     dummy_data = pd.read_excel(dummy_data_file_path)
     user_info=st.session_state['user_info']
     user_email = str(user_info.get('email'))
@@ -526,7 +526,7 @@ if st.session_state["connected"]:
                         )
                 else:
                     if st.button("Show Dummy Summary",key='showd1'):
-                        dummy_summary_data_file_path = os.path.join("home","ec2-user","app","assets","other","dummy_summary_data.xlsx")
+                        dummy_summary_data_file_path = "/"+os.path.join("home","ec2-user","app","assets","other","dummy_summary_data.xlsx")
                         dummy_summary_data=pd.read_excel(dummy_summary_data_file_path)
                         # Convert the Date column to datetime and then format it
                         dummy_summary_data['Start_Date'] = pd.to_datetime(dummy_summary_data['Start_Date'],errors='coerce').dt.strftime('%d-%b-%Y')

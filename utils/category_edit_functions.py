@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=os.path.join("home","ec2-user","app",".env"))
+load_dotenv(dotenv_path="/"+os.path.join("home","ec2-user","app",".env"))
 
 # MySQL database credentials
 DATABASE_TYPE = os.getenv("DATABASE_TYPE")
