@@ -324,7 +324,7 @@ if st.session_state["connected"]:
                     col1, col2 = st.columns(2)
 
                     with col1:
-                        if st.button("Yes, Proceed"):
+                        if st.button("Yes, Proceed",key="yp2"):
                             try:
                                 delete_data(db_name,user_name,"1=1")
                                 delete_data(db_name,summ_table,"1=1")
@@ -335,11 +335,12 @@ if st.session_state["connected"]:
                             refresh_page()
                             
                     with col2:
-                        if st.button("Cancel"):
+                        if st.button("Cancel",key="can2"):
                             refresh_page()
                 else:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
-            if st.button("Select data to Delete"):
+            Select_data_button=st.button("Select data to Delete")
+            if Select_data_button:
                 if not db_df.empty:
                     name_options = list(db_df["Name"].unique())
                     bank_options = list(db_df["Bank"].unique())
@@ -371,7 +372,7 @@ if st.session_state["connected"]:
                     col1, col2 = st.columns(2)
 
                     with col1:
-                        if st.button("Yes, Proceed"):
+                        if st.button("Yes, Proceed", key="yp1"):
                             try:
                                 delete_data(db_name,user_name,condition)
                                 delete_data(db_name,summ_table,condition_summ)
@@ -396,7 +397,7 @@ if st.session_state["connected"]:
                             refresh_page()
                             
                     with col2:
-                        if st.button("Cancel"):
+                        if st.button("Cancel",key="can1"):
                             st.session_state.confirm = False
                             refresh_page()
                 else:
