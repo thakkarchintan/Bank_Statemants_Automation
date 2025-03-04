@@ -283,7 +283,7 @@ if st.session_state["connected"]:
     summary_df['End_Date'] = pd.to_datetime(summary_df['End_Date'],errors='coerce')
 
     start_dt=summary_df['Start_Date'].min()
-    end_dt=summary_df['End_Date'].min()
+    end_dt=summary_df['End_Date'].max()
 
     summary_df['Start_Date'] =summary_df['Start_Date'].dt.strftime('%d-%b-%Y')
     summary_df['End_Date'] = summary_df['End_Date'].dt.strftime('%d-%b-%Y')
