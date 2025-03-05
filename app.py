@@ -6,7 +6,6 @@ from io import BytesIO
 from datetime import datetime , timedelta ,date
 import os
 import time
-from dotenv import load_dotenv
 
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Bank Statements Automation",layout="wide")
@@ -14,15 +13,14 @@ st.set_page_config(page_title="Bank Statements Automation",layout="wide")
 from auth import Authenticator
 from database import *
 from utils import *
-
-load_dotenv()
+from constant_variables import *
 
 # hide_3_dot_menu()
 
 authenticator = Authenticator(
-    token_key=os.getenv("TOKEN_KEY"),
-    secret_path = "/etc/secrets/Bank_statement.json",
-    redirect_uri="https://bankstatements.onrender.com",
+    token_key=TOKEN_KEY,
+    secret_path = SECRET_PATH,
+    redirect_uri=REDIRECT_URI,
 )
 
 st.markdown(
@@ -49,11 +47,11 @@ page = query_params.get("page", ["home"])
 
 authenticator.check_auth()
 
-db_name=os.getenv("DATABASE")
+db_name=DATABASE
 
 if st.session_state["connected"]:
     db_df=pd.DataFrame()
-    dummy_data_file_path = os.path.join("assets","other","dummy_data.xlsx")
+    dummy_data_file_path = DUMMY_DATA_PATH
     dummy_data = pd.read_excel(dummy_data_file_path)
     user_info=st.session_state['user_info']
     user_email = str(user_info.get('email'))
@@ -105,7 +103,6 @@ if st.session_state["connected"]:
         
     # Sidebar elements to add data
     with st.sidebar:
-        global_categorization = st.toggle("Enable Categorization")
         # Submit button inside sidebar
         st.button("Add data", on_click=ok_submission ,use_container_width=True)
 
@@ -147,7 +144,7 @@ if st.session_state["connected"]:
                         df=pd.DataFrame()
                         for i in range(n):
                             tdf=format_uploaded_file(uploaded_files[i],bank,
-                            db_name,user_name,global_categorization)
+                            db_name,user_name)
                             df=pd.concat([df,tdf])
 
                         # get data from db
@@ -277,8 +274,26 @@ if st.session_state["connected"]:
     # get data from db
     db_df=get_transaction_data(db_name,user_name)
 
+    summary_df=get_summary_data(db_name,summ_table)
+
+    # Convert the Date column to datetime and then format it
+    summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce')
+    summary_df['End_Date'] = pd.to_datetime(summary_df['End_Date'],errors='coerce')
+
+    start_dt=summary_df['Start_Date'].min()
+    end_dt=summary_df['End_Date'].max()
+
+    summary_df['Start_Date'] =summary_df['Start_Date'].dt.strftime('%d-%b-%Y')
+    summary_df['End_Date'] = summary_df['End_Date'].dt.strftime('%d-%b-%Y')
+
     # Convert the Date column to datetime
     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
+
+    if "Select_data_button" not in st.session_state:
+        st.session_state.Select_data_button = False
+
+    if "delete_all" not in st.session_state:
+        st.session_state.delete_all = False
 
     # Initialize session state for confirmation popup
     if "confirm" not in st.session_state:
@@ -304,38 +319,87 @@ if st.session_state["connected"]:
     if st.session_state.confirm:
         tab=st.tabs(["Delete"])
         with tab[0]:
-            if not db_df.empty:
-                name_options = list(db_df["Name"].unique())
-                bank_options = list(db_df["Bank"].unique())
-
-                # Default date (today)
-                default_date = date.today()
-
-                d = st.columns(4)
-
-                # Dropdown to select a name and bank
-                with d[0]:
-                    name_selected = st.selectbox("Select Name:", options=name_options)
-
-                with d[1]:
-                    bank_selected = st.selectbox("Select Bank:", options=bank_options)
-
-                with d[2]:
-                    s_date = st.date_input("Pick a start date", value=default_date)
-                    s_date = s_date.strftime('%Y-%m-%d')
-
-                with d[3]:
-                    e_date = st.date_input("Pick a end date", value=default_date)
-                    e_date = e_date.strftime('%Y-%m-%d')
+            if not summary_df.empty:
+                display_data(summary_df,200)
                 
-                condition = f"Date between '{s_date}' and '{e_date}' and Name='{name_selected}' and Bank='{bank_selected}';"
-                condition_summ = f"Name='{name_selected}' and Bank='{bank_selected}';"
-                
-                st.warning("This will delete your all data and cannot be undone. Are you sure to proceed?")
-                col1, col2 = st.columns(2)
+            if st.button("Delete All data"):
+                st.session_state.delete_all=True
+            yp_button1=False
+            can_button1=False
 
-                with col1:
-                    if st.button("Yes, Proceed"):
+            if st.session_state.delete_all:
+                if not db_df.empty:
+                    st.warning("This will delete your all data and cannot be undone. Are you sure to proceed?")
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        if st.button("Yes, Proceed",key="yp2"):
+                            yp_button1=True
+
+                    with col2:
+                        if st.button("Cancel",key="can2"):
+                            can_button1=True
+
+                    if yp_button1:
+                        try:
+                            delete_data(db_name,user_name,"1=1")
+                            delete_data(db_name,summ_table,"1=1")
+                        except Exception as e:
+                            print(f"Error in deleting: {e}")
+                            st.toast(":red[Something went wrong.Please try again.]")
+                        time.sleep(2)
+                        refresh_page()
+                    
+                    if can_button1:
+                        refresh_page()
+
+                else:
+                    st.toast(":red[There are no transactions in your account. No data to delete!]")
+                    time.sleep(2)
+                    refresh_page()
+
+            if st.button("Select data to Delete"):
+                st.session_state.Select_data_button=True
+            yp_button=False
+            can_button=False
+
+            if st.session_state.Select_data_button:
+                if not db_df.empty:
+                    name_options = list(db_df["Name"].unique())
+                    bank_options = list(db_df["Bank"].unique())
+
+                    d = st.columns(4)
+                    name_selected,bank_selected="",""
+
+                    # Dropdown to select a name and bank
+                    with d[0]:
+                        name_selected = st.selectbox("Select Name:", options=name_options)
+
+                    with d[1]:
+                        bank_selected = st.selectbox("Select Bank:", options=bank_options)
+
+                    with d[2]:
+                        s_date = st.date_input("Pick a start date", value=start_dt,min_value=start_dt,max_value=end_dt)
+                        s_date = s_date.strftime('%Y-%m-%d')
+
+                    with d[3]:
+                        e_date = st.date_input("Pick a end date", value=end_dt,min_value=start_dt,max_value=end_dt)
+                        e_date = e_date.strftime('%Y-%m-%d')
+                    
+                    condition = f"Date between '{s_date}' and '{e_date}' and Name='{name_selected}' and Bank='{bank_selected}';"
+                    condition_summ = f"Name='{name_selected}' and Bank='{bank_selected}';"
+                    
+                    st.warning(f"This will delete your data Date between '{s_date}' and '{e_date}' for Name '{name_selected}' & Bank '{bank_selected}' and cannot be undone. Are you sure to proceed?")
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        if st.button("Yes, Proceed", key="yp1"):
+                            yp_button=True
+                    with col2:
+                        if st.button("Cancel",key="can1"):
+                            can_button=True
+                    
+                    if yp_button:
                         try:
                             delete_data(db_name,user_name,condition)
                             delete_data(db_name,summ_table,condition_summ)
@@ -358,13 +422,13 @@ if st.session_state["connected"]:
                         st.session_state.confirm = False
                         time.sleep(2)
                         refresh_page()
-                        
-                with col2:
-                    if st.button("Cancel"):
-                        st.session_state.confirm = False
+                            
+                    if can_button:
                         refresh_page()
-            else:
-                st.toast(":red[There are no transactions in your account. No data to delete!]")
+                else:
+                    st.toast(":red[There are no transactions in your account. No data to delete!]")
+                    time.sleep(2)
+                    refresh_page()
 
     else:
         if user_name in admins:
@@ -450,7 +514,11 @@ if st.session_state["connected"]:
             try:
                 if not db_df.empty:
                     db_df['Date'] = db_df['Date'].dt.strftime('%d-%b-%Y')
-                    display_data(db_df,600,db_name,user_name,True)
+                    table_nm="Categories"
+                    initialize_db(table_nm)
+                    category_table_data = get_categories(table_nm)
+
+                    display_data(db_df,600,db_name,user_name,True,sorted(category_table_data['Category'].unique()))
                     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
                     st.download_button(
                         key='dbb',
@@ -474,12 +542,6 @@ if st.session_state["connected"]:
             try:
                 if not db_df.empty:
                     # st.subheader("Summary")
-                    summary_df=get_summary_data(db_name,summ_table)
-
-                    # Convert the Date column to datetime and then format it
-                    summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
-                    summary_df['End_Date'] = pd.to_datetime(summary_df['End_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
-
                     if not summary_df.empty:
                         display_data(summary_df,200)
 
@@ -496,7 +558,7 @@ if st.session_state["connected"]:
                         )
                 else:
                     if st.button("Show Dummy Summary",key='showd1'):
-                        dummy_summary_data_file_path = os.path.join("assets","other","dummy_summary_data.xlsx")
+                        dummy_summary_data_file_path = DUMMY_DATA_SUMMARY_PATH
                         dummy_summary_data=pd.read_excel(dummy_summary_data_file_path)
                         # Convert the Date column to datetime and then format it
                         dummy_summary_data['Start_Date'] = pd.to_datetime(dummy_summary_data['Start_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
@@ -510,14 +572,12 @@ if st.session_state["connected"]:
         
         with tab4:
             # Admin Email Config
-            ADMIN_EMAIL1 = os.getenv("ADMIN_EMAIL1")  
-            ADMIN_EMAIL2 = os.getenv("ADMIN_EMAIL2")
             ADMIN_EMAILS=[ADMIN_EMAIL1,ADMIN_EMAIL2]
 
-            SMTP_SERVER = os.getenv("SMTP_SERVER")
+            SMTP_SERVER = SMTP_SERVER
 
-            SMTP_USER = os.getenv("SMTP_USER")  # Replace with your Gmail
-            SMTP_PASSWORD = os.getenv("email_pass")  # Use an App Password, not your main password
+            SMTP_USER = SMTP_USER  # Replace with your Gmail
+            SMTP_PASSWORD = email_pass  # Use an App Password, not your main password
             feedback_table='Feedback'
             st.subheader("We value your thoughts! Feel free to share any feedback, ideas, or suggestions to help us improve. Your insights make a difference!")
 
@@ -546,10 +606,6 @@ if st.session_state["connected"]:
 
         if user_name in admins:
             with tab5:
-                # Razorpay credentials
-                RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID')
-                RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
-
                 # Initialize the Razorpay client
                 client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
@@ -634,41 +690,45 @@ if st.session_state["connected"]:
                     st.rerun()
 
                 # Add New Entry Section
-                st.subheader("➕ Add New Item")
+                st.subheader("Add New Item")
 
-                col = st.columns([2.8,2.8,2.8,1.6])  # Layout columns
+                col = st.columns(3)  # Layout columns
 
                 # Unique categories sorted A-Z
                 unique_categories = sorted(st.session_state.table_data["Category"].unique())
-                new_category = col[0].selectbox("Select Category", unique_categories + ["Other"], index=0)
+                new_category = col[0].selectbox("Select Category", ["Add new category"]+unique_categories, index=0)
 
-                if new_category == "Other":
-                    new_category = col[0].text_input("Enter New Category")
+                if new_category == "Add new category":
+                    new_category = col[1].text_input("Enter New Category")
 
-                new_keyword = col[1].text_input("Enter Keyword")
-                type = col[2].selectbox("Select Transaction type",["Credit","Debit"])
+                next_col=st.columns(3)
+                new_keywords = next_col[0].text_input("Enter comma-separated Keywords")
+                type = next_col[1].selectbox("Select Transaction type",["Credit","Debit"])
                 
                         
-                with col[3]:
+                with next_col[2]:
                     # Move button slightly up
                     st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
                     # Check for duplicate and show prompt
-                    if st.button("➕ Add", use_container_width=True):
-                        if new_category and new_keyword:
-                            existing_entry = st.session_state.table_data[(st.session_state.table_data["Keyword"] == new_keyword) & (type==st.session_state.table_data["Type"])]
+                    if st.button("Add", use_container_width=True):
+                        keyword_list = [item for item in new_keywords.split(",") if item]
+                        if new_category and new_keywords:
+                            for new_keyword in keyword_list:
+                                existing_entry = st.session_state.table_data[(st.session_state.table_data["Keyword"] == new_keyword) & (type==st.session_state.table_data["Type"])]
 
-                            if not existing_entry.empty:
-                                # Store the existing keyword/category in session state
-                                st.session_state.pending_category = new_category
-                                st.session_state.pending_keyword = new_keyword
-                                st.session_state.existing_category = existing_entry.iloc[0]["Category"]
-                                st.session_state.replace_prompt = True
-                                refresh_table()
+                                if not existing_entry.empty:
+                                    # Store the existing keyword/category in session state
+                                    st.session_state.pending_category = new_category
+                                    st.session_state.pending_keyword = new_keyword
+                                    st.session_state.existing_category = existing_entry.iloc[0]["Category"]
+                                    st.session_state.replace_prompt = True
+                                    refresh_table()
                             else:
                                 # Add new entry since no duplicate exists
-                                new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
-                                st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
-                                st.success(f"✅ Added: {new_category} - {new_keyword}")
+                                for new_keyword in keyword_list:
+                                    new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
+                                    st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
+                                st.success(f"✅ Added: {new_category} - {keyword_list}")
                                 delete_all(table_nm)
                                 add_category_df(st.session_state.table_data,table_nm)
                                 refresh_table()
@@ -700,6 +760,8 @@ if st.session_state["connected"]:
                 # Delete Selected Rows
                 if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
                     st.session_state.table_data = st.session_state.table_data.merge(selected_rows, how="left", indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
+                    delete_all(table_nm)
+                    add_category_df(st.session_state.table_data,table_nm)
                     refresh_table()
 
                 # Handle Replace Prompt

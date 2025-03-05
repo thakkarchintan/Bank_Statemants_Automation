@@ -2,22 +2,11 @@ import pandas as pd
 import pymysql
 import mysql.connector
 from sqlalchemy import create_engine, text
-import os
-from dotenv import load_dotenv
 import datetime as dt
 import pytz
 from database.Encryption import *
+from constant_variables import *
 
-load_dotenv()
-
-# MySQL database credentials
-DATABASE_TYPE = os.getenv("DATABASE_TYPE")
-DBAPI = os.getenv("DBAPI")
-HOST = os.getenv("HOST")
-USER = os.getenv("USER")
-PASSWORD = os.getenv("PASSWORD")
-DATABASE = os.getenv("DATABASE")
-PORT = 3306
 
 # 1. Create a new database
 def create_database(database_name,cursor):

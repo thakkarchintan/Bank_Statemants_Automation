@@ -1,19 +1,7 @@
 import mysql.connector
-import os
 import pandas as pd
 from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# MySQL database credentials
-DATABASE_TYPE = os.getenv("DATABASE_TYPE")
-DBAPI = os.getenv("DBAPI")
-HOST = os.getenv("HOST")
-USER = os.getenv("USER")
-PASSWORD = os.getenv("PASSWORD")
-DATABASE = os.getenv("DATABASE")
-PORT = 3306
+from constant_variables import *
 
 # Database connection
 def get_db_connection():

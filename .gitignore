@@ -1,6 +1,7 @@
 assets/images
 assets/statements
 etc/secrets/*.json
+constant_variables/ec2_constants.py
 Previous_versions_of_app
 *__pycache__/
 tests

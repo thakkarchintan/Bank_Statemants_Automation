@@ -99,7 +99,7 @@ def xlsx_to_df(uploaded_file):
 from utils import banks_date_format,table_columns_dic,table_columns_pdf_dic ,bank_status_dict
 from database import get_categories
 
-def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categorization):
+def format_uploaded_file(uploaded_file, bank, db_name, user_name):
     date_format=banks_date_format[bank]
     table_columns=table_columns_dic[bank]
     table_columns_pdf=table_columns_pdf_dic[bank]
@@ -189,25 +189,24 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
         # print(df)
         # Add a new column 'Category'
         df['Category'] = ""
+
+        category_table="Categories"
+        categorization_df=get_categories(category_table)
+        debit_categorization_df = categorization_df[categorization_df['Type'] == 'Debit']
+        credit_categorization_df = categorization_df[categorization_df['Type'] == 'Credit']
+
+        credit_categorization_dict = dict(zip(credit_categorization_df['Keyword'], credit_categorization_df['Category']))
+        debit_categorization_dict = dict(zip(debit_categorization_df['Keyword'], debit_categorization_df['Category']))
         
-        if global_categorization:
-            category_table="Categories"
-            categorization_df=get_categories(category_table)
-            debit_categorization_df = categorization_df[categorization_df['Type'] == 'Debit']
-            credit_categorization_df = categorization_df[categorization_df['Type'] == 'Credit']
+        df['Category'] = df.apply(
+            lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" and row['Category']=="" else row['Category'],
+            axis=1
+        )
 
-            credit_categorization_dict = dict(zip(credit_categorization_df['Keyword'], credit_categorization_df['Category']))
-            debit_categorization_dict = dict(zip(debit_categorization_df['Keyword'], debit_categorization_df['Category']))
-            
-            df['Category'] = df.apply(
-                lambda row: categorize(row['Narration'],credit_categorization_dict) if pd.notna(row['Credit']) and row['Credit'] != "" and row['Category']=="" else row['Category'],
-                axis=1
-            )
-
-            df['Category'] = df.apply(
-                lambda row: categorize(row['Narration'],debit_categorization_dict) if pd.notna(row['Debit']) and row['Debit'] != ""  and row['Category']=="" else row['Category'],
-                axis=1
-            )
+        df['Category'] = df.apply(
+            lambda row: categorize(row['Narration'],debit_categorization_dict) if pd.notna(row['Debit']) and row['Debit'] != ""  and row['Category']=="" else row['Category'],
+            axis=1
+        )
 
         df.fillna(0, inplace=True)        
 
@@ -217,12 +216,11 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name,global_categori
         print(f"Error cleaning Excel file: {e}")
     return pd.DataFrame()
    
-def display_data(df,Height,db_name="",user_name="",category_present=False):
+def display_data(df,Height,db_name="",user_name="",category_present=False,category_list=[]):
     # Configure the ag-Grid options without pagination
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_side_bar()  # Add a sidebar
     if category_present:
-        category_list=["Books", "Cash Withdrawal", "Credit Card Payments", "Education", "EMI Payments", "Food & Beverage", "Health & Fitness", "Healthcare", "Investments & Trading", "Online Shopping", "Rent & Housing", "Subscriptions & Entertainment", "TDS & Tax", "Technology", "Transport & Fuel", "Travel", "Utilities"]
         gb.configure_column("Category", editable=True, cellEditor="agSelectCellEditor", cellEditorParams={"values": category_list})
 
     # Automatically configure columns to fit content dynamically
