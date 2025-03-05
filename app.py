@@ -6,7 +6,6 @@ from io import BytesIO
 from datetime import datetime , timedelta ,date
 import os
 import time
-from dotenv import load_dotenv
 
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Bank Statements Automation",layout="wide")
@@ -14,15 +13,14 @@ st.set_page_config(page_title="Bank Statements Automation",layout="wide")
 from auth import Authenticator
 from database import *
 from utils import *
-
-load_dotenv(dotenv_path="/"+os.path.join("home","ec2-user","app",".env"))
+from constant_variables import *
 
 # hide_3_dot_menu()
 
 authenticator = Authenticator(
-    token_key=os.getenv("TOKEN_KEY"),
-    secret_path = "/etc/secrets/Bank_statement.json",
-    redirect_uri="https://fintellect.co.in",
+    token_key=TOKEN_KEY,
+    secret_path = SECRET_PATH,
+    redirect_uri=REDIRECT_URI,
 )
 
 st.markdown(
@@ -49,11 +47,11 @@ page = query_params.get("page", ["home"])
 
 authenticator.check_auth()
 
-db_name=os.getenv("DATABASE")
+db_name=DATABASE
 
 if st.session_state["connected"]:
     db_df=pd.DataFrame()
-    dummy_data_file_path = "/"+os.path.join("home","ec2-user","app","assets","other","dummy_data.xlsx")
+    dummy_data_file_path = DUMMY_DATA_PATH
     dummy_data = pd.read_excel(dummy_data_file_path)
     user_info=st.session_state['user_info']
     user_email = str(user_info.get('email'))
@@ -557,7 +555,7 @@ if st.session_state["connected"]:
                         )
                 else:
                     if st.button("Show Dummy Summary",key='showd1'):
-                        dummy_summary_data_file_path = "/"+os.path.join("home","ec2-user","app","assets","other","dummy_summary_data.xlsx")
+                        dummy_summary_data_file_path = DUMMY_DATA_SUMMARY_PATH
                         dummy_summary_data=pd.read_excel(dummy_summary_data_file_path)
                         # Convert the Date column to datetime and then format it
                         dummy_summary_data['Start_Date'] = pd.to_datetime(dummy_summary_data['Start_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
@@ -571,14 +569,12 @@ if st.session_state["connected"]:
         
         with tab4:
             # Admin Email Config
-            ADMIN_EMAIL1 = os.getenv("ADMIN_EMAIL1")  
-            ADMIN_EMAIL2 = os.getenv("ADMIN_EMAIL2")
             ADMIN_EMAILS=[ADMIN_EMAIL1,ADMIN_EMAIL2]
 
-            SMTP_SERVER = os.getenv("SMTP_SERVER")
+            SMTP_SERVER = SMTP_SERVER
 
-            SMTP_USER = os.getenv("SMTP_USER")  # Replace with your Gmail
-            SMTP_PASSWORD = os.getenv("email_pass")  # Use an App Password, not your main password
+            SMTP_USER = SMTP_USER  # Replace with your Gmail
+            SMTP_PASSWORD = email_pass  # Use an App Password, not your main password
             feedback_table='Feedback'
             st.subheader("We value your thoughts! Feel free to share any feedback, ideas, or suggestions to help us improve. Your insights make a difference!")
 
@@ -607,10 +603,6 @@ if st.session_state["connected"]:
 
         if user_name in admins:
             with tab5:
-                # Razorpay credentials
-                RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID')
-                RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
-
                 # Initialize the Razorpay client
                 client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 

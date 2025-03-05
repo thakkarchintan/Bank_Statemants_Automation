@@ -83,7 +83,7 @@ class Authenticator:
             return
 
         if st.session_state.get("logout"):
-                db_name=os.getenv("DATABASE")
+                db_name=DATABASE
                 user_info=st.session_state['user_info']
                 user_email = str(user_info.get('email'))
                 user_name = user_email[:-10]

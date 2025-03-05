@@ -6,17 +6,15 @@ import os
 import logging
 import pandas as pd
 from Crypto.Cipher import AES
-
-# Load environment variables
-load_dotenv(dotenv_path="/"+os.path.join("home","ec2-user","app",".env"))
+from constant_variables import *
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def aws_config():
     """Configures AWS credentials and creates a KMS client."""
-    aws_access_key = os.getenv("AWS_ACCESS_KEY")
-    aws_secret_key = os.getenv("AWS_SECRET_KEY")
+    aws_access_key = AWS_ACCESS_KEY
+    aws_secret_key = AWS_SECRET_KEY
     aws_region = "ap-south-1"  # Change to your AWS region
 
     try:
