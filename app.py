@@ -701,7 +701,7 @@ if st.session_state["connected"]:
 
                 # Unique categories sorted A-Z
                 unique_categories = sorted(st.session_state.table_data["Category"].unique())
-                new_category = col[0].selectbox("Select Category", unique_categories + ["Other"], index=0)
+                new_category = col[0].selectbox("Select Category", unique_categories + ["Add new category"], index=0)
 
                 if new_category == "Add new category":
                     new_category = col[1].text_input("Enter New Category")
