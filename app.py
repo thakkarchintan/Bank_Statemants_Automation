@@ -291,6 +291,9 @@ if st.session_state["connected"]:
     # Convert the Date column to datetime
     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
 
+    if "Select_data_button" not in st.session_state:
+        st.session_state.Select_data_button = False
+
     # Initialize session state for confirmation popup
     if "confirm" not in st.session_state:
         st.session_state.confirm = False
@@ -311,9 +314,6 @@ if st.session_state["connected"]:
         user_name = user_email[:-10]
         user_name = user_name.replace('.','__')
         authenticator.logout()
-    
-    if "Select_data_button" not in st.session_state:
-        st.session_state.Select_data_button = False
 
     if st.session_state.confirm:
         tab=st.tabs(["Delete"])
@@ -343,9 +343,11 @@ if st.session_state["connected"]:
                 else:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
 
-            st.session_state.Select_data_button=st.button("Select data to Delete")
+            if st.button("Select data to Delete"):
+                st.session_state.Select_data_button=True
             yp_button=False
             can_button=False
+
             if st.session_state.Select_data_button:
                 if not db_df.empty:
                     name_options = list(db_df["Name"].unique())
@@ -376,9 +378,11 @@ if st.session_state["connected"]:
                     col1, col2 = st.columns(2)
                     
                     with col1:
-                        yp_button=st.button("Yes, Proceed", key="yp1")
+                        if st.button("Yes, Proceed", key="yp1"):
+                            yp_button=True
                     with col2:
-                        can_button=st.button("Cancel",key="can1")
+                        if st.button("Cancel",key="can1"):
+                            can_button=True
                     
                     if yp_button:
                         try:
