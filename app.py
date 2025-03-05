@@ -294,6 +294,9 @@ if st.session_state["connected"]:
     if "Select_data_button" not in st.session_state:
         st.session_state.Select_data_button = False
 
+    if "delete_all" not in st.session_state:
+        st.session_state.delete_all = False
+
     # Initialize session state for confirmation popup
     if "confirm" not in st.session_state:
         st.session_state.confirm = False
@@ -322,24 +325,36 @@ if st.session_state["connected"]:
                 display_data(summary_df,200)
                 
             if st.button("Delete All data"):
+                st.session_state.delete_all=True
+            yp_button1=False
+            can_button1=False
+
+            if st.session_state.delete_all:
                 if not db_df.empty:
                     st.warning("This will delete your all data and cannot be undone. Are you sure to proceed?")
                     col1, col2 = st.columns(2)
 
                     with col1:
                         if st.button("Yes, Proceed",key="yp2"):
-                            try:
-                                delete_data(db_name,user_name,"1=1")
-                                delete_data(db_name,summ_table,"1=1")
-                            except Exception as e:
-                                print(f"Error in deleting: {e}")
-                                st.toast(":red[Something went wrong.Please try again.]")
-                            time.sleep(2)
-                            refresh_page()
-                            
+                            yp_button1=True
+
                     with col2:
                         if st.button("Cancel",key="can2"):
-                            refresh_page()
+                            can_button1=True
+
+                    if yp_button1:
+                        try:
+                            delete_data(db_name,user_name,"1=1")
+                            delete_data(db_name,summ_table,"1=1")
+                        except Exception as e:
+                            print(f"Error in deleting: {e}")
+                            st.toast(":red[Something went wrong.Please try again.]")
+                        time.sleep(2)
+                        refresh_page()
+                    
+                    if can_button1:
+                        refresh_page()
+
                 else:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
 
@@ -374,7 +389,7 @@ if st.session_state["connected"]:
                     condition = f"Date between '{s_date}' and '{e_date}' and Name='{name_selected}' and Bank='{bank_selected}';"
                     condition_summ = f"Name='{name_selected}' and Bank='{bank_selected}';"
                     
-                    st.warning(f"This will delete your data Date between '{s_date}' and '{e_date}' for Name='{name_selected}' & Bank='{bank_selected} and cannot be undone. Are you sure to proceed?")
+                    st.warning(f"This will delete your data Date between '{s_date}' and '{e_date}' for Name '{name_selected}' & Bank '{bank_selected}' and cannot be undone. Are you sure to proceed?")
                     col1, col2 = st.columns(2)
                     
                     with col1:
