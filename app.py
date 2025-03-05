@@ -764,6 +764,8 @@ if st.session_state["connected"]:
                 # Delete Selected Rows
                 if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
                     st.session_state.table_data = st.session_state.table_data.merge(selected_rows, how="left", indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
+                    delete_all(table_nm)
+                    add_category_df(st.session_state.table_data,table_nm)
                     refresh_table()
 
                 # Handle Replace Prompt
