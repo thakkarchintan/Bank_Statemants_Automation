@@ -355,6 +355,8 @@ if st.session_state["connected"]:
 
                 else:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
+                    time.sleep(2)
+                    refresh_page()
 
             if st.button("Select data to Delete"):
                 st.session_state.Select_data_button=True
@@ -422,10 +424,11 @@ if st.session_state["connected"]:
                         refresh_page()
                             
                     if can_button:
-                        st.session_state.confirm = False
                         refresh_page()
                 else:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
+                    time.sleep(2)
+                    refresh_page()
 
     else:
         if user_name in admins:
@@ -689,7 +692,7 @@ if st.session_state["connected"]:
                 # Add New Entry Section
                 st.subheader("Add New Item")
 
-                col = st.columns([2.1,2.1,2.1,2.1,1.6])  # Layout columns
+                col = st.columns(3)  # Layout columns
 
                 # Unique categories sorted A-Z
                 unique_categories = sorted(st.session_state.table_data["Category"].unique())
@@ -698,11 +701,12 @@ if st.session_state["connected"]:
                 if new_category == "Add new category":
                     new_category = col[1].text_input("Enter New Category")
 
-                new_keywords = col[2].text_input("Enter comma-separated Keywords")
-                type = col[3].selectbox("Select Transaction type",["Credit","Debit"])
+                next_col=st.columns(3)
+                new_keywords = next_col[0].text_input("Enter comma-separated Keywords")
+                type = next_col[1].selectbox("Select Transaction type",["Credit","Debit"])
                 
                         
-                with col[4]:
+                with next_col[2]:
                     # Move button slightly up
                     st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
                     # Check for duplicate and show prompt
