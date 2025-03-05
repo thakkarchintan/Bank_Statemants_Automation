@@ -486,6 +486,7 @@ def home_page():
             }
             
             .policy{
+                margin-top:40px;
                 font-size:1rem;
                 display:flex;
                 flex-direction:column;
@@ -699,16 +700,18 @@ def home_page():
         <div class = "policy">
                     <h1 class="section-heading">Commitment to Privacy & Security</h1>
                     <div>
-                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
-                    </div>
-                <div>
-                        <p><span class="section-subheading">📂 You Upload - The App processes - </span>The app only processes the data your provide - nothing more, nothing less.</p>
-                    </div>
-                <div>
-                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever.</p>
-                    </div>
-                    <div>
-                        <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
+                        <div>
+                            <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
+                        </div>
+                        <div>
+                            <p><span class="section-subheading">📂 You Upload - The App processes - </span>The app only processes the data your provide - nothing more, nothing less.</p>
+                        </div>
+                        <div>
+                            <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever.</p>
+                        </div>
+                        <div>
+                            <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
+                        </div>
                     </div>
                     <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
                 </div>
