@@ -517,7 +517,7 @@ if st.session_state["connected"]:
                     initialize_db(table_nm)
                     category_table_data = get_categories(table_nm)
 
-                    display_data(db_df,600,db_name,user_name,True,category_table_data['Category'].to_list())
+                    display_data(db_df,600,db_name,user_name,True,sorted(category_table_data['Category'].unique()))
                     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
                     st.download_button(
                         key='dbb',
