@@ -66,7 +66,7 @@ if st.session_state["connected"]:
     else:
         name=get_name(db_name,'users',user_name)
         
-    st.sidebar.write(f"fogged in as {first_name}")
+    st.sidebar.write(f"ffogged in as {first_name}")
         
     # sorting list of banks
     bank_list.sort()
