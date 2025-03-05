@@ -697,39 +697,42 @@ if st.session_state["connected"]:
                 # Add New Entry Section
                 st.subheader("Add New Item")
 
-                col = st.columns([2.8,2.8,2.8,1.6])  # Layout columns
+                col = st.columns([2.1,2.1,2.1,2.1,1.6])  # Layout columns
 
                 # Unique categories sorted A-Z
                 unique_categories = sorted(st.session_state.table_data["Category"].unique())
                 new_category = col[0].selectbox("Select Category", unique_categories + ["Other"], index=0)
 
-                if new_category == "Other":
-                    new_category = col[0].text_input("Enter New Category")
+                if new_category == "Add new category":
+                    new_category = col[1].text_input("Enter New Category")
 
-                new_keyword = col[1].text_input("Enter Keyword")
-                type = col[2].selectbox("Select Transaction type",["Credit","Debit"])
+                new_keywords = col[2].text_input("Enter comma-separated Keywords")
+                type = col[3].selectbox("Select Transaction type",["Credit","Debit"])
                 
                         
-                with col[3]:
+                with col[4]:
                     # Move button slightly up
                     st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
                     # Check for duplicate and show prompt
                     if st.button("Add", use_container_width=True):
-                        if new_category and new_keyword:
-                            existing_entry = st.session_state.table_data[(st.session_state.table_data["Keyword"] == new_keyword) & (type==st.session_state.table_data["Type"])]
+                        keyword_list = [item for item in new_keywords.split(",") if item]
+                        if new_category and new_keywords:
+                            for new_keyword in keyword_list:
+                                existing_entry = st.session_state.table_data[(st.session_state.table_data["Keyword"] == new_keyword) & (type==st.session_state.table_data["Type"])]
 
-                            if not existing_entry.empty:
-                                # Store the existing keyword/category in session state
-                                st.session_state.pending_category = new_category
-                                st.session_state.pending_keyword = new_keyword
-                                st.session_state.existing_category = existing_entry.iloc[0]["Category"]
-                                st.session_state.replace_prompt = True
-                                refresh_table()
+                                if not existing_entry.empty:
+                                    # Store the existing keyword/category in session state
+                                    st.session_state.pending_category = new_category
+                                    st.session_state.pending_keyword = new_keyword
+                                    st.session_state.existing_category = existing_entry.iloc[0]["Category"]
+                                    st.session_state.replace_prompt = True
+                                    refresh_table()
                             else:
                                 # Add new entry since no duplicate exists
-                                new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
-                                st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
-                                st.success(f"✅ Added: {new_category} - {new_keyword}")
+                                for new_keyword in keyword_list:
+                                    new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
+                                    st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
+                                st.success(f"✅ Added: {new_category} - {keyword_list}")
                                 delete_all(table_nm)
                                 add_category_df(st.session_state.table_data,table_nm)
                                 refresh_table()
