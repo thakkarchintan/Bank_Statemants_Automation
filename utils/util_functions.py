@@ -216,12 +216,11 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name):
         print(f"Error cleaning Excel file: {e}")
     return pd.DataFrame()
    
-def display_data(df,Height,db_name="",user_name="",category_present=False):
+def display_data(df,Height,db_name="",user_name="",category_present=False,category_list=[]):
     # Configure the ag-Grid options without pagination
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_side_bar()  # Add a sidebar
     if category_present:
-        category_list=["Books", "Cash Withdrawal", "Credit Card Payments", "Education", "EMI Payments", "Food & Beverage", "Health & Fitness", "Healthcare", "Investments & Trading", "Online Shopping", "Rent & Housing", "Subscriptions & Entertainment", "TDS & Tax", "Technology", "Transport & Fuel", "Travel", "Utilities"]
         gb.configure_column("Category", editable=True, cellEditor="agSelectCellEditor", cellEditorParams={"values": category_list})
 
     # Automatically configure columns to fit content dynamically

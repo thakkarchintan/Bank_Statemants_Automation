@@ -22,7 +22,7 @@ load_dotenv(dotenv_path="/"+os.path.join("home","ec2-user","app",".env"))
 authenticator = Authenticator(
     token_key=os.getenv("TOKEN_KEY"),
     secret_path = "/etc/secrets/Bank_statement.json",
-    redirect_uri="https://bankstatements.onrender.com",
+    redirect_uri="https://fintellect.co.in",
 )
 
 st.markdown(
@@ -513,7 +513,11 @@ if st.session_state["connected"]:
             try:
                 if not db_df.empty:
                     db_df['Date'] = db_df['Date'].dt.strftime('%d-%b-%Y')
-                    display_data(db_df,600,db_name,user_name,True)
+                    table_nm="Categories"
+                    initialize_db(table_nm)
+                    category_table_data = get_categories(table_nm)
+
+                    display_data(db_df,600,db_name,user_name,True,category_table_data['category_table_data'].to_list())
                     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
                     st.download_button(
                         key='dbb',
