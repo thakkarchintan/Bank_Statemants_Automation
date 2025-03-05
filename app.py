@@ -344,15 +344,15 @@ if st.session_state["connected"]:
                     st.toast(":red[There are no transactions in your account. No data to delete!]")
 
             st.session_state.Select_data_button=st.button("Select data to Delete")
+            yp_button=False
+            can_button=False
             if st.session_state.Select_data_button:
                 if not db_df.empty:
                     name_options = list(db_df["Name"].unique())
                     bank_options = list(db_df["Bank"].unique())
 
-                    # Default date (today)
-                    default_date = date.today()
-
                     d = st.columns(4)
+                    name_selected,bank_selected="",""
 
                     # Dropdown to select a name and bank
                     with d[0]:
@@ -374,8 +374,7 @@ if st.session_state["connected"]:
                     
                     st.warning(f"This will delete your data Date between '{s_date}' and '{e_date}' for Name='{name_selected}' & Bank='{bank_selected} and cannot be undone. Are you sure to proceed?")
                     col1, col2 = st.columns(2)
-                    yp_button=False
-                    can_button=False
+                    
                     with col1:
                         yp_button=st.button("Yes, Proceed", key="yp1")
                     with col2:
