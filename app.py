@@ -95,7 +95,7 @@ if st.session_state["connected"]:
                 margin: 0;
                 border: none;
             }
-            section[role="button"] {
+            section[data-testid="stBaseButton-secondary"] {
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -216,8 +216,8 @@ if st.session_state["connected"]:
                                 keep = st.button("Keep Both")
                             with c3:
                                 cancel = st.button("Cancel")
-
-                            display_data(common_data,400)
+                            print("Summary Data : ",common_data)
+                            display_data(common_data,400,[],True)
 
                             if overwrite:
                                 # Remove exact matches
@@ -535,7 +535,7 @@ if st.session_state["connected"]:
                 print(f"Error in showing transction data graph: {e}")
                 st.toast(":red[Something went wrong.]")
 
-        with tab3:
+        with tab3:    
             try:
                 if not db_df.empty:
                     db_df['Date'] = db_df['Date'].dt.strftime('%d-%b-%Y')
@@ -569,16 +569,8 @@ if st.session_state["connected"]:
             try:
                 if not db_df.empty:
                     # st.subheader("Summary")
-                    if not summary_df.empty:# Rename columns
-                        old_col_names=["Start_Date","End_Date","Pending_days","Opening_balance","Closing_balance"]
-                        new_col_names=["Start Date","End Date","Pending days","Opening balance","Closing balance"]
-                        rename_dict = {o: n for o, n in zip(old_col_names, new_col_names) if o in summary_df.columns}
-                        summary_df=summary_df.rename(columns=rename_dict)
-
+                    if not summary_df.empty:
                         display_data(summary_df,200,[],True)
-
-                        rename_dict = {o: n for o, n in zip(new_col_names,old_col_names) if o in summary_df.columns}
-                        summary_df=summary_df.rename(columns=rename_dict)
 
                         # Convert the Date column to datetime and then format it
                         summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce')
@@ -587,7 +579,7 @@ if st.session_state["connected"]:
                             col1, col2= st.columns([4, 1])  # Added extra spacing
                             with col2:
                                 st.download_button(
-                                    key='dbs_summary',
+                                    key='dbs',
                                     label="Download data",
                                     data=convert_df_to_excel(summary_df),
                                     file_name="bank_statement_summary.xlsx",
@@ -773,7 +765,7 @@ if st.session_state["connected"]:
                             st.error("⚠ Please enter both Category and Keyword!")
 
                 # Display the table
-                st.subheader("Category & Keyword Table")
+                st.header("📋 Category & Keyword Table")
 
                 gb = GridOptionsBuilder.from_dataframe(st.session_state.table_data)
 
