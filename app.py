@@ -22,7 +22,6 @@ authenticator = Authenticator(
     secret_path = SECRET_PATH,
     redirect_uri=REDIRECT_URI,
 )
-
 st.markdown(
     """
     <style>
@@ -81,10 +80,35 @@ if st.session_state["connected"]:
                 visibility: hidden;
                 height: 0px;
             }
+            div[data-testid="stFileUploaderDropzoneInstructions"] {
+                display: none !important;
+            }
+            div[data-testid="stFileUploaderDropzone"] {
+                display: none; /* Ensures proper alignment */
+                justify-content: center;
+                align-items: center;
+                width: fit-content;
+                height: fit-content;
+                background: none; /* Remove any background */
+                padding: 0;
+                margin: 0;
+                border: none;
+            }
+            section[role="stBaseButton-secondary"] {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: fit-content;
+                height: fit-content;
+                background: none;
+                padding: 0;
+                margin: 0;
+                border: none;
+            }
         </style>
     """, unsafe_allow_html=True)
 
-    uploaded_files = st.sidebar.file_uploader(f"Upload your files (Max size: 2MB)", type=["xls", "xlsx", "pdf"],accept_multiple_files=True)
+    uploaded_files = st.sidebar.file_uploader(f"Upload Statements (Max size: 2MB)", type=["xls", "xlsx", "pdf"],accept_multiple_files=True)
 
     file_size_in_limit = True
 
@@ -521,19 +545,18 @@ if st.session_state["connected"]:
                     table_nm="Categories"
                     initialize_db(table_nm)
                     category_table_data = get_categories(table_nm)
-
-                    display_data(db_df,600,db_name,user_name,True,sorted(category_table_data['Category'].unique()))
-                    db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
                     with st.container():
-                        col1, col2 = st.columns([4, 1])  # Empty space, push right, and button column
-                        with col2:  # Place the button in the rightmost column
-                            st.download_button(
-                                key='dbs',
-                                label="Download data",
-                                data=convert_df_to_excel(db_df),
-                                file_name="bank_statement.xlsx",
-                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            )
+                        download_df = db_df
+                        download_df['Date'] = pd.to_datetime(download_df['Date'],errors='coerce')
+                        display_data(db_df,600,download_df,False,db_name,user_name,True,sorted(category_table_data['Category'].unique()))
+                        # db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
+                        # st.download_button(
+                        #     key='dbs',
+                        #     label="Download data",
+                        #     data=convert_df_to_excel(db_df),
+                        #     file_name="bank_statement.xlsx",
+                        #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        # )
                 else:
                     if st.button("Show Dummy Data",key='showd2'):
                         dummy_data['Date'] = dummy_data['Date'].dt.strftime('%d-%b-%Y')
@@ -549,15 +572,13 @@ if st.session_state["connected"]:
             try:
                 if not db_df.empty:
                     # st.subheader("Summary")
-                    if not summary_df.empty:
-
-                        # Rename columns
+                    if not summary_df.empty:# Rename columns
                         old_col_names=["Start_Date","End_Date","Pending_days","Opening_balance","Closing_balance"]
                         new_col_names=["Start Date","End Date","Pending days","Opening balance","Closing balance"]
                         rename_dict = {o: n for o, n in zip(old_col_names, new_col_names) if o in summary_df.columns}
                         summary_df=summary_df.rename(columns=rename_dict)
 
-                        display_data(summary_df,200)
+                        display_data(summary_df,200,[],True)
 
                         rename_dict = {o: n for o, n in zip(new_col_names,old_col_names) if o in summary_df.columns}
                         summary_df=summary_df.rename(columns=rename_dict)
