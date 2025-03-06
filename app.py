@@ -530,8 +530,8 @@ if st.session_state["connected"]:
                             st.download_button(
                                 key='dbs',
                                 label="Download data",
-                                data=convert_df_to_excel(summary_df),
-                                file_name="bank_statement_summary.xlsx",
+                                data=convert_df_to_excel(db_df),
+                                file_name="bank_statement.xlsx",
                                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                             )
                 else:
