@@ -550,7 +550,7 @@ if st.session_state["connected"]:
                         summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce')
                         summary_df['End_Date'] = pd.to_datetime(summary_df['End_Date'],errors='coerce')
                         with st.container():
-                            col1, col2 = st.columns([3, 1])  # Empty space, push right, and button column
+                            col1, col2 = st.columns([4, 1])  # Empty space, push right, and button column
                             with col2:  # Place the button in the rightmost column
                                 st.download_button(
                                 key='dbs',
