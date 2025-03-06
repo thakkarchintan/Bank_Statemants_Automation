@@ -84,7 +84,7 @@ if st.session_state["connected"]:
             div[data-testid="stFileUploaderDropzoneInstructions"] {
                 display: none !important;
             }
-            div[data-testid="stFileUploaderDropzone"] {
+            section[data-testid="stFileUploaderDropzone"] {
                 display: none; /* Ensures proper alignment */
                 justify-content: center;
                 align-items: center;
@@ -95,7 +95,7 @@ if st.session_state["connected"]:
                 margin: 0;
                 border: none;
             }
-            button[data-testid="stBaseButton-secondary"] {
+            section[data-testid="stBaseButton-secondary"] {
                 display: flex;
                 justify-content: center;
                 align-items: center;
