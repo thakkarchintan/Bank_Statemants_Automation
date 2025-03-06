@@ -233,9 +233,10 @@ if st.session_state["connected"]:
                                         row_condition=f"where Date='{res['oldest_date']}' limit 1"
                                         row = get_transaction_data(db_name,user_name,row_condition)
                                         res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
+                                        openning_bal=row.loc[0, 'Balance']
                                         row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                         row.loc[0, 'Balance']+=ex_balance_sum
-                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'])
+                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
 
                                 st.toast(":green[Data updated successfully]")   
                                 time.sleep(3)
@@ -252,10 +253,11 @@ if st.session_state["connected"]:
                                     if res:
                                         row_condition=f"where Date='{res['oldest_date']}' limit 1"
                                         row = get_transaction_data(db_name,user_name,row_condition)
-                                        res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
+                                        res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')                                        
+                                        openning_bal=row.loc[0, 'Balance']
                                         row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                         row.loc[0, 'Balance']+=ex_balance_sum
-                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'])
+                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
                                 st.toast(":green[Data updated successfully]")
                                 time.sleep(3)
                                 refresh_page()
@@ -276,9 +278,10 @@ if st.session_state["connected"]:
                                     row_condition=f"where Date='{res['oldest_date']}' limit 1"
                                     row = get_transaction_data(db_name,user_name,row_condition)
                                     res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
+                                    openning_bal=row.loc[0, 'Balance']
                                     row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                     row.loc[0, 'Balance']+=ex_balance_sum
-                                    update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'])
+                                    update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
                                 
                             st.toast(":green[Data updated successfully]")
                             time.sleep(3)
@@ -433,12 +436,13 @@ if st.session_state["connected"]:
                                 row_condition=f"where Date='{res['oldest_date']}' limit 1"
                                 row = get_transaction_data(db_name,user_name,row_condition)
                                 res['oldest_date']=pd.to_datetime(res['oldest_date'], errors='coerce')
+                                openning_bal=row.loc[0, 'Balance']
                                 row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                 cred_deb_condition=f"where Bank='{bank_selected}' and Name='{name_selected}'"
                                 cred_deb_df=get_transaction_data(db_name,user_name,cred_deb_condition)
                                 cred_deb_sum = cred_deb_df['Credit'].sum() - cred_deb_df['Debit'].sum() + row.loc[0, 'Balance']
                                     
-                                update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],cred_deb_sum)
+                                update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],cred_deb_sum,openning_bal)
                             st.toast(":green[Data deleted successfully]")
                         except Exception as e:
                             print(f"Error in deleting: {e}")
@@ -715,6 +719,7 @@ if st.session_state["connected"]:
 
                 # Function to refresh the table
                 def refresh_table():
+                    time.sleep(3)
                     st.rerun()
 
                 # Add New Entry Section
@@ -733,7 +738,9 @@ if st.session_state["connected"]:
                 new_keywords = next_col[0].text_input("Enter comma-separated Keywords")
                 type = next_col[1].selectbox("Select Transaction type",["Credit","Debit"])
                 
-                        
+                message_to_display=""
+                success_message=False
+
                 with next_col[2]:
                     # Move button slightly up
                     st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
@@ -749,19 +756,30 @@ if st.session_state["connected"]:
                                     st.session_state.pending_category = new_category
                                     st.session_state.pending_keyword = new_keyword
                                     st.session_state.existing_category = existing_entry.iloc[0]["Category"]
-                                    st.session_state.replace_prompt = True
-                                    refresh_table()
-                            else:
-                                # Add new entry since no duplicate exists
-                                for new_keyword in keyword_list:
-                                    new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
-                                    st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
-                                st.success(f"✅ Added: {new_category} - {keyword_list}")
-                                delete_all(table_nm)
-                                add_category_df(st.session_state.table_data,table_nm)
-                                refresh_table()
+                                    # st.session_state.replace_prompt = True
+
+                                else:
+                                    success_message=True
+                                    # Add new entry since no duplicate exists
+                                    for new_keyword in keyword_list:
+                                        new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
+                                        st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
+                                    delete_all(table_nm)
+                                    add_category_df(st.session_state.table_data,table_nm)
+                                    message_to_display=f"✅ Added: {new_category} - {keyword_list}"
+
+                                    
                         else:
-                            st.error("⚠ Please enter both Category and Keyword!")
+                            success_message=False
+                            message_to_display="⚠ Please enter both Category and Keyword!"
+
+                if message_to_display!="":
+                    if not success_message:
+                        st.error(message_to_display)
+                    else:
+                        st.success(message_to_display)
+                    message_to_display=""
+                    refresh_table()
 
                 # Display the table
                 st.header("📋 Category & Keyword Table")
