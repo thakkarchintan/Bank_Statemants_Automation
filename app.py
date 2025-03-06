@@ -687,6 +687,7 @@ if st.session_state["connected"]:
 
                 # Function to refresh the table
                 def refresh_table():
+                    time.sleep(3)
                     st.rerun()
 
                 # Add New Entry Section
@@ -705,7 +706,9 @@ if st.session_state["connected"]:
                 new_keywords = next_col[0].text_input("Enter comma-separated Keywords")
                 type = next_col[1].selectbox("Select Transaction type",["Credit","Debit"])
                 
-                        
+                message_to_display=""
+                success_message=False
+
                 with next_col[2]:
                     # Move button slightly up
                     st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
@@ -721,19 +724,30 @@ if st.session_state["connected"]:
                                     st.session_state.pending_category = new_category
                                     st.session_state.pending_keyword = new_keyword
                                     st.session_state.existing_category = existing_entry.iloc[0]["Category"]
-                                    st.session_state.replace_prompt = True
-                                    refresh_table()
-                            else:
-                                # Add new entry since no duplicate exists
-                                for new_keyword in keyword_list:
-                                    new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
-                                    st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
-                                st.success(f"✅ Added: {new_category} - {keyword_list}")
-                                delete_all(table_nm)
-                                add_category_df(st.session_state.table_data,table_nm)
-                                refresh_table()
+                                    # st.session_state.replace_prompt = True
+
+                                else:
+                                    success_message=True
+                                    # Add new entry since no duplicate exists
+                                    for new_keyword in keyword_list:
+                                        new_entry = pd.DataFrame({"Keyword": [new_keyword], "Category": [new_category], "Type":[type]})
+                                        st.session_state.table_data = pd.concat([st.session_state.table_data, new_entry], ignore_index=True)
+                                    delete_all(table_nm)
+                                    add_category_df(st.session_state.table_data,table_nm)
+                                    message_to_display=f"✅ Added: {new_category} - {keyword_list}"
+
+                                    
                         else:
-                            st.error("⚠ Please enter both Category and Keyword!")
+                            success_message=False
+                            message_to_display="⚠ Please enter both Category and Keyword!"
+
+                if message_to_display!="":
+                    if not success_message:
+                        st.error(message_to_display)
+                    else:
+                        st.success(message_to_display)
+                    message_to_display=""
+                    refresh_table()
 
                 # Display the table
                 st.header("📋 Category & Keyword Table")
