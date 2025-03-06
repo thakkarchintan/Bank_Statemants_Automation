@@ -95,7 +95,7 @@ if st.session_state["connected"]:
                 margin: 0;
                 border: none;
             }
-            section[data-testid="stBaseButton-secondary"] {
+            button[data-testid="stBaseButton-secondary"] {
                 display: flex;
                 justify-content: center;
                 align-items: center;
