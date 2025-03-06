@@ -535,7 +535,7 @@ if st.session_state["connected"]:
                 print(f"Error in showing transction data graph: {e}")
                 st.toast(":red[Something went wrong.]")
 
-        with tab3:    
+        with tab3:
             try:
                 if not db_df.empty:
                     db_df['Date'] = db_df['Date'].dt.strftime('%d-%b-%Y')
@@ -569,8 +569,16 @@ if st.session_state["connected"]:
             try:
                 if not db_df.empty:
                     # st.subheader("Summary")
-                    if not summary_df.empty:
+                    if not summary_df.empty:# Rename columns
+                        old_col_names=["Start_Date","End_Date","Pending_days","Opening_balance","Closing_balance"]
+                        new_col_names=["Start Date","End Date","Pending days","Opening balance","Closing balance"]
+                        rename_dict = {o: n for o, n in zip(old_col_names, new_col_names) if o in summary_df.columns}
+                        summary_df=summary_df.rename(columns=rename_dict)
+
                         display_data(summary_df,200,[],True)
+
+                        rename_dict = {o: n for o, n in zip(new_col_names,old_col_names) if o in summary_df.columns}
+                        summary_df=summary_df.rename(columns=rename_dict)
 
                         # Convert the Date column to datetime and then format it
                         summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce')
@@ -765,7 +773,7 @@ if st.session_state["connected"]:
                             st.error("⚠ Please enter both Category and Keyword!")
 
                 # Display the table
-                st.header("📋 Category & Keyword Table")
+                st.subheader("Category & Keyword Table")
 
                 gb = GridOptionsBuilder.from_dataframe(st.session_state.table_data)
 
