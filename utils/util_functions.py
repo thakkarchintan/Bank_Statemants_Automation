@@ -235,7 +235,7 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
     grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
     if not summary:
         with st.container():
-            col1,col2 ,_,col4,col5,col6,col7,col8 = st.columns([1,1,1,1,1,1,1,1])
+            col1,col2 ,_,col4,col5,col6,col7,col8 = st.columns([2,2,1,1,1,1,1,1])
             with col1:
                 if category_present:
                     if st.button("Save Changes"):
