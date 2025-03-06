@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
-# load_dotenv(dotenv_path="/home/ec2-user/app/.env")
+# load_dotenv()
+load_dotenv(dotenv_path="/home/ec2-user/app/.env")
 
 TOKEN_KEY = os.getenv("TOKEN_KEY")
 DATABASE_TYPE = os.getenv("DATABASE_TYPE")
