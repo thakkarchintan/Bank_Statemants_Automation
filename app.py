@@ -520,12 +520,14 @@ if st.session_state["connected"]:
 
                     display_data(db_df,600,db_name,user_name,True,sorted(category_table_data['Category'].unique()))
                     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
-                    # Use a container for better layout control
-                    st.download_button(
-                                key="dbb",
+                    with st.container():
+                        col1, col2 = st.columns([4, 1])  # Empty space, push right, and button column
+                        with col2:  # Place the button in the rightmost column
+                            st.download_button(
+                                key='dbs',
                                 label="Download data",
-                                data=convert_df_to_excel(db_df),
-                                file_name="bank_statement.xlsx",
+                                data=convert_df_to_excel(summary_df),
+                                file_name="bank_statement_summary.xlsx",
                                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                             )
                 else:
@@ -550,15 +552,15 @@ if st.session_state["connected"]:
                         summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce')
                         summary_df['End_Date'] = pd.to_datetime(summary_df['End_Date'],errors='coerce')
                         with st.container():
-                            col1, col2 = st.columns([4, 1])  # Empty space, push right, and button column
-                            with col2:  # Place the button in the rightmost column
+                            col1, col2= st.columns([4, 1])  # Added extra spacing
+                            with col2:
                                 st.download_button(
-                                key='dbs',
-                                label="Download data",
-                                data=convert_df_to_excel(summary_df),
-                                file_name="bank_statement_summary.xlsx",
-                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            )
+                                    key='dbs_summary',
+                                    label="Download data",
+                                    data=convert_df_to_excel(summary_df),
+                                    file_name="bank_statement_summary.xlsx",
+                                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                )
                 else:
                     if st.button("Show Dummy Summary",key='showd1'):
                         dummy_summary_data_file_path = DUMMY_DATA_SUMMARY_PATH

@@ -235,15 +235,18 @@ def display_data(df,Height,db_name="",user_name="",category_present=False,catego
     grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
 
     if category_present:
-        if st.button("Save Changes"):
-            # Update session state when selection changes
-            if grid_response["data"] is not None:
-                updated_df = pd.DataFrame(grid_response["data"])
-                print(updated_df)
-                updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
-                delete_data(db_name,user_name,"1=1")
-                add_data(updated_df,False,db_name,user_name)
-                st.toast(":green[Data saved successfully.]")
+        with st.container():
+            col1, col2 = st.columns([4, 1])  # Empty space, push right, and button column
+            with col2:
+                if st.button("Save Changes"):
+                    # Update session state when selection changes
+                    if grid_response["data"] is not None:
+                        updated_df = pd.DataFrame(grid_response["data"])
+                        print(updated_df)
+                        updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
+                        delete_data(db_name,user_name,"1=1")
+                        add_data(updated_df,False,db_name,user_name)
+                        st.toast(":green[Data saved successfully.]")
 
 def show_message(page):
     if page == "refund_policy":
