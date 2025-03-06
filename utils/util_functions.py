@@ -235,15 +235,18 @@ def display_data(df,Height,db_name="",user_name="",category_present=False,catego
     grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
 
     if category_present:
-        if st.button("Save Changes"):
-            # Update session state when selection changes
-            if grid_response["data"] is not None:
-                updated_df = pd.DataFrame(grid_response["data"])
-                print(updated_df)
-                updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
-                delete_data(db_name,user_name,"1=1")
-                add_data(updated_df,False,db_name,user_name)
-                st.toast(":green[Data saved successfully.]")
+        with st.container():
+            col1, col2 = st.columns([4, 1])  # Empty space, push right, and button column
+            with col2:
+                if st.button("Save Changes"):
+                    # Update session state when selection changes
+                    if grid_response["data"] is not None:
+                        updated_df = pd.DataFrame(grid_response["data"])
+                        print(updated_df)
+                        updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
+                        delete_data(db_name,user_name,"1=1")
+                        add_data(updated_df,False,db_name,user_name)
+                        st.toast(":green[Data saved successfully.]")
 
 def show_message(page):
     if page == "refund_policy":
@@ -484,6 +487,7 @@ def home_page():
             }
             
             .policy{
+                margin-top:40px;
                 font-size:1rem;
                 display:flex;
                 flex-direction:column;
@@ -697,16 +701,18 @@ def home_page():
         <div class = "policy">
                     <h1 class="section-heading">Commitment to Privacy & Security</h1>
                     <div>
-                        <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
-                    </div>
-                <div>
-                        <p><span class="section-subheading">📂 You Upload - The App processes - </span>The app only processes the data your provide - nothing more, nothing less.</p>
-                    </div>
-                <div>
-                        <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever.</p>
-                    </div>
-                    <div>
-                        <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
+                        <div>
+                            <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
+                        </div>
+                        <div>
+                            <p><span class="section-subheading">📂 You Upload - The App processes - </span>The app only processes the data your provide - nothing more, nothing less.</p>
+                        </div>
+                        <div>
+                            <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever.</p>
+                        </div>
+                        <div>
+                            <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
+                        </div>
                     </div>
                     <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
                 </div>
