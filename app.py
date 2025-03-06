@@ -520,13 +520,14 @@ if st.session_state["connected"]:
 
                     display_data(db_df,600,db_name,user_name,True,sorted(category_table_data['Category'].unique()))
                     db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
+                    # Use a container for better layout control
                     st.download_button(
-                        key='dbb',
-                        label="Download data",
-                        data=convert_df_to_excel(db_df),
-                        file_name="bank_statement.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
+                                key="dbb",
+                                label="Download data",
+                                data=convert_df_to_excel(db_df),
+                                file_name="bank_statement.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            )
                 else:
                     if st.button("Show Dummy Data",key='showd2'):
                         dummy_data['Date'] = dummy_data['Date'].dt.strftime('%d-%b-%Y')
@@ -548,14 +549,16 @@ if st.session_state["connected"]:
                         # Convert the Date column to datetime and then format it
                         summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce')
                         summary_df['End_Date'] = pd.to_datetime(summary_df['End_Date'],errors='coerce')
-
-                        st.download_button(
-                            key='dbs',
-                            label="Download data",
-                            data=convert_df_to_excel(summary_df),
-                            file_name="bank_statement_summary.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        )
+                        with st.container():
+                            col1, col2, col3 = st.columns([5, 1, 1])  # Empty space, push right, and button column
+                            with col3:  # Place the button in the rightmost column
+                                st.download_button(
+                                key='dbs',
+                                label="Download data",
+                                data=convert_df_to_excel(summary_df),
+                                file_name="bank_statement_summary.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            )
                 else:
                     if st.button("Show Dummy Summary",key='showd1'):
                         dummy_summary_data_file_path = DUMMY_DATA_SUMMARY_PATH
@@ -579,10 +582,10 @@ if st.session_state["connected"]:
             SMTP_USER = SMTP_USER  # Replace with your Gmail
             SMTP_PASSWORD = email_pass  # Use an App Password, not your main password
             feedback_table='Feedback'
-            st.subheader("We value your thoughts! Feel free to share any feedback, ideas, or suggestions to help us improve. Your insights make a difference!")
+            st.write("**We value your thoughts! Feel free to share any feedback, ideas, or suggestions to help us improve. Your insights make a difference!**")
 
             # Text area for feedback
-            feedback = st.text_area("Your Feedback:", placeholder="Write your feedback here...")
+            feedback = st.text_area("Your Feedback:", placeholder="Write your feedback here...",height=150)
             feedback=feedback.strip()
             
             # File uploader (Optional)
@@ -816,7 +819,7 @@ else:
                         border-radius: 50%;
                     }
                     /* Media query for screens 768px and smaller */
-                    @media (max-width: 768px) {
+                    @media (max-width: 1100px) {
                         .gcenter {
                             position: fixed;
                             top: 5vh;
