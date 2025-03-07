@@ -225,7 +225,7 @@ if st.session_state["connected"]:
                                         openning_bal=row.loc[0, 'Balance']
                                         row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                         row.loc[0, 'Balance']+=ex_balance_sum
-                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
+                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],bank,res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
 
                                 st.toast(":green[Data updated successfully]")   
                                 time.sleep(3)
@@ -246,7 +246,7 @@ if st.session_state["connected"]:
                                         openning_bal=row.loc[0, 'Balance']
                                         row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                         row.loc[0, 'Balance']+=ex_balance_sum
-                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
+                                        update_summary1(db_name,summ_table,row.iloc[0]['Name'],bank,res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
                                 st.toast(":green[Data updated successfully]")
                                 time.sleep(3)
                                 refresh_page()
@@ -270,7 +270,7 @@ if st.session_state["connected"]:
                                     openning_bal=row.loc[0, 'Balance']
                                     row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                     row.loc[0, 'Balance']+=ex_balance_sum
-                                    update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
+                                    update_summary1(db_name,summ_table,row.iloc[0]['Name'],bank,res['oldest_date'],res['latest_date'],res['no_of_transactions'],row.loc[0, 'Balance'],openning_bal)
                                 
                             st.toast(":green[Data updated successfully]")
                             time.sleep(3)
@@ -431,7 +431,7 @@ if st.session_state["connected"]:
                                 cred_deb_df=get_transaction_data(db_name,user_name,cred_deb_condition)
                                 cred_deb_sum = cred_deb_df['Credit'].sum() - cred_deb_df['Debit'].sum() + row.loc[0, 'Balance']
                                     
-                                update_summary1(db_name,summ_table,row.iloc[0]['Name'],row.iloc[0]['Bank'],res['oldest_date'],res['latest_date'],res['no_of_transactions'],cred_deb_sum,openning_bal)
+                                update_summary1(db_name,summ_table,row.iloc[0]['Name'],bank,res['oldest_date'],res['latest_date'],res['no_of_transactions'],cred_deb_sum,openning_bal)
                             st.toast(":green[Data deleted successfully]")
                         except Exception as e:
                             print(f"Error in deleting: {e}")
