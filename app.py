@@ -22,6 +22,7 @@ authenticator = Authenticator(
     secret_path = SECRET_PATH,
     redirect_uri=REDIRECT_URI,
 )
+
 st.markdown(
     """
     <style>
@@ -829,12 +830,15 @@ else:
     else:
         css = """
                 <style>
+                    header[data-testid="stHeader"]{
+                        z-index:1000;
+                    }
                     .gcenter {
                         overflow-x:hidden;
                         width: 100%;
                         display: flex;
                         position:fixed;
-                        top:5vh;
+                        top:2vh;
                         left:78vw;
                         backfround-color:white;
                         z-index: 100000000000;
@@ -861,8 +865,9 @@ else:
                     /* Media query for screens 768px and smaller */
                     @media (max-width: 1100px) {
                         .gcenter {
+                            background-color:white
                             position: fixed;
-                            top: 5vh;
+                            top: 1vh;
                             left: 50%;
                             transform: translateX(-50%); /* Moves it to center */
                             width: max-content; /* Adjust width based on content */
