@@ -535,7 +535,7 @@ if st.session_state["connected"]:
                     initialize_db(table_nm)
                     category_table_data = get_categories(table_nm)
                     with st.container():
-                        download_df = db_df
+                        download_df = db_df.copy()
                         download_df['Date'] = pd.to_datetime(download_df['Date'],errors='coerce')
                         display_data(db_df,600,download_df,False,db_name,user_name,True,sorted(category_table_data['Category'].unique()))
                         # db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
