@@ -593,7 +593,7 @@ if st.session_state["connected"]:
                         dummy_summary_data['Start_Date'] = pd.to_datetime(dummy_summary_data['Start_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
                         dummy_summary_data['End_Date'] = pd.to_datetime(dummy_summary_data['End_Date'],errors='coerce').dt.strftime('%d-%b-%Y')
 
-                        display_data(dummy_summary_data,300)
+                        display_data(dummy_summary_data,300,[],True)
 
             except Exception as e:
                 print(f"Error in fetching summary data: {e}")
