@@ -248,13 +248,13 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
                             st.toast(":green[Data saved successfully.]")
             with col2:
                 st.download_button(
-                                key='dbs',
-                                label="Download data",
-                                data=convert_df_to_excel(download_df),
-                                file_name="bank_statement.xlsx",
-                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                use_container_width=True
-                            )
+                    key='dbs',
+                    label="Download data",
+                    data=convert_df_to_excel(download_df),
+                    file_name="bank_statement.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
 
 def show_message(page):
     if page == "refund_policy":
