@@ -71,6 +71,7 @@ if st.session_state["connected"]:
         st.stop()
 
     app_name = cookies.get("app_name")
+    
     if app_name and app_name!="nothing":
         main_page=False
         if app_name=="bank_statements":
