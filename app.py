@@ -157,8 +157,8 @@ if st.session_state["connected"]:
                 block = st.sidebar.empty()
                 st.markdown("""
                 <style>
-                    .st-emotion-cache-1gwvy71{
-                        padding-bottom:0rem;
+                    .st-emotion-cache-a6qe2i{
+                        padding-bottom:2rem;
                     }
                 </style>
             """, unsafe_allow_html=True)
