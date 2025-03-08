@@ -1,6 +1,9 @@
 import streamlit as st
+
+# Set Streamlit to wide mode
+st.set_page_config(page_title="Fintellect",layout="wide")
+
 from streamlit_cookies_manager import EncryptedCookieManager
-import warnings
 import razorpay
 import streamlit.components.v1 as components
 import pandas as pd
@@ -8,8 +11,6 @@ from io import BytesIO
 from datetime import datetime , timedelta ,date
 import time
 
-# Set Streamlit to wide mode
-st.set_page_config(page_title="Fintellect",layout="wide")
 
 from auth import Authenticator
 from database import *
@@ -17,7 +18,7 @@ from utils import *
 from constant_variables import *
 
 # hide_3_dot_menu()
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+# warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 authenticator = Authenticator(
     token_key=TOKEN_KEY,
@@ -71,7 +72,7 @@ if st.session_state["connected"]:
         st.stop()
 
     app_name = cookies.get("app_name")
-    
+
     if app_name and app_name!="nothing":
         main_page=False
         if app_name=="bank_statements":
