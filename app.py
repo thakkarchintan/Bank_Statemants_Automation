@@ -164,7 +164,7 @@ if st.session_state["connected"]:
             """, unsafe_allow_html=True)
                 st.sidebar.markdown(
                     """
-                    <div style="height: 255px;">
+                    <div style="height: 200px;">
                     </div>
                     """,
                     unsafe_allow_html=True,
