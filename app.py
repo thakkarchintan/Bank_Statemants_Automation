@@ -1,7 +1,8 @@
 import streamlit as st
+import os
 
 # Set Streamlit to wide mode
-st.set_page_config(page_title="Fintellect",layout="wide")
+st.set_page_config(page_title="Fintellect",page_icon=os.getenv("Fevicon_Path"),layout="wide")
 
 from streamlit_cookies_manager import EncryptedCookieManager
 import razorpay
@@ -10,7 +11,6 @@ import pandas as pd
 from io import BytesIO
 from datetime import datetime , timedelta ,date
 import time
-
 
 from auth import Authenticator
 from database import *
@@ -154,6 +154,21 @@ if st.session_state["connected"]:
             with st.sidebar:
                 # Submit button inside sidebar
                 st.button("Add data", on_click=ok_submission ,use_container_width=True)
+                block = st.sidebar.empty()
+                st.markdown("""
+                <style>
+                    .st-emotion-cache-1gwvy71{
+                        padding-bottom:2rem;
+                    }
+                </style>
+            """, unsafe_allow_html=True)
+                st.sidebar.markdown(
+                    """
+                    <div style="height: 255px;">
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
             if "Select_data_button" not in st.session_state:
                 st.session_state.Select_data_button = False
@@ -468,9 +483,29 @@ if st.session_state["connected"]:
 
             else:
                 if user_name in admins:
+                    # Apply CSS to reduce white space above tabs
+                    st.markdown(
+                        """
+                        <style>
+                            div.block-container { padding-top: 0rem; } /* Reduce padding */
+                            div[data-testid="stTabs"] { margin-top: -50px; } /* Move tabs higher */
+                        </style>
+                        """,
+                        unsafe_allow_html=True
+                    )
                     # Create tabs
                     tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback","Razorpay","Categories"])
                 else:
+                    # Apply CSS to reduce white space above tabs
+                    st.markdown(
+                        """
+                        <style>
+                            div.block-container { padding-top: 0rem; } /* Reduce padding */
+                            div[data-testid="stTabs"] { margin-top: -50px; } /* Move tabs higher */
+                        </style>
+                        """,
+                        unsafe_allow_html=True
+                    )
                     # Create tabs
                     tab1, tab2, tab3, tab4= st.tabs(["Dashboard", "Summary", "Bank Entries", "Feedback"])
 

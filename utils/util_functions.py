@@ -257,12 +257,8 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
                 )
 
 def show_message(page):
-    if page == "refund_policy":
+    if page == "policies":
         refund_policy()
-    elif page == "privacy_policy":
-        privacy_policy()
-    elif page == "terms_condition":
-        terms_condition()
     else:
         home_page()
 
@@ -532,7 +528,6 @@ def home_page():
             .bold-text{
                 font-weight: bold;
             }
-            
             #list_of_supported_banks {
             max-width: 60%;
             border-collapse: collapse; /* Ensures table borders collapse together */
@@ -597,7 +592,7 @@ def home_page():
         }
 
         /* Responsive behavior */
-        @media (max-width: 600px) {
+        @media (max-width: 1110px) {
 
             #list_of_supported_banks {
                 font-size: 12px;
@@ -622,113 +617,144 @@ def home_page():
     html = f"""
         <div class="container">
                 <div class="text-section">
-                    <h1>Instantly Organize & Analyze Your Bank Transactions—All in One Place!</h1>
+                    <h1>Fintellect: Your All-in-One Financial Companion</h1>
                     <div class="para-section">
-                        <div class="para">Upload PDF or XLS bank statements from the <a href = "#list_of_supported_banks">list of supported banks</a> and instantly get a <span class = "bold">clean</span>, <span class = "bold">organized</span>, and <span class = "bold">standardized</span> view of all your transactions in one place.</div>
-                        <div class="para bold">✅ Track Spending Patterns</div>
-                        <div class="para bold">✅ Gain Intelligent Insights</div>
+                        <div class="para">Take control of your finances with <span class="bold">Fintellect</span> , a powerful platform designed to:</div>
+                        <div class="para"><span class="bold">✅ Assess & Project Your Net Worth – </span> Understand your financial standing today and plan for tomorrow.</div>
+                        <div class="para"><span class="bold">✅ Organize & Analyse Your Bank Transactions – </span>Get a single, clear view of your spending across all accounts.</div>
+                        <div class="para">Whether you’re tracking <span class="bold"> income, expenses, investments, or bank transactions, </span>  Fintellect helps you make informed financial decisions - effortlessly.</div>
                     </div>
                 </div>  
                 <div class = "profile">
-                <h1>Why I Created This App</h1>
-                    <div class = "profile-section">
-                    <div class = "profile-text">
-                        <p>For <span class ="bold-text">3+ years</span>, I manually tracked my bank transactions—it was frustrating, inefficient, and time-consuming.
-                        So, I built a tool to <span class ="bold-text">automate the entire process.</span></p>
-                        <p>What started as a personal solution became something worth sharing. If you’ve ever struggled with organizing your finances, I hope this helps!.</p>
-                        <div class = "profile-info">
-                            <p class="bold"><a href="https://www.linkedin.com/in/1chintanthakkar/">Chintan Thakkar</a></p>
-                        </div>     
-                    </div>
+                    <h1>📊 Track & Project Your Net Worth</h1>
+                        <div class = "profile-section">
+                            <div class = "profile-text">
+                                <div class="para">Fintellect provides a <span class="bold">comprehensive overview of your financial status</span> by:</div>
+                                <div class="para">🔹 <span class="bold">Calculating your current net worth</span> based on income, expenses, savings, and investments.</div>
+                                <div class="para">🔹 <span class="bold">Projecting your future financial growth</span> using potential income and expense trends.</div>
+                                <div class="para">🔹 <span class="bold">Helping you plan for major life goals</span> with financial forecasting tools.</div>
+                                <div class="para">🔹 <span class="bold">Providing interactive graphs</span> to visualize your wealth accumulation over time.</div>
+                            </div>
+                        </div>
                 </div>
+                <div class = "profile">
+                    <h1>💰 Organize & Categorize Your Transactions</h1>
+                    <div class = "profile-section">
+                        <div class = "profile-text">
+                            <div class="para">Keeping track of <span class="bold">bank transactions</span> can be overwhelming, but Fintellect simplifies it:</div>
+                            <div class="para">🔹 <span class="bold">Upload PDF/XLS bank statements</span> from multiple accounts.</div>
+                            <div class="para">🔹 <span class="bold">Get a clean, structured view</span> of all transactions in one place.</div>
+                            <div class="para">🔹 <span class="bold">Automatically categorize expenses</span> to identify spending patterns.</div>
+                            <div class="para">🔹 <span class="bold">Gain powerful insights</span> into savings, subscriptions, and recurring charges.</div>
+                        </div>
+                    </div>
                 </div>
         <div class="table-section">
-        <h1>List of supported banks</h1>
-        <table id="list_of_supported_banks">
-            <tr>
-                <th>Name of the Bank</th>
-                <th>XLS or XLSX Supported</th>
-                <th>PDF Supported</th>
-            </tr>
-            <tr>
-                <td>Axis Bank</td>
-                <td class="yes">Yes</td>
-                <td class="yes">Yes</td>
-            </tr>
-            <tr>
-                <td>Bandhan Bank</td>
-                <td class="work-in-progress">Work in progress</td>
-                <td class="yes">Yes</td>
-            </tr>
-            <tr>
-                <td>Bank of India</td>
-                <td class="yes">Yes</td>
-                <td class="work-in-progress">Work in progress</td>
-            </tr>
-            <tr>
-                <td>HDFC Bank</td>
-                <td class="yes">Yes</td>
-                <td class="work-in-progress">Work in progress</td>
-            </tr>
-            <tr>
-                <td>ICICI Bank</td>
-                <td class="yes">Yes</td>
-                <td class="yes">Yes</td>
-            </tr>
-            <tr>
-                <td>Indian Bank</td>
-                <td class="work-in-progress">Work in progress</td>
-                <td class="work-in-progress">Work in progress</td>
-            </tr>
-            <tr>
-                <td>Indian Overseas Bank</td>
-                <td class="yes">Yes</td>
-                <td class="work-in-progress">Work in progress</td>
-            </tr>
-            <tr>
-                <td>Kotak Mahindra Bank</td>
-                <td class="work-in-progress">Work in progress</td>
-                <td class="yes">Yes</td>
-            </tr>
-            <tr>
-                <td>Punjab National Bank</td>
-                <td class="work-in-progress">Work in progress</td>
-                <td class="work-in-progress">Work in progress</td>
-            </tr>
-            <tr>
-                <td>State Bank of India</td>
-                <td class="yes">Yes</td>
-                <td class="yes">Yes</td>
-            </tr>
-            <tr>
-                <td>Union Bank of India</td>
-                <td class="work-in-progress">Work in progress</td>
-                <td class="work-in-progress">Work in progress</td>
-            </tr>
+            <h1>List of supported banks</h1>
+            <table id="list_of_supported_banks">
+                <tr>
+                    <th>Name of the Bank</th>
+                    <th>XLS or XLSX Supported</th>
+                    <th>PDF Supported</th>
+                </tr>
+                <tr>
+                    <td>Axis Bank</td>
+                    <td class="yes">Yes</td>
+                    <td class="yes">Yes</td>
+                </tr>
+                <tr>
+                    <td>Bandhan Bank</td>
+                    <td class="work-in-progress">Work in progress</td>
+                    <td class="yes">Yes</td>
+                </tr>
+                <tr>
+                    <td>Bank of India</td>
+                    <td class="yes">Yes</td>
+                    <td class="work-in-progress">Work in progress</td>
+                </tr>
+                <tr>
+                    <td>HDFC Bank</td>
+                    <td class="yes">Yes</td>
+                    <td class="work-in-progress">Work in progress</td>
+                </tr>
+                <tr>
+                    <td>ICICI Bank</td>
+                    <td class="yes">Yes</td>
+                    <td class="yes">Yes</td>
+                </tr>
+                <tr>
+                    <td>Indian Bank</td>
+                    <td class="work-in-progress">Work in progress</td>
+                    <td class="work-in-progress">Work in progress</td>
+                </tr>
+                <tr>
+                    <td>Indian Overseas Bank</td>
+                    <td class="yes">Yes</td>
+                    <td class="work-in-progress">Work in progress</td>
+                </tr>
+                <tr>
+                    <td>Kotak Mahindra Bank</td>
+                    <td class="work-in-progress">Work in progress</td>
+                    <td class="yes">Yes</td>
+                </tr>
+                <tr>
+                    <td>Punjab National Bank</td>
+                    <td class="work-in-progress">Work in progress</td>
+                    <td class="work-in-progress">Work in progress</td>
+                </tr>
+                <tr>
+                    <td>State Bank of India</td>
+                    <td class="yes">Yes</td>
+                    <td class="yes">Yes</td>
+                </tr>
+                <tr>
+                    <td>Union Bank of India</td>
+                    <td class="work-in-progress">Work in progress</td>
+                    <td class="work-in-progress">Work in progress</td>
+                </tr>
         </table>
-        <div class = "policy">
-                    <h1 class="section-heading">Commitment to Privacy & Security</h1>
-                    <div>
-                        <div>
-                            <p><span class="section-subheading">🔒 100% Encrypted & Secure - </span>The data in this app is securely encrypted using robust encryption methods.</p>
-                        </div>
-                        <div>
-                            <p><span class="section-subheading">📂 You Upload - The App processes - </span>The app only processes the data your provide - nothing more, nothing less.</p>
-                        </div>
-                        <div>
-                            <p><span class="section-subheading ">🗑️ You Can Delete Your Data Anytime  - </span>Once deleted, it’s gone forever.</p>
-                        </div>
-                        <div>
-                            <p><span class="section-subheading">🚫 No Sharing, No Selling - </span>Your data is yours. We do not and will not share or sell your data.</p>
-                        </div>
-                    </div>
-                    <p>📩 Have questions? Reach out at  <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
-                </div>
-                <div class="para bold guidelines footer">
-                    <a href="https://bankstatements.onrender.com/?page=privacy_policy" target="_self">Privacy Policy</a> , 
-                    <a href="https://bankstatements.onrender.com/?page=refund_policy" target="_self">Refund Policy</a>
-                    and <a href="https://bankstatements.onrender.com/?page=terms_condition" target="_self">Terms & Conditions</a>
-                </div>
+    </div>
+    <div class="profile">
+        <h1>🔒 Privacy & Security Commitment</h1>
+        <div class = "profile-section">
+            <div class="profile-text">
+                <div class="para">At Fintellect, we prioritize <span class="bold">your data privacy and security:</span></div>
+                <div class="para"><span class="bold">✅  100% Encrypted & Secure – </span> Your data is protected with robust encryption methods.</div>
+                <div class="para"><span class="bold">✅  No Data Sharing or Selling – </span> Your financial information stays with you.</div>
+                <div class="para"><span class="bold">✅  You Upload, We Process – </span> The app processes only the data you provide - nothing more.</div>
+                <div class="para"><span class="bold">✅  Delete Anytime – </span> Your data is yours. Once deleted, it’s gone forever</div>
+            </div>
+        </div>
+    </div>
+    <div class = "profile">
+        <h1>📂 Easy Data Management & Export</h1>
+        <div class = "profile-section">
+            <div class = "profile-text">
+                <div class="para">Need to keep financial records? Fintellect allows you to <span class="bold">export</span> your data to Excel for deeper analysis and record-keeping.</div>
+            </div>
+        </div>
+    </div>
+    <div class = "profile">
+        <h1>Why Choose Fintellect?</h1>
+        <div class = "profile-section">
+            <div class = "profile-text">
+                <div class="para">Managing finances shouldn’t feel like a chore. Fintellect is designed for <span class="bold">simplicity , automation , and clarity ,</span> helping you: </div>
+                <div class="para">🔹 <span class="bold">Gain financial confidence</span> with structured insights.</div>
+                <div class="para">🔹 <span class="bold"> Track, plan, and grow your wealth</span> with ease.</div>
+                <div class="para">🔹 <span class="bold">Make informed decisions</span> with a clear view of your money.</div>
+            </div>
+        </div>
+    </div>
+    <div class = "profile">
+        <h1>Disclaimer</h1>
+        <div class = "profile-section">
+            <div class = "profile-text">
+                <div class="para">Fintellect provides financial insights based on user inputs but does <span class="bold">not offer financial advice</span>  We recommend consulting a professional for personalized guidance.</div>
+                <div class="para">📩 Have questions? Reach out at <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></div>
+                <div class="para"><span class="bold">Start using Fintellect today and take control of your financial future! 🚀</span></div>
+                <div class="para">Learn more about our <a href = "https://fintellect.co.in?page=policies"  target="_self"><span class = "bold" > Terms, Privacy & Security  Policies </span> </a></div>
+            </div>
+        </div>
     </div>
     <div class = "space-maker"></div>
     </div>
@@ -740,9 +766,6 @@ def home_page():
 def refund_policy():
     css = """
     <style>
-        *{
-            font-family:sans-serif;
-        }
         .container {
             overflow-x: hidden;
             min-width: 100vw;
@@ -750,12 +773,13 @@ def refund_policy():
             background: white;
             box-sizing: border-box;
             padding: 20px;
+            display:flex;
+            flex-direction:column;
+            gap:25px;
         }
-        .policy p , .policy li {
-            font-size: 1rem;
-        } 
-        
-          
+        .policy-heading{
+            margin-bottom:10px;
+        }
         h1 {
                 all: unset;
                 font-size: 1.5rem !important;
@@ -777,11 +801,6 @@ def refund_policy():
             flex-direction: column;
             align-items: center;
         }
-        .policy-data {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
         .sub-heading {
             height: 3%;
             font-size:1rem
@@ -789,7 +808,6 @@ def refund_policy():
         ul {
             display: flex;
             flex-direction: column;
-            gap: 10px;
         }
         .footer {
             text-align: center;
@@ -797,8 +815,8 @@ def refund_policy():
             color: #777;
         }
         .button {
-            position: absolute;
-            top: 10px;
+            position: relative;
+            top: 0px;
             left: 10px;
             padding: 10px 20px;
             color: white;
@@ -807,71 +825,163 @@ def refund_policy():
             cursor: pointer;
             font-size: 1rem;
         }
+        .bold {
+            font-weight: bold;
+         }
         a{
             color: white;
+        }
+        p{
+            width:60%;
         }
     </style>
     """
     html = f"""<body>
-    <button class="button"><a href="https://bankstatements.onrender.com/" target="_self">Home</a></button>
+    <button class="button"><a href="https://fintellect.co.in/" target="_self">Home</a></button>
     <div class="container">
-        <h1 class="center top-heading">Fintellect Policies</h1>
-        <div class="center sub-heading">
-            <h2>Refund & Cancellation Policy</h2>
-            <p><strong>Effective Date:</strong> 17-Feb-25</p>
-            <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
+        <div>
+            <h1>Fintellect Policies</h1>
+            <div>
+                <p><span class = "bold">Effective Date : </span>15-February-2025</p>
+            </div>
         </div>
         <div class="policy-data">
-            <div class="policy">
-                <h2>1. General Refund Policy</h2>
-                <p>At Fintellect, we prioritize customer satisfaction. Users can request refunds for subscriptions or one-time purchases—no questions asked.</p>
-                <p>We offer a <strong>2-week trial period</strong> before requiring a purchase.</p>
-                <p>Refunds are <strong>full refunds</strong>, excluding third-party processing fees.</p>
+            <div class="policy-heading">
+                <h2>1. Privacy Policy</h2>
             </div>
             <div class="policy">
-                <h2>2. Subscription Cancellations</h2>
+                <h2>Introduction</h2>
+                <p>At Fintellect, we recognize the importance of protecting your privacy and personal financial data. This Privacy Policy outlines the types of information we collect, how we use and safeguard that information, and your rights concerning your data.
+                By accessing and using our services, you consent to the terms set forth in this policy.</p>
+            </div>
+            <div class="policy">
+                <h2>Information We Collect</h2>
+                <p>Fintellect provides financial tracking services, including Bank Statements Automation and Net Worth Projection.
+                To enable these services, we may collect the following types of data:</p>
                 <ul>
-                    <li>Users can cancel their subscriptions anytime.</li>
-                    <li>Upon cancellation, <strong>access is revoked immediately</strong>.</li>
-                    <li>If a user cancels after being charged, a full refund will be issued.</li>
+                    <li>Bank Transaction Data: Users may manually upload bank statements (PDF/XLS) for categorization and analysis.</li>
+                    <li>Financial Planning Data: Users may input financial details to calculate and project their net worth.</li>
+                    <li>User Identifiers: Basic profile information necessary for account management and security purposes.</li>
                 </ul>
             </div>
             <div class="policy">
-                <h2>3. One-Time Purchase Policy</h2>
+                <h2>How We Use Your Information</h2>
+                <p>The information you provide is used strictly for the purpose of delivering Fintellect's financial tracking and analysis functionalities. We do not sell, share, 
+                or monetize user data. Our processing activities include:</p>
                 <ul>
-                    <li>Users may request a refund for one-time purchases if dissatisfied.</li>
-                    <li>Refund requests made in good faith will be honored.</li>
+                    <li>Organizing and categorizing financial transactions for enhanced visibility.</li>
+                    <li>Providing personalized financial insights through net worth calculations.</li>
+                    <li>Enabling users to track their financial trajectory based on historical and projected data.</li>
                 </ul>
             </div>
             <div class="policy">
-                <h2>4. Payment Gateway & Processing Fees</h2>
-                <ul>
-                    <li>Refunds exclude <strong>third-party payment processing fees</strong>.</li>
-                    <li>Refund timelines depend on the payment provider.</li>
-                </ul>
+                <h2>Data Deletion & User Control</h2>
+                <p>Users maintain full control over their data and may permanently delete their uploaded bank statements and net worth projections at any time. Upon deletion, 
+                all associated data is irreversibly removed from our servers.</p>
             </div>
             <div class="policy">
-                <h2>5. Refund Request Process</h2>
-                <p>Email <strong>support@fintellect.co.in</strong> for a refund request.</p>
-                <p>Requests undergo <strong>manual review</strong> before processing.</p>
-            </div>
-            <div class="policy">
-                <h2>6. Exceptional Cases</h2>
-                <ul>
-                    <li>No refunds for fraudulent or unauthorized transactions.</li>
-                    <li>Fintellect may deny repeated refund requests.</li>
-                </ul>
-            </div>
-            <div class="policy">
-                <h2>7. Governing Law & Dispute Resolution</h2>
-                <p>Policy governed by <strong>Indian law</strong>.</p>
-                <p>Refund disputes follow Indian legal procedures.</p>
+                <h2>Data Security Measures</h2>
+                <p>Fintellect employs AES-256 encryption for data storage and SSL/TLS encryption for all data transmissions. We implement industry-leading security 
+                protocols to ensure the confidentiality and integrity of user data.</p>
             </div>
         </div>
-        <div class="footer">
-            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
-            <p><strong>Last Updated:</strong> 17-Feb-25</p>
+        <div class="policy-data">
+            <div class="policy-heading">
+                <h2>2. Terms & Conditions</h2>
+            </div>
+            <div class="policy">
+                <h2>Acceptance of Terms</h2>
+                <p>By accessing or using Fintellect, you agree to be bound by these Terms & Conditions. 
+                If you do not agree with any provision herein, you must discontinue use of the platform.</p>
+            </div>
+            <div class="policy">
+                <h2>Scope of Services</h2>
+                <p>Fintellect provides a digital financial tracking solution comprising:</p>
+                <ul>
+                    <li>Bank Statements Automation: Users may upload and categorize bank transactions for financial analysis.</li>
+                    <li>Net Worth Projection: Users may input financial information to generate future net worth forecasts.</li>
+                </ul>
+                <p>Fintellect is a financial data organization tool and does not provide investment advisory or financial planning services. Users should seek
+                professional guidance for investment decisions.</p>
+            </div>
+            <div class="policy">
+                <h2>Subscription & Payment Terms</h2>
+                <p>Fintellect operates under a single subscription model, granting access to both Bank Statements Automation and Net Worth Projection features. Users may opt for a free
+                version with limited access or upgrade to a paid subscription for enhanced capabilities.</p>
+            </div>
         </div>
+        <div class="policy-data">
+            <div class="policy-heading">
+                <h2>3. Refund & Cancellation Policy</h2>
+            </div>
+            <div class="policy">
+                <h2>Refund Eligibility</h2>
+                <p>Refunds are applicable only for subscriptions and must be requested within 15 days of the initial purchase.
+                Refund requests beyond this period will be reviewed on a case-by-case basis.</p>
+            </div>
+            <div class="policy">
+                <h2>Cancellation of Subscription</h2>
+                <p>Users may cancel their subscription at any time. Upon cancellation, all premium features will be immediately revoked, 
+                and no further charges will apply in subsequent billing cycles</p>
+            </div>
+            <div class="policy">
+                <h2>Processing Fees</h2>
+                <p>Refunds may be subject to third-party processing 
+                fees (e.g., Razorpay transaction fees), which are non-refundable.</p>
+            </div>
+        </div>
+        <div class="policy-data">
+            <div class="policy-heading">
+                <h2>4. Data Retention & Deletion Policy</h2>
+            </div>
+            <div class="policy">
+                <h2>Data Storage and Retention</h2>
+                <p>Fintellect retains user data solely for the purpose of delivering its financial tracking services. Users may access and manage their data at any time.</p>
+            </div>
+            <div class="policy">
+                <h2>Permanent Deletion of User Data</h2>
+                <ul>
+                    <li>Users may initiate complete deletion of their data via the platform's settings.</li>
+                    <li>Once deletion is confirmed, the data is permanently erased from Fintellect’s servers and cannot be recovered.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="policy-data">
+            <div class="policy-heading">
+                <h2>5. Security & Encryption Policy</h2>
+            </div>
+            <div class="policy">
+                <h2>Security Protocols</h2>
+                <p>Fintellect enforces a multi-layered security framework that includes:</p>
+                <ul>
+                    <li>AES-256 encryption for data at rest and SSL/TLS encryption for data in transit.</li>
+                    <li>Strict access control policies ensuring that only authorized users can access their financial data.</li>
+                    <li>Continuous security audits and monitoring to prevent unauthorized access</li>
+                </ul>
+            </div>
+            <div class="policy">
+                <h2>Third-Party Integrations</h2>
+                <p>Currently, Fintellect operates as a standalone platform with no third-party financial service integrations. Future integrations, if any, will be disclosed transparently and subject to updated policy agreements.</p>
+            </div>
+        </div>
+        <div class="policy-data">
+            <div class="policy-heading">
+                <h2>6. Governing Law & Legal Compliance</h2>
+            </div>
+            <div class="policy">
+                <h2>Legal Disclaimer</h2>
+                <p>Fintellect is not a regulated financial institution and does not provide any form of investment advisory, lending, or wealth management services. Users acknowledge that Fintellect is a financial data aggregation tool and must conduct independent due diligence before making financial decisions.</p>
+            </div>
+            <div class="policy">
+                <h2>Jurisdiction & Dispute Resolution</h2>
+                <p>These policies are governed by the laws of India. Any disputes arising from the use of Fintellect shall be subject to the exclusive jurisdiction of Indian courts.</p>
+            </div>
+        </div>
+         <div>
+            <h2>7. Contact Information</h2>
+            <p>For inquiries related to these policies, please contact us at <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a></p>
+        </div>
+        <footer>Last Updated: 15-February-2025</footer>
     </div>
 </body>"""
     st.markdown(css, unsafe_allow_html=True)
