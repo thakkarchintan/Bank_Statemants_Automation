@@ -24,3 +24,4 @@ pycryptodome
 razorpay
 mysql-connector-python
 Flask
+streamlit_cookies_manager
