@@ -158,7 +158,7 @@ if st.session_state["connected"]:
                 st.markdown("""
                 <style>
                     .st-emotion-cache-1gwvy71{
-                        padding-bottom:2rem;
+                        padding-bottom:0rem;
                     }
                 </style>
             """, unsafe_allow_html=True)
