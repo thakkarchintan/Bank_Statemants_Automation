@@ -3,7 +3,6 @@ import os
 
 # Set Streamlit to wide mode
 st.set_page_config(page_title="Fintellect",page_icon=os.getenv("Fevicon_Path"),layout="wide")
-
 from streamlit_cookies_manager import EncryptedCookieManager
 import razorpay
 import streamlit.components.v1 as components
@@ -11,6 +10,7 @@ import pandas as pd
 from io import BytesIO
 from datetime import datetime , timedelta ,date
 import time
+
 
 from auth import Authenticator
 from database import *
@@ -101,7 +101,8 @@ if st.session_state["connected"]:
             else:
                 name=get_name(db_name,'users',user_name)
                 
-            st.sidebar.write(f"Logged in as {first_name}")
+            st.sidebar.write(f"<p style='margin-bottom: 5px;'>Logged in as {first_name}</p>", unsafe_allow_html=True)
+            st.sidebar.markdown("---")
                 
             # sorting list of banks
             bank_list.sort()
@@ -185,6 +186,7 @@ if st.session_state["connected"]:
 
             # Sidebar elements to delete data
             with st.sidebar:
+                st.sidebar.markdown("---")
                 # Submit button inside sidebar
                 st.button("Delete my data", on_click=confirm_submission,use_container_width=True)
 
@@ -881,7 +883,8 @@ if st.session_state["connected"]:
             
             if st.sidebar.button("Go to Main Page"):
                 main_page=True
-
+                
+            
             if main_page:
                 cookies["app_name"]="nothing"
                 cookies.save()
