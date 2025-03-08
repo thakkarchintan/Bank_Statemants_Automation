@@ -26,15 +26,15 @@ authenticator = Authenticator(
     redirect_uri=REDIRECT_URI,
 )
 
-st.markdown(
-    """
-    <style>
-        /* Hide the three-dot menu */
-        [data-testid="stToolbar"] {visibility: hidden;}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# st.markdown(
+#     """
+#     <style>
+#         /* Hide the three-dot menu */
+#         [data-testid="stToolbar"] {visibility: hidden;}
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
 
 st.markdown("""
     <style>
