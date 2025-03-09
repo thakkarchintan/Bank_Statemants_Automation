@@ -62,7 +62,7 @@ def networth():
                         """
                         <style>
                             div.block-container { padding-top: 0rem; } /* Reduce padding */
-                            div[data-testid="stTabs"] { margin-top: -50px; } /* Move tabs higher */
+                            div[data-testid="stTabs"] { margin-top: -30px; } /* Move tabs higher */
                         </style>
                         """,
                         unsafe_allow_html=True
