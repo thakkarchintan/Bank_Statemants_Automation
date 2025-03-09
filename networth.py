@@ -21,7 +21,7 @@ def networth():
     """, unsafe_allow_html=True)
         st.sidebar.markdown(
             """
-            <div style="height: 300px;">
+            <div style="height: 350px;">
             </div>
             """,
             unsafe_allow_html=True,
