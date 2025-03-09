@@ -10,6 +10,9 @@ from io import BytesIO
 import os
 import base64
 import streamlit.components.v1 as components
+import re
+import uuid
+from st_aggrid import AgGrid, GridOptionsBuilder
 from database import *
 
 
@@ -986,280 +989,7 @@ def refund_policy():
 </body>"""
     st.markdown(css, unsafe_allow_html=True)
     st.markdown(html, unsafe_allow_html=True)
-    
-def privacy_policy():
-# CSS for styling
- css = """
-    <style>
-        *{
-            font-family:sans-serif;
-        }
-        .container {
-            overflow-x: hidden;
-            min-width: 100vw;
-            min-height: 100vh;
-            background: white;
-            box-sizing: border-box;
-            padding: 20px;
-        }
-        .policy p , .policy li {
-            font-size: 1rem;
-        } 
-        
-              
-        h1 {
-                all: unset;
-                font-size: 1.5rem !important;
-                margin: 20px 0 !important;
-                font-weight: bold !important;
-                color: black;
-            }
 
-            h2 {
-                all: unset;
-                font-size: 1.3rem !important;
-                margin: 20px 0 !important;
-                font-weight: bold !important;
-                color: black;
-            }
-            
-        .center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .policy-data {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .sub-heading {
-            height: 3%;
-            font-size:1rem
-        }
-        ul {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .footer {
-            text-align: center;
-            font-size: 1rem;
-            color: #777;
-        }
-        .button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        a{
-            color: white;
-        }
-    </style>
-    """
- html = f"""<body>
-    <button class="button"><a href="https://bankstatements.onrender.com/" target="_self">Home</a></button>
-    <div class="container">
-        <h1 class="center top-heading">Fintellect Policies</h1>
-        <div class="center sub-heading">   
-            <h2>Privacy Policy</h2>
-            <p><strong>Effective Date:</strong> 17-Feb-25</p>
-            <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
-        </div>
-        <div class="policy-data">
-            <div class="policy">
-                <h2>1. Introduction</h2>
-                <p>At Fintellect, we prioritize your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our application.</p>
-            </div>
-            <div class="policy">
-                <h2>2. Data Collection & Processing</h2>
-                <ul>
-                    <li>We allow users to upload bank statements in PDF, Excel, and CSV formats.</li>
-                    <li>All transaction data is stored on our fully encrypted cloud servers.</li>
-                    <li>We do not use any third-party OCR tools, AI models, or APIs for data processing.</li>
-                </ul>
-            </div>
-           <div class="policy">
-                <h2>3. Data Security & Privacy</h2>
-                <p>Your data is encrypted using AES-256 and SSL encryption.</p>
-            </div>
-            <div class="policy">
-                <h2>4. User Rights & Data Control</h2>
-                <p>Users can view, download, and delete their transaction data at any time.</p>
-            </div>
-              <div class="policy">
-                <h2>5. Payment Processing</h2>
-                <p>Payments will be processed through Razorpay.</p>
-            </div>
-            <div class="policy">
-                <h2>6. Data Usage</h2>
-                <p>We do not share or sell user data to third parties.</p>
-            </div>
-            <div class="policy">
-                <h2>7. Changes to this Privacy Policy</h2>
-                <p>We may update this policy from time to time. Users will be notified of significant changes.</p>
-            </div>
-        </div>
-        <div class="policy-data acceptance">
-            <h2>Acceptance of Terms</h2>
-            <h2>By using Fintellect, you agree to these Terms & Conditions.</h2>
-        <div class="policy">
-                <h2>1. Usage Restrictions & Prohibited Activities</h2>
-                <ul>
-                    <li>Users must not engage in fraudulent or illegal activities.</li>
-                    <li>The app is designed for personal use only.</li>
-                </ul>
-        </div>
-        <div class="policy">
-                <h2>2. Data Accuracy & Liability</h2>
-                <p>Fintellect is an organizational tool, not financial advice.</p>
-        </div>
-        <div class="policy">
-                <h2>3. Payments & Subscriptions</h2>
-                <p>Future plans may include subscription-based and one-time payment options.</p>
-        </div>
-         <div class="policy">
-                <h2>4. Termination & Data Deletion</h2>
-                <p>Users can delete their accounts and all associated data permanently at any time.</p>
-        </div>
-        <div class="policy">
-                <h2>5. Governing Law & Dispute Resolution</h2>
-                <p>These Terms & Conditions shall be governed by the laws of India.</p>
-        </div>
-        </div>
-        <div class="footer">
-            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
-            <p><strong>Last Updated:</strong> 17-Feb-25</p>
-        </div>
-    </div>
-</body>"""
- st.markdown(css, unsafe_allow_html=True)
- st.markdown(html, unsafe_allow_html=True)
-    
-def terms_condition():
-    css = """
-    <style>
-        *{
-            font-family:sans-serif;
-        }
-        .container {
-            overflow-x: hidden;
-            min-width: 100vw;
-            min-height: 100vh;
-            background: white;
-            box-sizing: border-box;
-            padding: 20px;
-        }
-        .policy p , .policy li {
-            font-size: 1rem;
-        } 
-          
-        h1 {
-                all: unset;
-                font-size: 1.5rem !important;
-                margin: 20px 0 !important;
-                font-weight: bold !important;
-                color: black;
-            }
-
-            h2 {
-                all: unset;
-                font-size: 1.3rem !important;
-                margin: 20px 0 !important;
-                font-weight: bold !important;
-                color: black;
-            }
-            
-        .center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .policy-data {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .sub-heading {
-            height: 3%;
-            font-size:1rem
-        }
-        ul {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .footer {
-            text-align: center;
-            font-size: 1rem;
-            color: #777;
-        }
-        .button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        a{
-            color: white;
-        }
-    </style>
-    """
-    html = f"""
-    <button class="button"><a href="https://bankstatements.onrender.com/" target="_self">Home</a></button>
-    <div class = "container">
-        <h1 class="center top-heading">Fintellect Policies</h1>
-        <div class="center sub-heading">   
-            <h2>Acceptance of Terms</h2>
-            <p><strong>Effective Date:</strong> 17-Feb-25</p>
-            <p><strong>Legal Entity:</strong> Alpha Aces Advisory LLP</p>
-        </div>
-        <div class="policy-data">
-            <h2>By using Fintellect, you agree to these Terms & Conditions.</h2>
-            <div class="policy">
-                <h2>1. Usage Restrictions & Prohibited Activities</h2>
-                <ul>
-                    <li>Users must not engage in fraudulent or illegal activities.</li>
-                    <li>The app is designed for personal use only.</li>
-                </ul>
-            </div>
-            <div class="policy">
-                <h2>2. Data Accuracy & Liability</h2>
-                <p>Fintellect is an organizational tool, not financial advice.</p>
-            </div>
-            <div class="policy">
-                <h2>3. Payments & Subscriptions</h2>
-                <p>Future plans may include subscription-based and one-time payment options.</p>
-            </div>
-            <div class="policy">
-                <h2>4. Termination & Data Deletion</h2>
-                <p>Users can delete their accounts and all associated data permanently at any time.</p>
-            </div>
-            <div class="policy">
-                <h2>5. Governing Law & Dispute Resolution</h2>
-                <p>These Terms & Conditions shall be governed by the laws of India.</p>
-            </div>
-        </div>
-        <div class="footer">
-            <p>For queries, contact <a href="mailto:chintanthakkar@outlook.in">chintanthakkar@outlook.in</a>.</p>
-            <p><strong>Last Updated:</strong> 17-Feb-25</p>
-        </div>
-    </div>
-    """
-
-    st.markdown(css, unsafe_allow_html=True)
-    st.markdown(html, unsafe_allow_html=True)
 
 def refresh_page():
     st.markdown('<meta http-equiv="refresh" content="0">', unsafe_allow_html=True)
@@ -1273,3 +1003,53 @@ def hide_3_dot_menu():
         """,
         unsafe_allow_html=True
     )
+
+def generate_username(email):
+    prefix = email.split('@')[0]  # Get part before '@'
+    cleaned_prefix = re.sub(r'[^a-zA-Z0-9]', '', prefix).lower()  # Remove special characters
+    unique_suffix = str(uuid.uuid4())[:8]  # Generate a short unique identifier
+    return f"{cleaned_prefix}_{unique_suffix}"
+
+def display_aggrid(df, title):
+    """Display a DataFrame using AG Grid with dynamic height based on the number of rows."""
+    st.subheader(title)
+
+    if df.empty:
+        st.write("No data available.")
+        return
+
+    # Drop the "Id" column if it exists
+    if "ID" in df.columns:
+        df = df.drop(columns=["ID"])
+
+    # Determine grid height dynamically
+    row_height = 35  # Approximate row height in pixels
+    min_height = 200  # Minimum grid height
+    max_height = 600  # Maximum grid height
+    calculated_height = min(max_height, max(min_height, len(df) * row_height))
+
+    # Configure AG Grid
+    gb = GridOptionsBuilder.from_dataframe(df)
+    gb.configure_pagination(paginationAutoPageSize=True)  # Enable pagination
+    gb.configure_side_bar()  # Enable side bar
+    gb.configure_default_column(editable=False, groupable=True)
+
+    grid_options = gb.build()
+
+    # Display AG Grid with dynamic height
+    AgGrid(df, gridOptions=grid_options, height=calculated_height, fit_columns_on_grid_load=True, use_container_width=True)
+
+def compute_annual_amount(value, frequency):
+    frequencies = {
+        'Daily': 365,
+        'Weekly': 52,
+        'bi-Weekly': 26,
+        'Monthly': 12,
+        'Quarterly': 4,
+        'Half-Yearly': 2,
+        'Annual': 1
+    }
+    return value * frequencies[frequency]
+
+def apply_growth_rate(value, rate, years):
+    return value * ((1 + rate / 100) ** years)
