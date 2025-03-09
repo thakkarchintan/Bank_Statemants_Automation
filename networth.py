@@ -14,7 +14,7 @@ def networth():
     with st.sidebar:
         st.markdown("""
         <style>
-            .st-emotion-cache-a6qe2i{
+            .st-emotion-cache-1gwvy71{
                 padding-bottom:0rem;
             }
         </style>
@@ -62,7 +62,7 @@ def networth():
                         """
                         <style>
                             div.block-container { padding-top: 0rem; } /* Reduce padding */
-                            div[data-testid="stTabs"] { margin-top: -30px; } /* Move tabs higher */
+                            div[data-testid="stTabs"] { margin-top: -40px; } /* Move tabs higher */
                         </style>
                         """,
                         unsafe_allow_html=True

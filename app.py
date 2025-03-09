@@ -57,6 +57,13 @@ apps = {
 }
 
 if st.session_state["connected"]:
+    user_info=st.session_state['user_info']
+    user_email = str(user_info.get('email'))
+    user_name = user_email[:-10]
+    user_name = user_name.replace('.','__')
+    summ_table = user_name+'_summary'
+    name=user_info.get('name')
+    first_name = get_name(db_name,'users',user_name)
     cookies = EncryptedCookieManager(prefix="my_app", password="your_secret_password")
 
     # Set up cookie manager with a password
@@ -80,13 +87,7 @@ if st.session_state["connected"]:
             db_df=pd.DataFrame()
             dummy_data_file_path = DUMMY_DATA_PATH
             dummy_data = pd.read_excel(dummy_data_file_path)
-            user_info=st.session_state['user_info']
-            user_email = str(user_info.get('email'))
-            user_name = user_email[:-10]
-            user_name = user_name.replace('.','__')
-            summ_table = user_name+'_summary'
-            name=user_info.get('name')
-            first_name = get_name(db_name,'users',user_name)
+
             if name:
                 user_data = (user_name,user_info.get('name'),user_email)
                 add_user(db_name,'users',user_data)
@@ -878,6 +879,8 @@ if st.session_state["connected"]:
                 app_name="nothing"
                 time.sleep(1)
                 refresh_page()
+            st.sidebar.write(f"<p style='margin-bottom: 5px;'>Logged in as {first_name}</p>", unsafe_allow_html=True)
+            st.sidebar.markdown("---")
             networth()
         else:
             st.write("### 📊 Welcome to the Null!")
