@@ -40,6 +40,12 @@ def result() :
 
     savings_rate = savings_data[0][1] if savings_data else "N/A"
     
+        # Apply date formatting
+    df_dependents = format_date_columns(df_dependents, ["Date_of_Birth"])
+    df_incomes = format_date_columns(df_incomes, ["Start_Date", "End_Date"])
+    df_expenses = format_date_columns(df_expenses, ["Start_Date", "End_Date"])
+    df_investments = format_date_columns(df_investments, ["Start Date", "End Date"])
+    
     display_aggrid(df_dependents, "Dependents Data")
     display_aggrid(df_incomes, "Income Data")
     display_aggrid(df_expenses, "Expense Data")

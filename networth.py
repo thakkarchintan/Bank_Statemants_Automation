@@ -5,6 +5,28 @@ from utils import *
 from tabs import *
 
 def networth():
+    # Initialize session state if not already present
+    if 'dependents' not in st.session_state:
+        st.session_state.dependents = []
+    create_database()
+    create_user_table()
+    if "user_info" in st.session_state:
+        user_info = st.session_state["user_info"]
+        email = user_info["email"]
+    if not check_email_exists(email):
+        username = generate_username(email)
+        insert_user(email,username)
+        st.session_state["username"] = username
+    else :
+        print(f"username fetched : {get_username(email)}")
+        st.session_state["username"] = get_username(email)
+        
+    username = st.session_state.get("username") 
+    create_dependents_table(username)
+    create_expense_table(username)
+    create_incomes_table(username)
+    create_savings_table(username)
+    create_investment_table(username)
     if "networth_confirm" not in st.session_state:
         st.session_state.networth_confirm = False
         
@@ -29,35 +51,23 @@ def networth():
     
     with st.sidebar:
         st.sidebar.markdown("---")
-        # Submit button inside sidebar
-        # st.button("Delete my data", on_click=networth_confirm_submission,use_container_width=True)
+        st.button("Delete all data", on_click=networth_confirm_submission,use_container_width=True)
+        if st.session_state.networth_confirm:
+            st.warning("Are you sure you want to delete all user data? This action is irreversible.")
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                if st.button("Yes, Delete"):
+                    drop_user_tables(username)
+                    st.session_state.networth_confirm = False  # Reset confirmation state
+                    st.rerun()
+            with col2:
+                if st.button("Cancel"):
+                    st.session_state.networth_confirm = False  # Reset confirmation state
+                    st.rerun()
+
 
     if st.sidebar.button("Log out",use_container_width=True):
         authenticator.logout()
-        
-        
-    # Initialize session state if not already present
-    if 'dependents' not in st.session_state:
-        st.session_state.dependents = []
-    create_database()
-    create_user_table()
-    if "user_info" in st.session_state:
-        user_info = st.session_state["user_info"]
-        email = user_info["email"]
-    if not check_email_exists(email):
-        username = generate_username(email)
-        insert_user(email,username)
-        st.session_state["username"] = username
-    else :
-        print(f"username fetched : {get_username(email)}")
-        st.session_state["username"] = get_username(email)
-        
-    username = st.session_state.get("username") 
-    create_dependents_table(username)
-    create_expense_table(username)
-    create_incomes_table(username)
-    create_savings_table(username)
-    create_investment_table(username)
     st.markdown(
                         """
                         <style>

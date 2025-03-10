@@ -1053,3 +1053,9 @@ def compute_annual_amount(value, frequency):
 
 def apply_growth_rate(value, rate, years):
     return value * ((1 + rate / 100) ** years)
+
+def format_date_columns(df, date_columns):
+    for col in date_columns:
+        if col in df.columns:
+            df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%d-%b-%Y')
+    return df

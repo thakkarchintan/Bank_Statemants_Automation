@@ -96,3 +96,27 @@ def get_username(email):
         logging.error(f"Error retrieving username for `{email}`: {err}")
         return None  # Return None in case of an error
 
+def drop_user_tables(username):
+    try:
+        conn = mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name)
+        with conn.cursor() as cursor:
+            # Fetch all tables for the given username
+            cursor.execute("DELETE FROM User_Data WHERE User_Name = %s", (username,))
+            print(f"Deleted user data from User_Data for username: {username}")
+            cursor.execute("SHOW TABLES LIKE %s", (f"{username}_%",))
+            tables = cursor.fetchall()
+
+            if not tables:
+                print(f"No tables found for username: {username}")
+                return
+            
+            # Drop each table safely
+            for (table_name,) in tables:
+                cursor.execute(f"DROP TABLE IF EXISTS `{table_name}`")
+                print(f"Deleted table: {table_name}")
+
+            conn.commit()
+            print("All tables related to the user have been deleted.")
+
+    except mysql.connector.Error as e:
+        print(f"Error: {e}")
