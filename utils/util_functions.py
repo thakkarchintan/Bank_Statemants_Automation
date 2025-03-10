@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from st_aggrid import AgGrid
-from st_aggrid.grid_options_builder import GridOptionsBuilder
 import pdfplumber
 import datetime as dt
 import xlrd
@@ -12,7 +10,7 @@ import base64
 import streamlit.components.v1 as components
 import re
 import uuid
-from st_aggrid import AgGrid, GridOptionsBuilder
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 from database import *
 
 
@@ -220,6 +218,12 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name):
     return pd.DataFrame()
    
 def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",category_present=False,category_list=[]):
+    bal_df=pd.DataFrame()
+    if category_present:
+        bal_df=df[["Balance"]].copy()
+        df.drop('Balance', axis=1, inplace=True)
+        # print(bal_df)
+    # print(df)
     # Configure the ag-Grid options without pagination
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_side_bar()  # Add a sidebar
@@ -235,7 +239,7 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
     gridOptions = gb.build()
 
     # Display the grid
-    grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
+    grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,update_mode=GridUpdateMode.MANUAL,use_container_width=True) 
     if not summary:
         with st.container():
             col1,col2 ,_,col4,col5,col6,col7 = st.columns([2,2,1,1,1,1,1])
@@ -243,8 +247,13 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
                 if category_present:
                     if st.button("Save Changes",use_container_width=True):
                         if grid_response["data"] is not None:
-                            updated_df = pd.DataFrame(grid_response["data"])
-                            print(updated_df)
+                            g_resonse=pd.DataFrame(grid_response["data"])
+                            g_resonse = g_resonse.reset_index(drop=True)
+                            bal_df = bal_df.reset_index(drop=True)
+                            # print(g_resonse)
+                            # print(bal_df)
+                            updated_df = pd.concat([g_resonse, bal_df], axis=1)
+                            # print(updated_df)
                             updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
                             delete_data(db_name,user_name,"1=1")
                             add_data(updated_df,False,db_name,user_name)
