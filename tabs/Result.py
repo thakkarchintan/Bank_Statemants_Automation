@@ -6,71 +6,140 @@ from utils import *
 import plotly.graph_objects as go
 from io import BytesIO
 import numpy as np
+from st_aggrid import AgGrid, GridOptionsBuilder
 
-def result() :
+def display_combined_aggrid(data, title):
+    st.subheader(title)
+    gb = GridOptionsBuilder.from_dataframe(data)
+    # Set default column widths to reduce horizontal scrolling
+    gb.configure_default_column(min_column_width=80, width=100)
+    gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=len(data))
+    gridOptions = gb.build()
+    # Auto-fit columns on load so that they appear perfect without clicking reset
+    AgGrid(data, gridOptions=gridOptions, fit_columns_on_grid_load=True)
+
+def create_combined_table(username):
+    income_data = get_incomes(username)
+    expense_data = get_expenses(username)
+    investment_data = get_investments(username)
+    savings_data = get_savings(username)
+    
+    # Build Income DataFrame
+    df_income = pd.DataFrame(income_data, columns=["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"])
+    df_income = df_income.rename(columns={"Source": "Type", "Growth_Rate": "Inflation / Growth Rate"})
+    df_income["Category"] = "Income"
+    
+    # Build Expenses DataFrame
+    df_expenses = pd.DataFrame(expense_data, columns=["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"])
+    df_expenses = df_expenses.rename(columns={"Expense_Type": "Type", "Inflation_Rate": "Inflation / Growth Rate"})
+    df_expenses["Category"] = "Expenses"
+    
+    # Build Investments DataFrame
+    df_investments = pd.DataFrame(investment_data, columns=["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"])
+    df_investments = df_investments.rename(columns={
+        "Amount": "Value",
+        "Start Date": "Start_Date",
+        "End Date": "End_Date",
+        "Rate of Return": "Inflation / Growth Rate"
+    })
+    df_investments["Frequency"] = None
+    df_investments["Category"] = "Investments"
+    
+    # Build Savings DataFrame
+    df_savings = pd.DataFrame(savings_data, columns=["ID", "Savings Rate"])
+    df_savings["Category"] = "Savings Rate"
+    for col in ["Type", "Value", "Frequency", "Start_Date", "End_Date"]:
+        df_savings[col] = None
+    df_savings = df_savings.rename(columns={"Savings Rate": "Inflation / Growth Rate"})
+    
+    # Convert date columns to formatted string in each DataFrame to remove time component
+    for df in [df_income, df_expenses, df_investments]:
+        for col in ["Start_Date", "End_Date"]:
+            if col in df.columns:
+                df[col] = pd.to_datetime(df[col], errors="coerce").dt.strftime("%Y-%m-%d")
+    
+    # Combine all DataFrames into one and reorder columns
+    combined_df = pd.concat([df_income, df_expenses, df_investments, df_savings], ignore_index=True)
+    combined_df = combined_df[["Category", "Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation / Growth Rate"]]
+    return combined_df
+
+def display_combined_table(username):
+    combined_df = create_combined_table(username)
+    display_combined_aggrid(combined_df, "Combined Financial Data Table")
+
+def calculate_age(dob):
+    """Calculate age based on date of birth."""
+    today = date.today()
+    return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+
+def result():
     username = st.session_state.get("username")
     st.header("Net Worth Projection")
     st.markdown("Check all your inputs below. If you need to change anything or add/remove data, go to the respective tabs and add the details")
     
+    # Display combined table at the top
+    display_combined_table(username)
+    
+    # Retrieve and format Dependents Data
     dependents_data = get_dependents(username)
-    dependents_columns = ["ID","Name", "Date_of_Birth", "Gender", "Relationship"]
+    dependents_columns = ["ID", "Name", "Date_of_Birth", "Gender", "Relationship"]
     df_dependents = pd.DataFrame(dependents_data, columns=dependents_columns)
     
+    # Convert Date_of_Birth to datetime and calculate Age
+    df_dependents["Date_of_Birth"] = pd.to_datetime(df_dependents["Date_of_Birth"], errors="coerce")
+    df_dependents["Age"] = df_dependents["Date_of_Birth"].apply(calculate_age)
+    
+    # Format Date_of_Birth as string for display (remove time component)
+    df_dependents["Date_of_Birth"] = df_dependents["Date_of_Birth"].dt.strftime("%Y-%m-%d")
+    
     income_data = get_incomes(username)
-    income_cols = ["ID","Source", "Value", "Frequency", "Start_Date" , "End_Date" , "Growth_Rate"]
-    df_incomes=pd.DataFrame(income_data, columns=income_cols)
+    income_cols = ["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"]
+    df_incomes = pd.DataFrame(income_data, columns=income_cols)
     
     expense_data = get_expenses(username)
-    expense_cols = ["ID","Expense_Type", "Value", "Frequency", "Start_Date" , "End_Date" , "Inflation_Rate"]
-    df_expenses=pd.DataFrame(expense_data, columns=expense_cols)
+    expense_cols = ["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"]
+    df_expenses = pd.DataFrame(expense_data, columns=expense_cols)
     
     investment_data = get_investments(username)
     savings_data = get_savings(username)
     
-    # Convert investment data to DataFrame
+    # Convert investment data to DataFrame and format dates to remove time component
     columns = ["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"]
     df_investments = pd.DataFrame(investment_data, columns=columns)
-
-    # Convert dates to datetime format
-    df_investments["Start Date"] = pd.to_datetime(df_investments["Start Date"]).dt.date
-    df_investments["End Date"] = pd.to_datetime(df_investments["End Date"]).dt.date
-
-    # Sort investments by 'End Date' year
+    df_investments["Start Date"] = pd.to_datetime(df_investments["Start Date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    df_investments["End Date"] = pd.to_datetime(df_investments["End Date"], errors="coerce").dt.strftime("%Y-%m-%d")
     df_investments = df_investments.sort_values(by="End Date")
-
+    
+    # Convert date columns in income and expense DataFrames to formatted string (remove time component)
+    df_incomes["Start_Date"] = pd.to_datetime(df_incomes["Start_Date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    df_incomes["End_Date"] = pd.to_datetime(df_incomes["End_Date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    df_expenses["Start_Date"] = pd.to_datetime(df_expenses["Start_Date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    df_expenses["End_Date"] = pd.to_datetime(df_expenses["End_Date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    
     savings_rate = savings_data[0][1] if savings_data else "N/A"
     
-        # Apply date formatting
-    df_dependents = format_date_columns(df_dependents, ["Date_of_Birth"])
-    df_incomes = format_date_columns(df_incomes, ["Start_Date", "End_Date"])
-    df_expenses = format_date_columns(df_expenses, ["Start_Date", "End_Date"])
-    df_investments = format_date_columns(df_investments, ["Start Date", "End Date"])
-    
-    display_aggrid(df_dependents, "Dependents Data")
-    display_aggrid(df_incomes, "Income Data")
-    display_aggrid(df_expenses, "Expense Data")
-    display_aggrid(df_investments, "Investments Data")
-    
-    st.subheader("Savings Rate")
-    st.markdown(f"<p style='font-size: 18px;'>Savings rate: <b>{savings_rate}</b></p>", unsafe_allow_html=True)
-  
-    
-   
     if st.button("Calculate Net Worth Projection"):
-        # Convert to datetime format
+        # Convert to datetime format for calculations
         df_incomes["Start_Date"] = pd.to_datetime(df_incomes["Start_Date"], errors="coerce")
+        df_incomes["End_Date"] = pd.to_datetime(df_incomes["End_Date"], errors="coerce")
         df_expenses["Start_Date"] = pd.to_datetime(df_expenses["Start_Date"], errors="coerce")
+        df_expenses["End_Date"] = pd.to_datetime(df_expenses["End_Date"], errors="coerce")
         df_investments["Start Date"] = pd.to_datetime(df_investments["Start Date"], errors="coerce")
+        df_investments["End Date"] = pd.to_datetime(df_investments["End Date"], errors="coerce")
+        
         current_year = date.today().year
         dob = df_dependents[df_dependents["Relationship"] == "Self"]["Date_of_Birth"].values[0]
         dob = pd.to_datetime(dob).date()
         current_age = current_year - dob.year
 
         # Find the minimum start year across all datasets
-        min_year = min(df_incomes["Start_Date"].dt.year.min(), df_expenses["Start_Date"].dt.year.min(), df_investments["Start Date"].dt.year.min())
+        min_year = min(
+            df_incomes["Start_Date"].dt.year.min(), 
+            df_expenses["Start_Date"].dt.year.min(), 
+            df_investments["Start Date"].dt.year.min()
+        )
         future_years = range(min_year, current_year + (100 - current_age))  # Project till age 100
 
-        # Initialize results
         net_worth = []
         income_details = []
         expense_details = []
@@ -175,7 +244,7 @@ def result() :
                 "Net Worth": net_worth_val
             })
 
-        # Create DataFrames
+        # Create DataFrames for display and download
         data = pd.DataFrame(net_worth)
         income_details_df = pd.DataFrame(income_details)
         expense_details_df = pd.DataFrame(expense_details)
@@ -183,33 +252,21 @@ def result() :
         investment_details_df = pd.DataFrame(investment_details)
         
         data = data.sort_values("Year")
-
-            # Ensure 'Year' and 'Age' are numeric
         data["Year"] = pd.to_numeric(data["Year"], errors="coerce")
         data["Age"] = pd.to_numeric(data["Age"], errors="coerce")
         data["Net Worth"] = pd.to_numeric(data["Net Worth"], errors="coerce")
-
-        # Remove NaN values, sort, and drop duplicate years
         data = data.dropna().sort_values("Year").drop_duplicates(subset=["Year"])
 
-        # -------------------------------
-        # Create Plot with Dual X-Axes
-        # -------------------------------
+        # Plot Net Worth Projection
         fig = go.Figure()
-
-        # Plot Net Worth as lines with markers
         fig.add_trace(go.Scatter(
             x=data["Year"],
             y=data["Net Worth"],
             mode="lines+markers",
             name="Net Worth",
             line=dict(color="blue"),
-            
-            marker=dict(size=2)  # Reduce marker size to make dots less prominent
-
+            marker=dict(size=2)
         ))
-
-        # Add a horizontal dashed baseline at y=0
         fig.add_trace(go.Scatter(
             x=[data["Year"].min(), data["Year"].max()],
             y=[0, 0],
@@ -217,8 +274,6 @@ def result() :
             name="Baseline",
             line=dict(color="gray", dash="dash")
         ))
-
-        # Highlight Negative Net Worth Areas
         negative_data = data[data["Net Worth"] < 0]
         if not negative_data.empty:
             fig.add_trace(go.Scatter(
@@ -229,22 +284,10 @@ def result() :
                 line=dict(color="rgba(255,0,0,0)"),
                 showlegend=False
             ))
-
-        # -------------------------------
-        # Define X-Axis Ticks for Year and Age
-        # -------------------------------
-        # Set ticks every 5 years on the Year axis
         year_min, year_max = int(data["Year"].min()), int(data["Year"].max())
         year_ticks = np.arange(year_min, year_max + 1, 5)
-
-        # Map Year ticks to Age values using nearest available data
-        age_ticks = np.interp(year_ticks, data["Year"], data["Age"]).astype(int)
-
-        # Update layout with dual x-axes
+        age_ticks = np.interp(year_ticks, data["Year"], data["Age"]).astype(str)
         fig.update_layout(
-                width=500,  
-                height=500,  # Adjust height but ensure no data loss
-                margin=dict(l=50, r=50, t=50, b=50),  # Add margins
             xaxis=dict(
                 title="Year",
                 tickmode="array",
@@ -262,13 +305,9 @@ def result() :
             yaxis=dict(title="Net Worth"),
             legend=dict(x=0, y=1),
         )
+        st.plotly_chart(fig)
 
-        # Display the Plotly chart in Streamlit
-        st.plotly_chart(fig, use_container_width=True)
-
-        # -------------------------------
-        # Create and Offer Download of Excel File
-        # -------------------------------
+        # Offer Excel file download
         with BytesIO() as output:
             with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
                 data.to_excel(writer, sheet_name="Net Worth Projection", index=False)
@@ -276,7 +315,6 @@ def result() :
                 expense_details_df.to_excel(writer, sheet_name="Expense Details", index=False)
                 savings_details_df.to_excel(writer, sheet_name="Savings Details", index=False)
                 investment_details_df.to_excel(writer, sheet_name="Investments & Assets Details", index=False)
-            
             output.seek(0)
             st.download_button(
                 label="Download Excel File",
@@ -284,3 +322,11 @@ def result() :
                 file_name="net_worth_projection.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
+    
+    display_aggrid(df_dependents, "Dependents Data")
+    display_aggrid(df_incomes, "Income Data")
+    display_aggrid(df_expenses, "Expense Data")
+    display_aggrid(df_investments, "Investments Data")
+    
+    st.subheader("Savings Rate")
+    st.markdown(f"<p style='font-size: 18px;'>Savings rate: <b>{savings_rate}</b></p>", unsafe_allow_html=True)
