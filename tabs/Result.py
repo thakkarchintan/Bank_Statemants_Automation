@@ -12,12 +12,13 @@ import time
 def display_combined_aggrid(data):
     # st.subheader(title)
     gb = GridOptionsBuilder.from_dataframe(data)
-    gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=len(data))
+    row_height = 35  # Approximate height per row
+    calculated_height = (len(data)) * row_height
     if "Age" in data.columns:
         gb.configure_column("Age", cellStyle={"textAlign": "left"})
     gridOptions = gb.build()
     # Auto-fit columns on load so that they appear perfect without clicking reset
-    AgGrid(data, gridOptions=gridOptions, fit_columns_on_grid_load=True)
+    AgGrid(data, gridOptions=gridOptions, fit_columns_on_grid_load=True,height=calculated_height)
 
 def create_combined_table(username):
     income_data = get_incomes(username)
@@ -302,5 +303,7 @@ def result():
 
     # Display only dependents table
     st.subheader("Dependents Data")
-    AgGrid(df_dependents, fit_columns_on_grid_load=True)
+    row_height = 35  # Approximate height per row
+    calculated_height = (len(df_dependents)) * row_height
+    AgGrid(df_dependents, fit_columns_on_grid_load=True,height=calculated_height)
 

@@ -913,8 +913,8 @@ else:
                         width: 100%;
                         display: flex;
                         position:fixed;
-                        top:2vh;
-                        left:78vw;
+                        top:5vh;
+                        left:76vw;
                         backfround-color:white;
                         z-index: 100000000000;
                     }
