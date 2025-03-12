@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit_highcharts as hct
 import pandas as pd
 import plotly.express as px
 import pdfplumber
@@ -999,7 +1000,6 @@ def refund_policy():
     st.markdown(css, unsafe_allow_html=True)
     st.markdown(html, unsafe_allow_html=True)
 
-
 def refresh_page():
     st.markdown('<meta http-equiv="refresh" content="0">', unsafe_allow_html=True)
 
@@ -1068,3 +1068,73 @@ def format_date_columns(df, date_columns):
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%d-%b-%Y')
     return df
+
+def display_hicharts(df,selected_name,selected_bank):
+    # Filter data for the selected name and bank
+    if selected_bank!='All':
+        df = df[df["Bank"] == selected_bank]
+    if selected_name!='All':
+        df = df[df["Name"] == selected_name]
+
+    total_debit = int(df["Debit"].sum())
+    total_credit = int(df["Credit"].sum())
+    
+    debit_df = df[df["Debit"] > 0].groupby("Category")["Debit"].sum().reset_index()
+    credit_df = df[df["Credit"] > 0].groupby("Category")["Credit"].sum().reset_index()
+    
+    drilldown_series = []
+    
+    for category in debit_df["Category"].unique():
+        category_df = df[(df["Category"] == category) & (df["Debit"] > 0)]
+        drilldown_series.append({
+            "id": f"debit_{category}",
+            "name": f"{category} Narrations",
+            "data": category_df.apply(lambda row: [row["Narration"], int(row["Debit"])], axis=1).tolist()
+        })
+    
+    for category in credit_df["Category"].unique():
+        category_df = df[(df["Category"] == category) & (df["Credit"] > 0)]
+        drilldown_series.append({
+            "id": f"credit_{category}",
+            "name": f"{category} Narrations",
+            "data": category_df.apply(lambda row: [row["Narration"], int(row["Credit"])], axis=1).tolist()
+        })
+    
+    category_drilldowns = [
+        {
+            "id": "debit_breakdown",
+            "name": "Debit Breakdown",
+            "data": debit_df.apply(lambda row: {"name": row["Category"], "y": int(row["Debit"]), "drilldown": f"debit_{row['Category']}"}, axis=1).tolist()
+        },
+        {
+            "id": "credit_breakdown",
+            "name": "Credit Breakdown",
+            "data": credit_df.apply(lambda row: {"name": row["Category"], "y": int(row["Credit"]), "drilldown": f"credit_{row['Category']}"}, axis=1).tolist()
+        }
+    ]
+    
+    chart_config = {
+        "chart": {"type": "column"},
+        "title": {"text": "Total Debit & Credit Transactions"},
+        "xAxis": {"type": "category"},
+        "yAxis": {"title": {"text": "Amount"}},
+        "series": [{
+            "name": "Transactions",
+            "data": [{
+                "name": "Debit",
+                "y": total_debit,
+                "drilldown": "debit_breakdown"
+            }, {
+                "name": "Credit",
+                "y": total_credit,
+                "drilldown": "credit_breakdown"
+            }]
+        }],
+        "drilldown": {
+            "series": category_drilldowns + drilldown_series
+        }
+    }
+    
+    hct.streamlit_highcharts(chart_config)
+
+    # ['Name','Bank','Date','Narration','Debit','Credit','Category','Balance']
