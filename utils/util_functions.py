@@ -1076,43 +1076,48 @@ def display_hicharts(df,selected_name,selected_bank):
     if selected_name!='All':
         df = df[df["Name"] == selected_name]
 
+    # Step 1: Compute Total Debit & Credit
     total_debit = int(df["Debit"].sum())
     total_credit = int(df["Credit"].sum())
-    
-    debit_df = df[df["Debit"] > 0].groupby("Category")["Debit"].sum().reset_index()
-    credit_df = df[df["Credit"] > 0].groupby("Category")["Credit"].sum().reset_index()
-    
-    drilldown_series = []
-    
-    for category in debit_df["Category"].unique():
-        category_df = df[(df["Category"] == category) & (df["Debit"] > 0)]
-        drilldown_series.append({
-            "id": f"debit_{category}",
-            "name": f"{category} Narrations",
-            "data": category_df.apply(lambda row: [row["Narration"], int(row["Debit"])], axis=1).tolist()
+
+    # Step 2: Compute Year-wise Debit & Credit
+    year_df = df.groupby("Year")[["Debit", "Credit"]].sum().reset_index()
+
+    # Step 3: Compute Drilldown Data (Year → Month)
+    year_drilldown_series = []
+    for year in year_df["Year"]:
+        year_month_df = df[df["Year"] == year].groupby("Month")[["Debit", "Credit"]].sum().reset_index()
+
+        year_drilldown_series.append({
+            "id": f"year_{year}",
+            "name": f"Transactions in {year}",
+            "data": [
+                {"name": month, "y": debit, "drilldown": f"month_{year}_{month}"}
+                for month, debit in zip(year_month_df["Month"], year_month_df["Debit"])
+            ] + [
+                {"name": month, "y": credit, "drilldown": f"month_{year}_{month}"}
+                for month, credit in zip(year_month_df["Month"], year_month_df["Credit"])
+            ]
         })
-    
-    for category in credit_df["Category"].unique():
-        category_df = df[(df["Category"] == category) & (df["Credit"] > 0)]
-        drilldown_series.append({
-            "id": f"credit_{category}",
-            "name": f"{category} Narrations",
-            "data": category_df.apply(lambda row: [row["Narration"], int(row["Credit"])], axis=1).tolist()
+
+    # Step 4: Compute Drilldown Data (Month → Categories)
+    month_drilldown_series = []
+    for year, month in zip(df["Year"], df["Month"]):
+        month_df = df[(df["Year"] == year) & (df["Month"] == month)].groupby("Category")[["Debit", "Credit"]].sum().reset_index()
+
+        month_drilldown_series.append({
+            "id": f"month_{year}_{month}",
+            "name": f"Categories in {month} {year}",
+            "data": [
+                {"name": category, "y": debit}
+                for category, debit in zip(month_df["Category"], month_df["Debit"])
+            ] + [
+                {"name": category, "y": credit}
+                for category, credit in zip(month_df["Category"], month_df["Credit"])
+            ]
         })
-    
-    category_drilldowns = [
-        {
-            "id": "debit_breakdown",
-            "name": "Debit Breakdown",
-            "data": debit_df.apply(lambda row: {"name": row["Category"], "y": int(row["Debit"]), "drilldown": f"debit_{row['Category']}"}, axis=1).tolist()
-        },
-        {
-            "id": "credit_breakdown",
-            "name": "Credit Breakdown",
-            "data": credit_df.apply(lambda row: {"name": row["Category"], "y": int(row["Credit"]), "drilldown": f"credit_{row['Category']}"}, axis=1).tolist()
-        }
-    ]
-    
+
+    # Main Chart Configuration
     chart_config = {
         "chart": {"type": "column"},
         "title": {"text": "Total Debit & Credit Transactions"},
@@ -1120,21 +1125,28 @@ def display_hicharts(df,selected_name,selected_bank):
         "yAxis": {"title": {"text": "Amount"}},
         "series": [{
             "name": "Transactions",
-            "data": [{
-                "name": "Debit",
-                "y": total_debit,
-                "drilldown": "debit_breakdown"
-            }, {
-                "name": "Credit",
-                "y": total_credit,
-                "drilldown": "credit_breakdown"
-            }]
+            "data": [
+                {"name": "Debit", "y": total_debit, "drilldown": "year_debit"},
+                {"name": "Credit", "y": total_credit, "drilldown": "year_credit"}
+            ]
         }],
         "drilldown": {
-            "series": category_drilldowns + drilldown_series
+            "series": [
+                {
+                    "id": "year_debit",
+                    "name": "Yearly Debit",
+                    "data": [{"name": str(year), "y": debit, "drilldown": f"year_{year}"} for year, debit in zip(year_df["Year"], year_df["Debit"])]
+                },
+                {
+                    "id": "year_credit",
+                    "name": "Yearly Credit",
+                    "data": [{"name": str(year), "y": credit, "drilldown": f"year_{year}"} for year, credit in zip(year_df["Year"], year_df["Credit"])]
+                }
+            ] + year_drilldown_series + month_drilldown_series
         }
     }
-    
+
+    # Render Highcharts
     hct.streamlit_highcharts(chart_config)
 
     # ['Name','Bank','Date','Narration','Debit','Credit','Category','Balance']
