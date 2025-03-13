@@ -517,6 +517,7 @@ if st.session_state["connected"]:
                             g1_df = db_df[['Date','Name','Bank','Narration','Debit','Credit']].copy()
                             g2_df = db_df[['Date','Name','Bank','Narration','Debit','Credit']].copy()
                             g3_df = db_df[['Date','Name','Bank','Debit']].copy()
+                            g_df_hichart=db_df[['Name','Bank','Date','Narration','Debit','Credit','Category']].copy()
                             # Create 3 columns
                             d1, d2, d3 = st.columns(3)
 
@@ -539,7 +540,8 @@ if st.session_state["connected"]:
                                 display_graph1(g2_df,selected_name,selected_bank,'emi','Monthly EMI','Debit')
                                 display_graph2(g2_df,selected_name,selected_bank,True,'Debit transactions between 0 to 500')
                                 display_graph2(g2_df,selected_name,selected_bank,False,'Debit transactions between 501 to 1500')
-                    
+                                display_hicharts(g_df_hichart,selected_name,selected_bank)
+
                         else:
                             name_options = ["All"] + list(dummy_data["Name"].unique())
                             bank_options = ["All"] + list(dummy_data["Bank"].unique())
@@ -548,6 +550,7 @@ if st.session_state["connected"]:
                             g1_df = dummy_data[['Date','Name','Bank','Narration','Debit','Credit']].copy()
                             g2_df = dummy_data[['Date','Name','Bank','Narration','Debit','Credit']].copy()
                             g3_df = dummy_data[['Date','Name','Bank','Debit']].copy()
+                            g_df_hichart=dummy_data.copy()
                             # Create 3 columns
                             d1, d2, d3 = st.columns(3)
 
@@ -570,7 +573,7 @@ if st.session_state["connected"]:
                                 display_graph1(g2_df,selected_name,selected_bank,'emi','Monthly EMI','Debit')
                                 display_graph2(g2_df,selected_name,selected_bank,True,'Debit transactions between 0 to 500')
                                 display_graph2(g2_df,selected_name,selected_bank,False,'Debit transactions between 501 to 1500')
-                    
+                                display_hicharts(g_df_hichart,selected_name,selected_bank)
                             
                     except Exception as e:
                         print(f"Error in showing transction data graph: {e}")
