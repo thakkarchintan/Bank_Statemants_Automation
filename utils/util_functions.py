@@ -13,7 +13,7 @@ import re
 import uuid
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 from database import *
-
+import time
 
 # Function to categorize each row based on narration content
 def categorize(narration,categorization_dict):
@@ -1066,7 +1066,7 @@ def apply_growth_rate(value, rate, years):
 def format_date_columns(df, date_columns):
     for col in date_columns:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%d-%b-%Y')
+            df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%Y-%m-%d')
     return df
 
 def display_hicharts(df,selected_name,selected_bank):
@@ -1150,3 +1150,55 @@ def display_hicharts(df,selected_name,selected_bank):
     hct.streamlit_highcharts(chart_config)
 
     # ['Name','Bank','Date','Narration','Debit','Credit','Category','Balance']
+    
+    
+def refresh_table():
+    time.sleep(3)
+    st.rerun()
+
+
+def display_added_data(data,form):
+    username = st.session_state.get("username")
+    gb = GridOptionsBuilder.from_dataframe(data)
+
+    # Add checkbox selection
+    gb.configure_selection(selection_mode="multiple", use_checkbox=True)
+
+    # Build grid options
+    grid_options = gb.build()
+    
+    row_height = 35  # Approximate height per row
+    calculated_height = (len(data)+2) * row_height
+    print(f"Calculated height {calculated_height}")
+
+    # Render AgGrid
+    grid_response = AgGrid(
+        data,
+        gridOptions=grid_options,
+        height=calculated_height,
+        fit_columns_on_grid_load=True
+    )
+
+    # Get selected rows as a DataFrame
+    selected_rows = pd.DataFrame(grid_response.get("selected_rows", []))
+
+    # Delete Selected Rows
+    if form == "Personal" :
+        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
+            delete_dependents(selected_rows,username)
+            refresh_page()
+            
+    if form == "Income" :
+        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
+            delete_income(selected_rows,username)
+            refresh_page()
+            
+    if form == "Investments" :
+        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
+            delete_investments(selected_rows,username)
+            refresh_page()
+            
+    if form == "Expenses" :
+        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
+            delete_expense(selected_rows,username)
+            refresh_page()

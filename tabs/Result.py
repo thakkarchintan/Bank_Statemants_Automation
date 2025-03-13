@@ -13,7 +13,7 @@ def display_combined_aggrid(data):
     # st.subheader(title)
     gb = GridOptionsBuilder.from_dataframe(data)
     row_height = 35  # Approximate height per row
-    calculated_height = (len(data)) * row_height
+    calculated_height = (len(data)+2) * row_height
     if "Age" in data.columns:
         gb.configure_column("Age", cellStyle={"textAlign": "left"})
     gridOptions = gb.build()
@@ -304,6 +304,6 @@ def result():
     # Display only dependents table
     st.subheader("Dependents Data")
     row_height = 35  # Approximate height per row
-    calculated_height = (len(df_dependents)) * row_height
+    calculated_height = (len(df_dependents)+2) * row_height
     AgGrid(df_dependents, fit_columns_on_grid_load=True,height=calculated_height)
 

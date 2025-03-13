@@ -77,16 +77,14 @@ def networth():
                         """,
                         unsafe_allow_html=True
                     )
-    tabs = st.tabs(["Fintellect App ", "Personal Profile", "Income Section", "Expenses Section", "Investments & Assets", "Summary & Networth"])
+    tabs = st.tabs(["Personal Profile", "Income Section", "Expenses Section", "Investments & Assets", "Summary & Networth"])
     with tabs[0]:
-        introduction()
-    with tabs[1]:
         personal_details()
-    with tabs[2]:
+    with tabs[1]:
         income_details()
-    with tabs[3]:
+    with tabs[2]:
         expense_details()
+    with tabs[3]:
+        investment_deatils()   
     with tabs[4]:
-            investment_deatils()   
-    with tabs[5]:
         result()

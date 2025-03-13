@@ -53,14 +53,41 @@ def get_investments(username):
         logging.error(f"Error retrieving investments: {err}")
         return []
 
-def delete_investment(username, investment_id):
-    """Delete an investment record by ID."""
+def delete_investments(df, username):
+    """Delete all investment in the given DataFrame from the database using SQLAlchemy."""
+    if df.empty:
+        logging.info("No investment to delete.")
+        return df  # Return unchanged DataFrame
+
     try:
-        with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
-            with conn.cursor() as cursor:
-                query = f"DELETE FROM {username}_Investments WHERE Investment_ID = %s"
-                cursor.execute(query, (investment_id,))
+        engine = create_engine(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
+
+        with engine.connect() as conn:
+            for _, row in df.iterrows():
+                query = text(f"""
+                    DELETE FROM `{username}_Investments`
+                    WHERE Investment_ID = :Ii
+                    AND Investment_Type = :it
+                    AND Amount = :amt
+                    AND Start_Date = :sd
+                    AND End_Date = :ed
+                    AND Rate_of_Return = :ror
+                """)
+
+                conn.execute(query, {
+                    "Ii": row["ID"],
+                    "it": row["Investment_Type"],
+                    "amt": row["Amount"],
+                    "sd": row["Start_Date"],
+                    "ed": row["End_Date"],
+                    "ror":row["Rate_of_Return"]
+                })
                 conn.commit()
-                logging.info(f"Investment {investment_id} deleted successfully.")
-    except mysql.connector.Error as err:
-        logging.error(f"Error deleting investment: {err}")
+
+        logging.info(f"Deleted {len(df)} investment from the database.")
+
+        return df.iloc[0:0]  # Return empty DataFrame after deletion
+
+    except Exception as e:
+        logging.error(f"Error deleting investment: {e}")
+        return df  # Return original DataFrame if error occurs

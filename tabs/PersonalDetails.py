@@ -1,6 +1,7 @@
 import streamlit as st
 from datetime import datetime, date
 from database import *
+from utils import *
 def personal_details():
     st.header("Personal Details")
     st.markdown("Your personal details will be stored in the dependents table as 'Self'.")
@@ -54,19 +55,10 @@ def personal_details():
 
     ### --- Retrieve and Display Dependents ---
     dependents = get_dependents(username)
-
+    df = pd.DataFrame(dependents) # Convert to DataFrame
     st.subheader("Dependents List")
     if not dependents:
         st.write("No dependents found.")
     else:
-        for dep in dependents:
-            col1, col2 = st.columns([1, 10])
-            with col1:
-                if st.button("❌", key=f"delete_Personal_{dep['Dependent_ID']}"):
-                    delete_dependent(username,dep["Dependent_ID"])
-                    st.session_state["updated"] = True
-                    st.rerun()  # Refresh page to reflect changes
-
-            with col2:
-                with col2:
-                    st.write(f"**{dep['Name']}** - {dep['Relationship']}")
+        df = format_date_columns(df,["Date_of_Birth"])
+        display_added_data(df,"Personal")

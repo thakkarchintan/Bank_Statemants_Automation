@@ -2,6 +2,8 @@ import mysql.connector
 import logging
 from dotenv import load_dotenv
 import os
+from sqlalchemy import create_engine, text
+
 
 # Load environment variables
 load_dotenv()

@@ -58,16 +58,45 @@ def get_incomes(username):
 
 
 # Function to delete an income record
-def delete_income(username, income_id):
-    """Delete an income record by ID."""
-    print(f"Delete the income for id : {income_id}")
+def delete_income(df, username):
+    """Delete all investment in the given DataFrame from the database using SQLAlchemy."""
+    if df.empty:
+        logging.info("No Income to delete.")
+        return df  # Return unchanged DataFrame
+
     try:
-        with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
-            with conn.cursor() as cursor:
-                query = f"DELETE FROM `{username}_Incomes` WHERE Income_ID = %s"
-                cursor.execute(query, (income_id,))
+        engine = create_engine(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
+
+        with engine.connect() as conn:
+            for _, row in df.iterrows():
+                query = text(f"""
+                    DELETE FROM `{username}_Incomes`
+                    WHERE Income_ID = :Ii
+                    AND Source = :sr
+                    AND Value = :val
+                    AND Frequency = :fq
+                    AND Start_Date = :sd
+                    AND End_Date = :ed
+                    AND Growth_Rate = :gr
+                """)
+
+                conn.execute(query, {
+                    "Ii": row["Income_ID"],
+                    "sr": row["Source"],
+                    "val": row["Value"],
+                    "fq":row["Frequency"],
+                    "sd": row["Start_Date"],
+                    "ed": row["End_Date"],
+                    "gr":row["Growth_Rate"]
+                })
                 conn.commit()
-                logging.info(f"Income {income_id} deleted successfully.")
-    except mysql.connector.Error as err:
-        logging.error(f"Error deleting income: {err}")
+
+        logging.info(f"Deleted {len(df)} Income from the database.")
+
+        return df.iloc[0:0]  # Return empty DataFrame after deletion
+
+    except Exception as e:
+        logging.error(f"Error deleting Income: {e}")
+        return df  # Return original DataFrame if error occurs
+
 

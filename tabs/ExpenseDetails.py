@@ -2,6 +2,7 @@ import streamlit as st
 from datetime import date
 from database import *
 import time
+from utils import *
 import uuid  
 def expense_details() :
     st.header("Expenses")
@@ -38,18 +39,17 @@ def expense_details() :
             else:
                 st.error("End Date must be after Start Date.")
                     
-    expenses = get_expenses(username)        
-    for index, expense in enumerate(expenses):
-        Expense_ID, Expense_Type, Value, Frequency, *rest = expense
-        col1, col2 = st.columns([1, 10])
-        with col1:
-            unique_key = f"delete_{Expense_ID}_{index}"  # Make it unique
-            if st.button("❌", key=unique_key):
-                print(unique_key)
-                delete_expense(username, Expense_ID)
-                st.rerun()
-        with col2:
-            st.write(f"**Source**: {Expense_Type} - **Value**: {Value} - **Frequency**: {Frequency}")
+    expenses = get_expenses(username)
+    df = pd.DataFrame(expenses)
+    if not expenses:
+        st.write("No expenses found.")
+    else:
+        df.columns = ["Expense_ID", "Expense_Type", "Value", "Frequency", "Start_Date","End_Date", "Inflation_Rate"]
+        df.columns = df.columns.astype(str) 
+        print(f"Expense Dataframe :{df}")
+        df = format_date_columns(df,["Start_Date","End_Date"])
+        st.subheader("Expense List")
+        display_added_data(df,"Expenses")
 
         # Ask for savings rate
     with st.form(key='savings_rate_form'):    

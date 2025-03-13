@@ -898,11 +898,30 @@ if st.session_state["connected"]:
         # Sidebar dropdown to select an app
         app_name = st.sidebar.selectbox("📂 Select an App", list(apps.keys()))
         app_name=apps[app_name]
-        if st.sidebar.button("Open app"):
+        if st.sidebar.button("Open app",use_container_width=True):
             cookies["app_name"] = app_name
             cookies.save()
             time.sleep(1)
             refresh_page()
+        
+        st.markdown("""
+        <style>
+            .st-emotion-cache-1gwvy71{
+                padding-bottom:0rem;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+        
+        st.sidebar.markdown(
+            """
+            <div style="height: 500px;">
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.sidebar.markdown("---")
+        if st.sidebar.button("Log out",use_container_width=True):
+            authenticator.logout()
   
 else:
     auth_url=authenticator.login()

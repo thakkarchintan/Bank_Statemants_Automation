@@ -2,6 +2,8 @@ import streamlit as st
 from datetime import date
 from database import *
 import uuid  
+from utils import *
+
 
    
 def investment_deatils():
@@ -33,22 +35,16 @@ def investment_deatils():
 
     # Display investments
     investments = get_investments(username)
-
-# Retrieve the fields for each document and display with an X button
+    if not isinstance(investments, list):
+     investments = []  # Ensure it's a list
+    df = pd.DataFrame(investments)  # Convert to DataFrame
+    st.subheader("Investment List")
     if not investments:
         st.write("No investment records found.")
     else:
-         for index, inv in enumerate(investments):
-            Investment_ID, Investment_Type, Amount, Start_Date, End_Date, Rate_of_Return = inv
-            
-            col1, col2 = st.columns([1, 10])
-            
-            with col1:
-                unique_key = f"delete_{Investment_ID}_{index}"  # Ensure uniqueness
-                if st.button("❌", key=f"delete_{unique_key}"):
-                    delete_investment(username, Investment_ID)
-                    st.success("Investment deleted successfully!")
-                    st.rerun()
-            
-            with col2:
-                st.write(f"""Source: {Investment_Type} , Amount: {Amount} , Rate of return: {Rate_of_Return}%""")   
+        df.columns = ["ID", "Investment_Type", "Amount", "Start_Date", "End_Date", "Rate_of_Return"]
+        df.columns = df.columns.astype(str) 
+        df = format_date_columns(df,["Start_Date","End_Date"])# Ensure all columns are strings
+        print(f"DataFrame Columns: {df.columns}")
+        print(f"DataFrame Data:\n{df}")
+        display_added_data(df,"Investments") 
