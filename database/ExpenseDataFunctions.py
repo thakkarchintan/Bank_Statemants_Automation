@@ -82,18 +82,46 @@ def get_expenses(username):
         return []
 
 
-def delete_expense(username,expense_id):
-    """Delete an income record by ID."""
+def delete_expense(df,username):
+    """Delete all investment in the given DataFrame from the database using SQLAlchemy."""
+    if df.empty:
+        logging.info("No Expenses to delete.")
+        return df  # Return unchanged DataFrame
+
     try:
-        print(f"Expense ID : {expense_id}")
-        with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
-            with conn.cursor() as cursor:
-                query = f"DELETE FROM `{username}_Expenses` WHERE Expense_ID = %s"
-                cursor.execute(query, (expense_id,))
+        engine = create_engine(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
+
+        with engine.connect() as conn:
+            for _, row in df.iterrows():
+                query = text(f"""
+                    DELETE FROM `{username}_Expenses`
+                    WHERE Expense_ID = :Ei
+                    AND Expense_Type = :et
+                    AND Value = :val
+                    AND Frequency = :fq
+                    AND Start_Date = :sd
+                    AND End_Date = :ed
+                    AND Inflation_Rate = :ir
+                """)
+
+                conn.execute(query, {
+                    "Ei": row["Expense_ID"],
+                    "et": row["Expense_Type"],
+                    "val": row["Value"],
+                    "fq":row["Frequency"],
+                    "sd": row["Start_Date"],
+                    "ed": row["End_Date"],
+                    "ir":row["Inflation_Rate"]
+                })
                 conn.commit()
-                logging.info(f"Income {expense_id} deleted successfully.")
-    except mysql.connector.Error as err:
-        logging.error(f"Error deleting income: {err}")
+
+        logging.info(f"Deleted {len(df)} Expenses from the database.")
+
+        return df.iloc[0:0]  # Return empty DataFrame after deletion
+
+    except Exception as e:
+        logging.error(f"Error deleting Expenses: {e}")
+        return df  # Return original DataFrame if error occurs)
 
             
 #################################################### Add savings ########################################### 

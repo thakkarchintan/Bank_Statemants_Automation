@@ -118,24 +118,42 @@ def get_dependents(username):
         conn.close()
 
 
-def delete_dependent(username, dependent_id):
-    """Delete a dependent from the database."""
+def delete_dependents(df, username):
+    """Delete all dependents in the given DataFrame from the database using SQLAlchemy."""
+    if df.empty:
+        logging.info("No dependents to delete.")
+        return df  # Return unchanged DataFrame
+
     try:
-        conn = mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name)
-        cursor = conn.cursor()
+        engine = create_engine(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
 
-        query = f"DELETE FROM `{username}_Dependents` WHERE Dependent_ID = %s"
-        cursor.execute(query, (dependent_id,))
+        with engine.connect() as conn:
+            for _, row in df.iterrows():
+                query = text(f"""
+                    DELETE FROM `{username}_Dependents`
+                    WHERE Dependent_ID = :dependent_id
+                    AND Name = :name
+                    AND Date_of_Birth = :dob
+                    AND Gender = :gender
+                    AND Relationship = :relationship
+                """)
 
-        conn.commit()
-        logging.info(f"Dependent `{dependent_id}` deleted successfully.")
+                conn.execute(query, {
+                    "dependent_id": row["Dependent_ID"],
+                    "name": row["Name"],
+                    "dob": row["Date_of_Birth"],
+                    "gender": row["Gender"],
+                    "relationship": row["Relationship"]
+                })
+                conn.commit()
 
-    except mysql.connector.Error as err:    
-        logging.error(f"Error deleting dependent `{dependent_id}`: {err}")
+        logging.info(f"Deleted {len(df)} dependents from the database.")
 
-    finally:
-        cursor.close()
-        conn.close()
+        return df.iloc[0:0]  # Return empty DataFrame after deletion
+
+    except Exception as e:
+        logging.error(f"Error deleting dependents: {e}")
+        return df  # Return original DataFrame if error occurs
                
 
 

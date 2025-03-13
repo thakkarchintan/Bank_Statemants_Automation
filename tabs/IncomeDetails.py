@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import date
 from database import *
-
+from utils import *
 def income_details():
     st.header("Income")
     st.markdown("Use this section to list down all primary sources of income without considering income from investments and assets.")
@@ -31,16 +31,14 @@ def income_details():
 
     # Fetch and display incomes from SQL database
     incomes = get_incomes(username)
-
-    for income in incomes:
-        income_id, source, value, frequency, start_date, end_date, growth_rate = income
-        
-        col1, col2 = st.columns([1, 10])
-        with col1:
-            if st.button("❌", key=f"delete_{income_id}"):
-                delete_income(username,income_id)
-                st.rerun()
-
-        with col2:
-            st.write(f"**Source**: {source} - **Value**: {value} - **Frequency**: {frequency}")
+    df = pd.DataFrame(incomes) # Convert to DataFrame
+    st.subheader("Incomes List")
+    if not incomes:
+        st.write("No Incomes found.")
+    else:
+        df.columns = ["Income_ID", "Source", "Value", "Frequency", "Start_Date","End_Date", "Growth_Rate"]
+        df.columns = df.columns.astype(str) 
+        print(f"Income Dataframe :{df}")
+        df = format_date_columns(df,["Start_Date","End_Date"])
+        display_added_data(df,"Income")
 
