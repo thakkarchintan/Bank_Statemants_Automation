@@ -939,7 +939,7 @@ else:
                         display: flex;
                         position:fixed;
                         top:5vh;
-                        left:4vw;
+                        left:6vw;
                         backfround-color:white;
                         z-index: 100000000000;
                     }
