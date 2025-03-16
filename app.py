@@ -9,6 +9,7 @@ from database import *
 from utils import *
 from constant_variables import *
 from common import *
+from streamlit_js_eval import streamlit_js_eval
 from networth import *
 
 
@@ -66,20 +67,21 @@ if st.session_state["connected"]:
     first_name = get_name(db_name,'users',user_name)
     cookies = EncryptedCookieManager(prefix="my_app", password="your_secret_password")
 
-    # Set up cookie manager with a password
-    if not cookies.ready():
-        st.stop()
+    # # Set up cookie manager with a password
+    # if not cookies.ready():
+    #     st.stop()
 
-    app_name = cookies.get("app_name")
-
+    # app_name = cookies.get("app_name")
+    app_name = streamlit_js_eval(js_expressions="localStorage.getItem('app_name')",key="Four")
     if app_name and app_name!="nothing":
         main_page=False
         if app_name=="bank_statements":
             if st.sidebar.button("Go to Main Page"):
                 main_page=True
             if main_page:
-                cookies["app_name"]="nothing"
-                cookies.save()
+                # cookies["app_name"]="nothing"
+                streamlit_js_eval(js_expressions="localStorage.setItem('app_name', 'nothing')",key="three")
+                # cookies.save()
                 app_name="nothing"
                 time.sleep(1)
                 refresh_page()
@@ -883,8 +885,8 @@ if st.session_state["connected"]:
             if st.sidebar.button("Go to Main Page"):
                 main_page=True
             if main_page:
-                cookies["app_name"]="nothing"
-                cookies.save()
+                streamlit_js_eval(js_expressions="localStorage.setItem('app_name', 'nothing')",key="two")
+                # cookies.save()
                 app_name="nothing"
                 time.sleep(1)
                 refresh_page()
@@ -899,8 +901,9 @@ if st.session_state["connected"]:
         app_name = st.sidebar.selectbox("📂 Select an App", list(apps.keys()))
         app_name=apps[app_name]
         if st.sidebar.button("Open app",use_container_width=True):
-            cookies["app_name"] = app_name
-            cookies.save()
+            # cookies["app_name"] = app_name
+            # cookies.save()
+            streamlit_js_eval(js_expressions=f"localStorage.setItem('app_name', '{app_name}')",key="One")
             time.sleep(1)
             refresh_page()
         
@@ -932,16 +935,18 @@ else:
                 <style>
                     header[data-testid="stHeader"]{
                         z-index:1000;
-                    }
+                  }
                     .gcenter {
+                        margin-top:1.5rem;
+                        hieght:100px;
                         overflow-x:hidden;
-                        width: 100%;
+                        width: 100vw;
                         display: flex;
                         position:fixed;
-                        top:5vh;
-                        left:76vw;
-                        backfround-color:white;
-                        z-index: 100000000000;
+                        top: 1vh;
+                        left:6vw;
+                        background-color:white;
+                        z-index: 1000000000000000;
                     }
                     .google-button {
                         background-color: #4285F4;

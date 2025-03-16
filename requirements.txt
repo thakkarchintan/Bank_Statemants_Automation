@@ -44,3 +44,4 @@ streamlit-aggrid
 Python-IO
 extra-streamlit-components
 streamlit-highcharts
+streamlit_js_eval
