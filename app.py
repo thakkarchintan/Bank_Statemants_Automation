@@ -19,15 +19,15 @@ if "connected" not in st.session_state:
 if "login_message_shown" not in st.session_state:
     st.session_state["login_message_shown"] = False
 
-# st.markdown(
-#     """
-#     <style>
-#         /* Hide the three-dot menu */
-#         [data-testid="stToolbar"] {visibility: hidden;}
-#     </style>
-#     """,
-#     unsafe_allow_html=True
-# )
+st.markdown(
+    """
+    <style>
+        /* Hide the three-dot menu */
+        [data-testid="stToolbar"] {visibility: hidden;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown("""
     <style>
