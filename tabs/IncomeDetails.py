@@ -3,7 +3,7 @@ from datetime import date
 from database import *
 from utils import *
 def income_details():
-    st.header("Income")
+    # st.header("Income")
     st.markdown("Use this section to list down all primary sources of income without considering income from investments and assets.")
 
     username = st.session_state.get("username") 

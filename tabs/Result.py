@@ -83,7 +83,7 @@ def calculate_age(dob):
 
 def result():
     username = st.session_state.get("username")
-    st.header("Net Worth Projection")
+    # st.header("Net Worth Projection")
     st.markdown("Check all your inputs below. If you need to change anything or add/remove data, go to the respective tabs and add the details")
     
     display_combined_table(username)

@@ -3,7 +3,7 @@ from datetime import datetime, date
 from database import *
 from utils import *
 def personal_details():
-    st.header("Personal Details")
+    # st.header("Personal Details")
     st.markdown("Your personal details will be stored in the dependents table as 'Self'.")
 
     # Fetch existing details if present

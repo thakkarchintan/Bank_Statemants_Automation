@@ -5,7 +5,7 @@ import time
 from utils import *
 import uuid  
 def expense_details() :
-    st.header("Expenses")
+    # st.header("Expenses")
     st.markdown("Use this section to list down all current and foreseeable future expenses. The more detailed you can be, the better the outcome will be.")
     username = st.session_state.get("username") 
     # Expense input form

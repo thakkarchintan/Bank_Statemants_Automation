@@ -7,7 +7,7 @@ from utils import *
 
    
 def investment_deatils():
-    st.header("Investments & Assets")
+    # st.header("Investments & Assets")
     st.markdown("Use this section to list down all assets & investments which may or may not be generating additional income")
     username = st.session_state.get("username")
     # Investment input form
