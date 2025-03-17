@@ -227,8 +227,7 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
         if category_present:
             bal_df=df[["Balance"]].copy()
             df.drop('Balance', axis=1, inplace=True)
-            # print(bal_df)
-        # print(df)
+    
         # Configure the ag-Grid options without pagination
         gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_side_bar()  # Add a sidebar
@@ -242,10 +241,10 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
         gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
 
         gridOptions = gb.build()
-
-        # Display the grid
-        grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,update_mode=GridUpdateMode.MANUAL,use_container_width=True) 
+        
         if not summary:
+            # Display the grid
+            grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,update_mode=GridUpdateMode.MANUAL,use_container_width=True) 
             with st.container():
                 col1,col2 ,_,col4,col5,col6,col7 = st.columns([2,2,1,1,1,1,1])
                 with col1:
@@ -274,10 +273,11 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         use_container_width=True
                     )
+        else:
+            AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
     except Exception as e:
         print(f"Error in updating category : {e}")
         st.toast(":red[Something went wrong.]")
-
 
 def show_message(page):
     if page == "policies":
