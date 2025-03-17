@@ -1,6 +1,4 @@
 from auth import Authenticator
-from dotenv import load_dotenv
-import os
 from constant_variables import *
 from streamlit_cookies_manager import EncryptedCookieManager
 

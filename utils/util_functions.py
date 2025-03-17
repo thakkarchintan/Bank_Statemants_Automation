@@ -217,57 +217,67 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name):
     except Exception as e:
         print(f"Error cleaning Excel file: {e}")
     return pd.DataFrame()
-   
+
+def contain_null(df):
+    return df.isnull().values.any()
+ 
 def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",category_present=False,category_list=[]):
-    bal_df=pd.DataFrame()
-    if category_present:
-        bal_df=df[["Balance"]].copy()
-        df.drop('Balance', axis=1, inplace=True)
-        # print(bal_df)
-    # print(df)
-    # Configure the ag-Grid options without pagination
-    gb = GridOptionsBuilder.from_dataframe(df)
-    gb.configure_side_bar()  # Add a sidebar
-    if category_present:
-        gb.configure_column("Category", editable=True, cellEditor="agSelectCellEditor", cellEditorParams={"values": category_list})
+    try:
+        bal_df=pd.DataFrame()
+        if category_present:
+            bal_df=df[["Balance"]].copy()
+            df.drop('Balance', axis=1, inplace=True)
+    
+        # Configure the ag-Grid options without pagination
+        gb = GridOptionsBuilder.from_dataframe(df)
+        gb.configure_side_bar()  # Add a sidebar
+        if category_present:
+            gb.configure_column("Category", editable=True, cellEditor="agSelectCellEditor", cellEditorParams={"values": category_list})
 
-    # Automatically configure columns to fit content dynamically
-    for column in df.columns:
-        gb.configure_column(column, minWidth=100,wrapText=True)
+        # Automatically configure columns to fit content dynamically
+        for column in df.columns:
+            gb.configure_column(column, minWidth=100,wrapText=True)
 
-    gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
+        gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
 
-    gridOptions = gb.build()
-
-    # Display the grid
-    grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,update_mode=GridUpdateMode.MANUAL,use_container_width=True) 
-    if not summary:
-        with st.container():
-            col1,col2 ,_,col4,col5,col6,col7 = st.columns([2,2,1,1,1,1,1])
-            with col1:
-                if category_present:
-                    if st.button("Save Changes",use_container_width=True):
-                        if grid_response["data"] is not None:
+        gridOptions = gb.build()
+        
+        if not summary:
+            # Display the grid
+            grid_response=AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,update_mode=GridUpdateMode.MANUAL,use_container_width=True) 
+            with st.container():
+                col1,col2 ,_,col4,col5,col6,col7 = st.columns([2,2,1,1,1,1,1])
+                with col1:
+                    if category_present:
+                        if st.button("Save Changes",use_container_width=True):
                             g_resonse=pd.DataFrame(grid_response["data"])
-                            g_resonse = g_resonse.reset_index(drop=True)
-                            bal_df = bal_df.reset_index(drop=True)
-                            # print(g_resonse)
-                            # print(bal_df)
-                            updated_df = pd.concat([g_resonse, bal_df], axis=1)
-                            # print(updated_df)
-                            updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
-                            delete_data(db_name,user_name,"1=1")
-                            add_data(updated_df,False,db_name,user_name)
-                            st.toast(":green[Data saved successfully.]")
-            with col2:
-                st.download_button(
-                    key='dbs',
-                    label="Download data",
-                    data=convert_df_to_excel(download_df),
-                    file_name="bank_statement.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True
-                )
+                            if contain_null(g_resonse):
+                                st.toast(":red[Something went wrong. Please try again.]")
+                            elif not g_resonse.empty:
+                                g_resonse = g_resonse.reset_index(drop=True)
+                                bal_df = bal_df.reset_index(drop=True)
+                                # print(g_resonse)
+                                # print(bal_df)
+                                updated_df = pd.concat([g_resonse, bal_df], axis=1)
+                                # print(updated_df)
+                                updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
+                                delete_data(db_name,user_name,"1=1")
+                                add_data(updated_df,False,db_name,user_name)
+                                st.toast(":green[Data saved successfully.]")
+                with col2:
+                    st.download_button(
+                        key='dbs',
+                        label="Download data",
+                        data=convert_df_to_excel(download_df),
+                        file_name="bank_statement.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True
+                    )
+        else:
+            AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
+    except Exception as e:
+        print(f"Error in updating category : {e}")
+        st.toast(":red[Something went wrong.]")
 
 def show_message(page):
     if page == "policies":

@@ -83,16 +83,9 @@ class Authenticator:
             return
 
         if st.session_state.get("logout"):
-                db_name=DATABASE
-                user_info=st.session_state['user_info']
-                user_email = str(user_info.get('email'))
-                user_name = user_email[:-10]
-                user_name = user_name.replace('.','__')
-                #st.toast(f":green[{get_name(db_name,'users',user_name)},logged out]")
-                message = f"{get_name(db_name,'users',user_name)} , Successfully logged out"
-                show_custom_toast(message)
-                st.session_state["user_info"] = None
-                return
+            message = f"Successfully logged out"
+            show_custom_toast(message)
+            return
 
         token = self.auth_token_manager.get_decoded_token()
         if token is not None:
