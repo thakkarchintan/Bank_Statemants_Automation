@@ -7,3 +7,5 @@ authenticator = Authenticator(
     secret_path = SECRET_PATH,
     redirect_uri=REDIRECT_URI,
 )
+
+# test
