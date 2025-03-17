@@ -1222,21 +1222,21 @@ def display_added_data(data, form):
 
     # Delete Selected Rows
     if form == "Personal":
-        if not selected_rows.empty and st.button("❌ Delete Selected Rows",id=generate_random_id()):
+        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
             delete_dependents(selected_rows, username)
             refresh_page()
 
     if form == "Income":
-        if not selected_rows.empty and st.button("❌ Delete Selected Rows",id=generate_random_id()):
+        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
             delete_income(selected_rows, username)
             refresh_page()
 
     if form == "Investments":
-        if not selected_rows.empty and st.button("❌ Delete Selected Rows",id=generate_random_id()):
+        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
             delete_investments(selected_rows, username)
             refresh_page()
 
     if form == "Expenses" :
-        if not selected_rows.empty and st.button("❌ Delete Selected Rows",id=generate_random_id()):
+        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
             delete_expense(selected_rows,username)
             refresh_page()
