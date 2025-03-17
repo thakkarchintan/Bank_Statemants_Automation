@@ -56,9 +56,11 @@ def personal_details():
     ### --- Retrieve and Display Dependents ---
     dependents = get_dependents(username)
     df = pd.DataFrame(dependents) # Convert to DataFrame
+    df =rename_column(df,"Date_of_Birth","Date of Birth")
+    df = rename_column(df,"Dependent_ID","ID")
     st.subheader("Dependents List")
     if not dependents:
         st.write("No dependents found.")
     else:
-        df = format_date_columns(df,["Date_of_Birth"])
+        df = format_date_columns(df,["Date of Birth"])
         display_added_data(df,"Personal")

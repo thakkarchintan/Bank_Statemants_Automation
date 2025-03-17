@@ -27,9 +27,9 @@ def investment_deatils():
         Rate_of_Return = st.number_input("Expected Annual Rate of Return (%)", min_value=0.0, key="Rate_of_Return")
 
         submit_investment = st.form_submit_button(label="Add Investment")
-
+        
         if submit_investment:
-            if Investment_Type and Amount and Start_Date and End_Date and Rate_of_Return:
+            if Investment_Type and Amount and Start_Date and End_Date:
                     add_investment(username, Investment_Type, Amount, Start_Date, End_Date, Rate_of_Return)
                     st.success("Investment added successfully and saved to your profile!")
 
@@ -42,9 +42,9 @@ def investment_deatils():
     if not investments:
         st.write("No investment records found.")
     else:
-        df.columns = ["ID", "Investment_Type", "Amount", "Start_Date", "End_Date", "Rate_of_Return"]
+        df.columns = ["ID", "Investment Type", "Amount", "Start Date", "End Date", "Rate of Return"]
         df.columns = df.columns.astype(str) 
-        df = format_date_columns(df,["Start_Date","End_Date"])# Ensure all columns are strings
+        df = format_date_columns(df,["Start Date","End Date"])# Ensure all columns are strings
         print(f"DataFrame Columns: {df.columns}")
         print(f"DataFrame Data:\n{df}")
         display_added_data(df,"Investments") 

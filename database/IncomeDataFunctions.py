@@ -71,7 +71,7 @@ def delete_income(df, username):
             for _, row in df.iterrows():
                 query = text(f"""
                     DELETE FROM `{username}_Incomes`
-                    WHERE Income_ID = :Ii
+                    WHERE Income_ID = :id
                     AND Source = :sr
                     AND Value = :val
                     AND Frequency = :fq
@@ -81,13 +81,13 @@ def delete_income(df, username):
                 """)
 
                 conn.execute(query, {
-                    "Ii": row["Income_ID"],
+                    "id":row["ID"],
                     "sr": row["Source"],
                     "val": row["Value"],
                     "fq":row["Frequency"],
-                    "sd": row["Start_Date"],
-                    "ed": row["End_Date"],
-                    "gr":row["Growth_Rate"]
+                    "sd": row["Start Date"],
+                    "ed": row["End Date"],
+                    "gr":row["Growth Rate"]
                 })
                 conn.commit()
 

@@ -66,7 +66,7 @@ def delete_investments(df, username):
             for _, row in df.iterrows():
                 query = text(f"""
                     DELETE FROM `{username}_Investments`
-                    WHERE Investment_ID = :Ii
+                    WHERE Investment_ID = :id
                     AND Investment_Type = :it
                     AND Amount = :amt
                     AND Start_Date = :sd
@@ -75,12 +75,12 @@ def delete_investments(df, username):
                 """)
 
                 conn.execute(query, {
-                    "Ii": row["ID"],
-                    "it": row["Investment_Type"],
+                    "id":row["ID"],
+                    "it": row["Investment Type"],
                     "amt": row["Amount"],
-                    "sd": row["Start_Date"],
-                    "ed": row["End_Date"],
-                    "ror":row["Rate_of_Return"]
+                    "sd": row["Start Date"],
+                    "ed": row["End Date"],
+                    "ror":row["Rate of Return"]
                 })
                 conn.commit()
 

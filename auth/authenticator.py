@@ -91,6 +91,7 @@ class Authenticator:
                 #st.toast(f":green[{get_name(db_name,'users',user_name)},logged out]")
                 message = f"{get_name(db_name,'users',user_name)} , Successfully logged out"
                 show_custom_toast(message)
+                st.session_state["user_info"] = None
                 return
 
         token = self.auth_token_manager.get_decoded_token()

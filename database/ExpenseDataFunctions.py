@@ -95,7 +95,7 @@ def delete_expense(df,username):
             for _, row in df.iterrows():
                 query = text(f"""
                     DELETE FROM `{username}_Expenses`
-                    WHERE Expense_ID = :Ei
+                    WHERE Expense_ID = :id
                     AND Expense_Type = :et
                     AND Value = :val
                     AND Frequency = :fq
@@ -105,13 +105,13 @@ def delete_expense(df,username):
                 """)
 
                 conn.execute(query, {
-                    "Ei": row["Expense_ID"],
-                    "et": row["Expense_Type"],
+                    "id":row["ID"],
+                    "et": row["Expense Type"],
                     "val": row["Value"],
                     "fq":row["Frequency"],
-                    "sd": row["Start_Date"],
-                    "ed": row["End_Date"],
-                    "ir":row["Inflation_Rate"]
+                    "sd": row["Start Date"],
+                    "ed": row["End Date"],
+                    "ir":row["Inflation Rate"]
                 })
                 conn.commit()
 

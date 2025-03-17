@@ -31,7 +31,7 @@ def expense_details() :
         submit_expense = st.form_submit_button(label="Add Expense")
 
     if submit_expense:
-        if exp_type and exp_value and exp_frequency and exp_start_date and exp_end_date and inflation_rate:
+        if exp_type and exp_value and exp_frequency and exp_start_date and exp_end_date:
             if exp_end_date >= exp_start_date:
                 add_expense(username, exp_type, exp_value, exp_frequency, exp_start_date, exp_end_date, inflation_rate)
         
@@ -44,10 +44,10 @@ def expense_details() :
     if not expenses:
         st.write("No expenses found.")
     else:
-        df.columns = ["Expense_ID", "Expense_Type", "Value", "Frequency", "Start_Date","End_Date", "Inflation_Rate"]
+        df.columns = ["ID", "Expense Type", "Value", "Frequency", "Start Date","End Date", "Inflation Rate"]
         df.columns = df.columns.astype(str) 
         print(f"Expense Dataframe :{df}")
-        df = format_date_columns(df,["Start_Date","End_Date"])
+        df = format_date_columns(df,["Start Date","End Date"])
         st.subheader("Expense List")
         display_added_data(df,"Expenses")
 

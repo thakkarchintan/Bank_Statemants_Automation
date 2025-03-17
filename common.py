@@ -4,16 +4,6 @@ import os
 from constant_variables import *
 from streamlit_cookies_manager import EncryptedCookieManager
 
-
-
-
-
-# authenticator = Authenticator(
-#     token_key=TOKEN_KEY,
-#     secret_path = "Bank_statement.json",
-#     redirect_uri="http://localhost:8501",
-# )
-
 authenticator = Authenticator(
     token_key=TOKEN_KEY,
     secret_path = SECRET_PATH,

@@ -131,7 +131,7 @@ def delete_dependents(df, username):
             for _, row in df.iterrows():
                 query = text(f"""
                     DELETE FROM `{username}_Dependents`
-                    WHERE Dependent_ID = :dependent_id
+                    WHERE Dependent_ID = :id
                     AND Name = :name
                     AND Date_of_Birth = :dob
                     AND Gender = :gender
@@ -139,9 +139,9 @@ def delete_dependents(df, username):
                 """)
 
                 conn.execute(query, {
-                    "dependent_id": row["Dependent_ID"],
+                    "id":row["ID"],
                     "name": row["Name"],
-                    "dob": row["Date_of_Birth"],
+                    "dob": row["Date of Birth"],
                     "gender": row["Gender"],
                     "relationship": row["Relationship"]
                 })

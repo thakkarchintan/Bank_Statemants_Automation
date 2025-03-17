@@ -22,7 +22,7 @@ def income_details():
 
     # Process form submission
     if submit:
-        if source and value and frequency and start_date and end_date and growth_rate:
+        if source and value and frequency and start_date and end_date:
             if end_date >= start_date:
                 add_income(username, source, value, frequency, start_date, end_date, growth_rate)
                 st.success("Income added successfully!")
@@ -36,9 +36,9 @@ def income_details():
     if not incomes:
         st.write("No Incomes found.")
     else:
-        df.columns = ["Income_ID", "Source", "Value", "Frequency", "Start_Date","End_Date", "Growth_Rate"]
+        df.columns = ["ID", "Source", "Value", "Frequency", "Start Date","End Date", "Growth Rate"]
         df.columns = df.columns.astype(str) 
         print(f"Income Dataframe :{df}")
-        df = format_date_columns(df,["Start_Date","End_Date"])
+        df = format_date_columns(df,["Start Date","End Date"])
         display_added_data(df,"Income")
 

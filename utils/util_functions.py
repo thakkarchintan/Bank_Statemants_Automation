@@ -1155,20 +1155,47 @@ def display_hicharts(df,selected_name,selected_bank):
 def refresh_table():
     time.sleep(3)
     st.rerun()
+    
+def generate_random_id():
+    return str(uuid.uuid4()) 
 
+def remove_column(df, column_name):
+    if column_name in df.columns:
+        return df.drop(columns=[column_name])
+    else:
+        print(f"Column '{column_name}' not found in DataFrame.")
+        return df
+    
+def rename_column(df, old_name, new_name):
+    if old_name in df.columns:
+        return df.rename(columns={old_name: new_name})
+    else:
+        print(f"Column '{old_name}' not found in DataFrame.")
+        return df  
 
-def display_added_data(data,form):
+def display_added_data(data, form):
     username = st.session_state.get("username")
+
     gb = GridOptionsBuilder.from_dataframe(data)
 
-    # Add checkbox selection
+    # ✅ Set checkbox selection
     gb.configure_selection(selection_mode="multiple", use_checkbox=True)
+
+    # ✅ Ensure at least one visible column has checkboxes
+    cols = ["Name","Source","Expense Type","Investment Type"]
+    for ele in cols:
+        if ele in data.columns:  # Change "Name" to any visible column in your DataFrame
+            gb.configure_column(ele, checkboxSelection=True)
+
+    # ✅ Hide "ID" column but keep it for selection
+    if "ID" in data.columns:
+        gb.configure_column("ID", hide=True)
 
     # Build grid options
     grid_options = gb.build()
-    
+
     row_height = 35  # Approximate height per row
-    calculated_height = (len(data)+2) * row_height
+    calculated_height = (len(data) + 2) * row_height
     print(f"Calculated height {calculated_height}")
 
     # Render AgGrid
@@ -1176,29 +1203,25 @@ def display_added_data(data,form):
         data,
         gridOptions=grid_options,
         height=calculated_height,
-        fit_columns_on_grid_load=True
+        fit_columns_on_grid_load=True,
+        id=generate_random_id()
     )
 
     # Get selected rows as a DataFrame
     selected_rows = pd.DataFrame(grid_response.get("selected_rows", []))
 
     # Delete Selected Rows
-    if form == "Personal" :
+    if form == "Personal":
         if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
-            delete_dependents(selected_rows,username)
+            delete_dependents(selected_rows, username)
             refresh_page()
-            
-    if form == "Income" :
+
+    if form == "Income":
         if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
-            delete_income(selected_rows,username)
+            delete_income(selected_rows, username)
             refresh_page()
-            
-    if form == "Investments" :
+
+    if form == "Investments":
         if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
-            delete_investments(selected_rows,username)
-            refresh_page()
-            
-    if form == "Expenses" :
-        if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
-            delete_expense(selected_rows,username)
+            delete_investments(selected_rows, username)
             refresh_page()

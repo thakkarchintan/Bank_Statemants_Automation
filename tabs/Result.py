@@ -90,11 +90,11 @@ def result():
     
     # Dependents Data
     dependents_data = get_dependents(username)
-    df_dependents = pd.DataFrame(dependents_data, columns=["ID", "Name", "Date_of_Birth", "Gender", "Relationship"])
+    df_dependents = pd.DataFrame(dependents_data, columns=["ID", "Name", "Date of Birth", "Gender", "Relationship"])
     df_dependents = df_dependents.drop(columns=["ID"])
-    df_dependents["Date_of_Birth"] = pd.to_datetime(df_dependents["Date_of_Birth"], errors="coerce")
-    df_dependents["Age"] = df_dependents["Date_of_Birth"].apply(calculate_age)
-    df_dependents["Date_of_Birth"] = df_dependents["Date_of_Birth"].dt.strftime("%Y-%m-%d")
+    df_dependents["Date of Birth"] = pd.to_datetime(df_dependents["Date of Birth"], errors="coerce")
+    df_dependents["Age"] = df_dependents["Date of Birth"].apply(calculate_age)
+    df_dependents["Date of Birth"] = df_dependents["Date of Birth"].dt.strftime("%Y-%m-%d")
     
     if st.button("Calculate Net Worth Projection"):
         income_data = get_incomes(username)
@@ -122,7 +122,7 @@ def result():
             
             # Calculation logic (same as original)
             current_year = date.today().year
-            dob = df_dependents[df_dependents["Relationship"] == "Self"]["Date_of_Birth"].values[0]
+            dob = df_dependents[df_dependents["Relationship"] == "Self"]["Date of Birth"].values[0]
             dob = pd.to_datetime(dob).date()
             current_age = current_year - dob.year
 
