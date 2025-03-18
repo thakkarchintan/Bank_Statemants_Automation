@@ -536,6 +536,7 @@ if st.session_state["connected"]:
 
                                 if show_data:
                                     display_hicharts(g_df_hichart,selected_name,selected_bank)
+                                    display_hichart2(g_df_hichart,selected_name,selected_bank)
                                     display_graph(g_df,selected_name,selected_bank)
                                     display_graph1(g1_df,selected_name,selected_bank,'salary','Monthly Income from Salary','Credit')
                                     display_graph1(g2_df,selected_name,selected_bank,'emi','Monthly EMI','Debit')
@@ -572,6 +573,7 @@ if st.session_state["connected"]:
 
                                 if show_data:
                                     display_hicharts(g_df_hichart,selected_name,selected_bank)
+                                    display_hichart2(g_df_hichart,selected_name,selected_bank)
                                     display_graph(g_df,selected_name,selected_bank)
                                     display_graph1(g1_df,selected_name,selected_bank,'salary','Monthly Income from Salary','Credit')
                                     display_graph1(g2_df,selected_name,selected_bank,'emi','Monthly EMI','Debit')
