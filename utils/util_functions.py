@@ -236,8 +236,8 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
 
         # Automatically configure columns to fit content dynamically
         for column in df.columns:
-            gb.configure_column(column, minWidth=100,wrapText=True)
-
+            gb.configure_column(column, minWidth=100,wrapText=True,filter="agTextColumnFilter")
+            
         gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
 
         gridOptions = gb.build()
