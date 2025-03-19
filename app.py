@@ -65,12 +65,24 @@ apps = {
 
 if st.session_state["connected"]:
     user_info=st.session_state['user_info']
-    user_email = str(user_info.get('email'))
+    name=user_info.get('name')
+    if name:
+        user_email=str(user_info.get('email'))
+        streamlit_js_eval(js_expressions=f"localStorage.setItem('local_email', '{user_email}')", key="el")
+        time.sleep(2)
+    else :
+        user_email = str(streamlit_js_eval(js_expressions="localStorage.getItem('local_email')", key="ef"))
+        time.sleep(2)
+        st.session_state['user_info']["email"]=user_email
     user_name = user_email[:-10]
     user_name = user_name.replace('.','__')
     summ_table = user_name+'_summary'
-    name=user_info.get('name')
-    first_name = get_name(db_name,'users',user_name)
+    if name:
+        user_data = (user_name,user_info.get('name'),user_email)
+        add_user(db_name,'users',user_data)
+    else:
+        name=get_name(db_name,'users',user_name)
+        st.session_state['user_info']["name"]=name
 
     app_name = streamlit_js_eval(js_expressions="localStorage.getItem('app_name')",key="Four")
     if app_name and app_name!="nothing":
@@ -90,14 +102,8 @@ if st.session_state["connected"]:
                 db_df=pd.DataFrame()
                 dummy_data_file_path = DUMMY_DATA_PATH
                 dummy_data = pd.read_excel(dummy_data_file_path)
-
-                if name:
-                    user_data = (user_name,user_info.get('name'),user_email)
-                    add_user(db_name,'users',user_data)
-                else:
-                    name=get_name(db_name,'users',user_name)
-                    
-                st.sidebar.write(f"<p style='margin-bottom: 5px;'>Logged in as {first_name}</p>", unsafe_allow_html=True)
+                  
+                st.sidebar.write(f"<p style='margin-bottom: 5px;'>Logged in as {name}</p>", unsafe_allow_html=True)
                 st.sidebar.markdown("---")
                     
                 # sorting list of banks
@@ -188,10 +194,6 @@ if st.session_state["connected"]:
 
 
                 if st.sidebar.button("Log out",use_container_width=True):
-                    user_info=st.session_state['user_info']
-                    user_email = str(user_info.get('email'))
-                    user_name = user_email[:-10]
-                    user_name = user_name.replace('.','__')
                     authenticator.logout()
 
 
@@ -887,9 +889,10 @@ if st.session_state["connected"]:
             except Exception as e:
                 print(f"Error in fetching data : {e}")
                 st.toast(":red[Something went wrong.Please try again.]")
-                delete_data(db_name,user_name,"Name is NULL")
+                # delete_data(db_name,user_name,"Name is NULL")
                 time.sleep(2)
-                refresh_page()
+                authenticator.logout()
+                # refresh_page()
         elif app_name=="networth":
             if st.sidebar.button("Go to Main Page"):
                 main_page=True
@@ -899,9 +902,9 @@ if st.session_state["connected"]:
                 app_name="nothing"
                 time.sleep(1)
                 refresh_page()
-            st.sidebar.write(f"<p style='margin-bottom: 5px;'>Logged in as {first_name}</p>", unsafe_allow_html=True)
+            st.sidebar.write(f"<p style='margin-bottom: 5px;'>Logged in as {name}</p>", unsafe_allow_html=True)
             st.sidebar.markdown("---")
-            networth()
+            networth(authenticator)
         else:
             st.write("### 📊 Welcome to the Null!")
 
