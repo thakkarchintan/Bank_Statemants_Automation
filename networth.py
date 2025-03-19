@@ -1,10 +1,9 @@
 import streamlit as st
-from common import authenticator
 from database import *
 from utils import *
 from tabs import *
 
-def networth():
+def networth(authenticator):
     # Initialize session state if not already present
     if 'dependents' not in st.session_state:
         st.session_state.dependents = []

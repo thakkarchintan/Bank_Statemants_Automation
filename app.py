@@ -8,9 +8,9 @@ import time
 from database import *
 from utils import *
 from constant_variables import *
-from common import *
 from streamlit_js_eval import streamlit_js_eval
 from networth import *
+from auth import Authenticator
 
 
 if "connected" not in st.session_state:
@@ -40,6 +40,12 @@ st.markdown("""
 
 query_params = st.query_params
 page = query_params.get("page", ["home"]) 
+
+authenticator = Authenticator(
+    token_key=TOKEN_KEY,
+    secret_path = SECRET_PATH,
+    redirect_uri=REDIRECT_URI,
+)
 
 authenticator.check_auth()
 
