@@ -294,7 +294,7 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
         print(f"Error in updating category : {e}")
         st.toast(":red[Something went wrong.]")
 
-def display_transaction_data(df,Height,download_df=[],summary=False,db_name="",user_name="",category_present=False,category_list=[]):
+def display_transaction_data(df,Height,download_df=[],summary=False,db_name="",user_name="",category_list=[]):
     try:
         bal_df=pd.DataFrame()
         bal_df=df[["Balance"]].copy()
@@ -318,7 +318,7 @@ def display_transaction_data(df,Height,download_df=[],summary=False,db_name="",u
             search_query = ""
 
         # Dynamic Table Height
-        table_height = min(400, 40 + len(filtered_df) * 35)
+        table_height = min(400, 80 + len(filtered_df) * 35)
 
         # Automatically configure columns to fit content dynamically
         for column in df.columns:
@@ -336,30 +336,29 @@ def display_transaction_data(df,Height,download_df=[],summary=False,db_name="",u
         with st.container():
             col1,col2 ,_,col4,col5,col6,col7 = st.columns([2,2,1,1,1,1,1])
             with col1:
-                if category_present:
-                    if st.button("Save Changes",use_container_width=True):
-                        g_resonse=pd.DataFrame(grid_response["data"])
-                        if not g_resonse.empty:
-                            # print(g_resonse)
-                            # Merge df with g_resonse on 'A' and 'B', keeping df's structure
-                            df = df.merge(g_resonse, on=['Name','Bank','Date','Narration','Debit','Credit'], how='left', suffixes=('_df', '_g_resonse'))
+                if st.button("Save Changes",use_container_width=True):
+                    g_resonse=pd.DataFrame(grid_response["data"])
+                    if not g_resonse.empty:
+                        # print(g_resonse)
+                        # Merge df with g_resonse on 'A' and 'B', keeping df's structure
+                        df = df.merge(g_resonse, on=['Name','Bank','Date','Narration','Debit','Credit'], how='left', suffixes=('_df', '_g_resonse'))
 
-                            # Update 'Category' Column: take 'Category_g_resonse' if it's not null, otherwise keep 'Category_df'
-                            df['Category'] = df['Category_g_resonse'].combine_first(df['Category_df'])
+                        # Update 'Category' Column: take 'Category_g_resonse' if it's not null, otherwise keep 'Category_df'
+                        df['Category'] = df['Category_g_resonse'].combine_first(df['Category_df'])
 
-                            # Drop extra columns and keep the required structure
-                            df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
-                            download_df=df
-                            df = df.reset_index(drop=True)
-                            bal_df = bal_df.reset_index(drop=True)
-                            # print(g_resonse)
-                            # print(bal_df)
-                            updated_df = pd.concat([df, bal_df], axis=1)
-                            # print(updated_df)
-                            updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
-                            delete_data(db_name,user_name,"1=1")
-                            add_data(updated_df,False,db_name,user_name)
-                            st.toast(":green[Data saved successfully.]")
+                        # Drop extra columns and keep the required structure
+                        df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
+                        download_df=df
+                        df = df.reset_index(drop=True)
+                        bal_df = bal_df.reset_index(drop=True)
+                        # print(g_resonse)
+                        # print(bal_df)
+                        updated_df = pd.concat([df, bal_df], axis=1)
+                        # print(updated_df)
+                        updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
+                        delete_data(db_name,user_name,"1=1")
+                        add_data(updated_df,False,db_name,user_name)
+                        st.toast(":green[Data saved successfully.]")
             with col2:
                 st.download_button(
                     key='dbs',
