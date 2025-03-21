@@ -220,7 +220,14 @@ def format_uploaded_file(uploaded_file, bank, db_name, user_name):
 
 def contain_null(df):
     return df.isnull().values.any()
- 
+
+# Function to filter data based on search query
+def filter_data(df, query):
+    if query:
+        query = query.lower()
+        return df[df.apply(lambda row: row.astype(str).str.lower().str.contains(query).any(), axis=1)]
+    return df
+
 def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",category_present=False,category_list=[]):
     try:
         bal_df=pd.DataFrame()
@@ -283,6 +290,85 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
                     )
         else:
             AgGrid(df, gridOptions=gridOptions,enable_enterprise_modules=True,height=Height,use_container_width=True) 
+    except Exception as e:
+        print(f"Error in updating category : {e}")
+        st.toast(":red[Something went wrong.]")
+
+def display_transaction_data(df,Height,download_df=[],summary=False,db_name="",user_name="",category_list=[]):
+    try:
+        bal_df=pd.DataFrame()
+        bal_df=df[["Balance"]].copy()
+        df.drop('Balance', axis=1, inplace=True)
+
+        # Search Bar
+        search_query = st.text_input("🔍 Search:", "")
+    
+        # Filter Data Based on Search
+        filtered_df = filter_data(df, search_query)
+
+        # Configure AgGrid
+        gb = GridOptionsBuilder.from_dataframe(filtered_df)
+        gb.configure_pagination()
+        gb.configure_default_column(filterable=True, sortable=True)
+        gb.configure_side_bar()  # Add a sidebar
+        gb.configure_column("Category", editable=True, cellEditor="agSelectCellEditor", cellEditorParams={"values": category_list})
+        
+        # Auto Filter Reset Button
+        if st.button("Reset Filters"):
+            search_query = ""
+
+        # Dynamic Table Height
+        table_height = min(400, 80 + len(filtered_df) * 35)
+
+        # Automatically configure columns to fit content dynamically
+        for column in df.columns:
+            gb.configure_column(column, minWidth=100,wrapText=True,filter="agTextColumnFilter")
+            
+        gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
+
+        gridOptions = gb.build()
+
+        # AgGrid(filtered_df, gridOptions=gb.build(), height=table_height, fit_columns_on_grid_load=True)
+
+        # Display the grid
+        grid_response=AgGrid(filtered_df, gridOptions=gridOptions,enable_enterprise_modules=True,height=table_height,update_mode=GridUpdateMode.MANUAL,use_container_width=True) 
+        
+        with st.container():
+            col1,col2 ,_,col4,col5,col6,col7 = st.columns([2,2,1,1,1,1,1])
+            with col1:
+                if st.button("Save Changes",use_container_width=True):
+                    g_resonse=pd.DataFrame(grid_response["data"])
+                    if not g_resonse.empty:
+                        # print(g_resonse)
+                        # Merge df with g_resonse on 'A' and 'B', keeping df's structure
+                        df = df.merge(g_resonse, on=['Name','Bank','Date','Narration','Debit','Credit'], how='left', suffixes=('_df', '_g_resonse'))
+
+                        # Update 'Category' Column: take 'Category_g_resonse' if it's not null, otherwise keep 'Category_df'
+                        df['Category'] = df['Category_g_resonse'].combine_first(df['Category_df'])
+
+                        # Drop extra columns and keep the required structure
+                        df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
+                        download_df=df
+                        df = df.reset_index(drop=True)
+                        bal_df = bal_df.reset_index(drop=True)
+                        # print(g_resonse)
+                        # print(bal_df)
+                        updated_df = pd.concat([df, bal_df], axis=1)
+                        # print(updated_df)
+                        updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
+                        delete_data(db_name,user_name,"1=1")
+                        add_data(updated_df,False,db_name,user_name)
+                        st.toast(":green[Data saved successfully.]")
+            with col2:
+                st.download_button(
+                    key='dbs',
+                    label="Download data",
+                    data=convert_df_to_excel(download_df),
+                    file_name="bank_statement.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
+
     except Exception as e:
         print(f"Error in updating category : {e}")
         st.toast(":red[Something went wrong.]")
@@ -1098,6 +1184,8 @@ def display_hicharts(df,selected_name,selected_bank):
     total_debit = int(df["Debit"].sum())
     total_credit = int(df["Credit"].sum())
 
+    df["Month"] = df["Date"].dt.strftime("%Y-%m")
+
     # Step 2: Compute Year-wise Debit & Credit
     year_df = df.groupby("Year")[["Debit", "Credit"]].sum().reset_index()
 
@@ -1256,14 +1344,14 @@ def display_hichart2(df,selected_name,selected_bank):
     if selected_name!='All':
         df = df[df["Name"] == selected_name]
     
-    df["Month"] = df["Date"].dt.strftime("%Y-%B")
-    df["Month_Sort"] = df["Date"].dt.to_period("M")  # Convert to period for proper sorting
+    df["Month"] = df["Date"].dt.strftime("%Y-%m")
+    # df["Month_Sort"] = df["Date"].dt.to_period("M")  # Convert to period for proper sorting
 
-    # Sort DataFrame by Month_Sort instead of Month
-    df = df.sort_values(by="Month_Sort")
+    # # Sort DataFrame by Month_Sort instead of Month
+    # df = df.sort_values(by="Month_Sort")
 
     # Drop the sorting helper column if not needed
-    df = df.drop(columns=["Month_Sort"])
+    # df = df.drop(columns=["Month_Sort"])
     # Aggregate data by Month
     monthly_data = df.groupby("Month").agg({"Debit": "sum", "Credit": "sum"}).reset_index()
 
