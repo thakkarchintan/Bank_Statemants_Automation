@@ -38,13 +38,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown(
+import streamlit.components.v1 as components
+
+components.html(
     """
     <meta property="og:title" content="Fintellect" />
     <meta property="og:image" content="https://res.cloudinary.com/dwszdaeqw/image/upload/t_Fintellect/v1742560314/nubtvotgjgc2pc99azh9.png" />
     <meta property="og:url" content="https://fintellect.co.in" />
     """,
-    unsafe_allow_html=True
+    height=0
 )
 
 query_params = st.query_params
