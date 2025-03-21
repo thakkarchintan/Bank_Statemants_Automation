@@ -38,6 +38,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+st.markdown(
+    """
+    <meta property="og:title" content="Fintellect" />
+    <meta property="og:image" content="https://res.cloudinary.com/dwszdaeqw/image/upload/t_Fintellect/v1742560314/nubtvotgjgc2pc99azh9.png" />
+    <meta property="og:url" content="https://fintellect.co.in" />
+    """,
+    unsafe_allow_html=True
+)
+
 query_params = st.query_params
 page = query_params.get("page", ["home"]) 
 
