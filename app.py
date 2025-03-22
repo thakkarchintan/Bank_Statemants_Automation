@@ -388,7 +388,7 @@ if st.session_state["connected"]:
                             if st.button("Delete All data"):
                                 st.session_state.Select_data_button=False
                                 st.session_state.delete_all=True
-                                st.rerun()
+                                # st.rerun()
                         
                         yp_button1=False
                         can_button1=False
@@ -430,7 +430,7 @@ if st.session_state["connected"]:
                             if st.button("Delete Selected Data"):
                                 st.session_state.delete_all=False
                                 st.session_state.Select_data_button=True
-                                st.rerun()
+                                # st.rerun()
 
                         if st.session_state.Select_data_button and not st.session_state.delete_all:
                             if not db_df.empty:
