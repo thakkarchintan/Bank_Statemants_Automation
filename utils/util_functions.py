@@ -308,8 +308,8 @@ def display_transaction_data(df,Height,download_df=[],summary=False,db_name="",u
 
         # Configure AgGrid
         gb = GridOptionsBuilder.from_dataframe(filtered_df)
-        gb.configure_pagination()
-        gb.configure_default_column(filterable=True, sortable=True)
+        # gb.configure_pagination()
+        # gb.configure_default_column(filterable=True, sortable=True)
         gb.configure_side_bar()  # Add a sidebar
         gb.configure_column("Category", editable=True, cellEditor="agSelectCellEditor", cellEditorParams={"values": category_list})
         
@@ -319,7 +319,6 @@ def display_transaction_data(df,Height,download_df=[],summary=False,db_name="",u
 
         # Dynamic Table Height
         table_height = min(400, 80 + len(filtered_df) * 35)
-
 
         # Automatically configure columns to fit content dynamically
         for column in df.columns:

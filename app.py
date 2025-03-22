@@ -382,13 +382,20 @@ if st.session_state["connected"]:
                     with tab[0]:
                         if not summary_df.empty:
                             display_data(summary_df,200,[],True)
-                            
-                        if st.button("Delete All data"):
-                            st.session_state.delete_all=True
+                        
+                        del_cols=st.columns([2,2.7,2,3.3])
+                        with del_cols[0]:
+                            if st.button("Delete All data"):
+                                st.session_state.Select_data_button=False
+                                st.session_state.delete_all=True
+                                st.rerun()
+                        
                         yp_button1=False
                         can_button1=False
+                        yp_button=False
+                        can_button=False
 
-                        if st.session_state.delete_all:
+                        if st.session_state.delete_all and not st.session_state.Select_data_button:
                             if not db_df.empty:
                                 st.warning("This will delete your all data and cannot be undone. Are you sure to proceed?")
                                 col1, col2 = st.columns(2)
@@ -419,12 +426,13 @@ if st.session_state["connected"]:
                                 time.sleep(1.5)
                                 refresh_page()
 
-                        if st.button("Select data to Delete"):
-                            st.session_state.Select_data_button=True
-                        yp_button=False
-                        can_button=False
+                        with del_cols[1]:
+                            if st.button("Delete Selected Data"):
+                                st.session_state.delete_all=False
+                                st.session_state.Select_data_button=True
+                                st.rerun()
 
-                        if st.session_state.Select_data_button:
+                        if st.session_state.Select_data_button and not st.session_state.delete_all:
                             if not db_df.empty:
                                 name_options = list(db_df["Name"].unique())
                                 bank_options = list(db_df["Bank"].unique())
@@ -492,6 +500,9 @@ if st.session_state["connected"]:
                                 time.sleep(1.5)
                                 refresh_page()
 
+                        with del_cols[2]:
+                            if st.button("Go Back"):
+                                refresh_page()
                 else:
                     if user_name in admins:
                         # Apply CSS to reduce white space above tabs
