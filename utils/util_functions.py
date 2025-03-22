@@ -320,7 +320,6 @@ def display_transaction_data(df,Height,download_df=[],summary=False,db_name="",u
         # Dynamic Table Height
         table_height = min(400, 80 + len(filtered_df) * 35)
 
-
         # Automatically configure columns to fit content dynamically
         for column in df.columns:
             gb.configure_column(column, minWidth=100,wrapText=True,filter="agTextColumnFilter")
