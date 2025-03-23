@@ -430,7 +430,7 @@ if st.session_state["connected"]:
                             if st.button("Delete Selected Data"):
                                 st.session_state.delete_all=False
                                 st.session_state.Select_data_button=True
-                                # st.rerun()
+                                #  
 
                         if st.session_state.Select_data_button and not st.session_state.delete_all:
                             if not db_df.empty:
@@ -624,7 +624,7 @@ if st.session_state["connected"]:
                                 with st.container():
                                     download_df = db_df.copy()
                                     download_df['Date'] = pd.to_datetime(download_df['Date'],errors='coerce')
-                                    display_transaction_data(db_df,600,download_df,False,db_name,user_name,sorted(category_table_data['Category'].unique()))
+                                    display_data(db_df,600,download_df,False,db_name,user_name,True,sorted(category_table_data['Category'].unique()))
                                     # db_df['Date'] = pd.to_datetime(db_df['Date'],errors='coerce')
                                     # st.download_button(
                                     #     key='dbs',
