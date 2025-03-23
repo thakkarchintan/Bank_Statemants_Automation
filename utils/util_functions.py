@@ -242,8 +242,10 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
             gb.configure_column("Category", editable=True, cellEditor="agSelectCellEditor", cellEditorParams={"values": category_list})
 
         # Automatically configure columns to fit content dynamically
+        num_cols=["Debit","Credit","Pending days","Transactions","Opening balance","Closing balance"]
         for column in df.columns:
-            gb.configure_column(column, minWidth=100,wrapText=True,filter="agTextColumnFilter")
+            if column not in num_cols:
+                gb.configure_column(column, minWidth=100,wrapText=True,filter="agTextColumnFilter")
             
         gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
 

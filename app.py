@@ -385,7 +385,7 @@ if st.session_state["connected"]:
                         
                         del_cols=st.columns([2,2.7,2,3.3])
                         with del_cols[0]:
-                            if st.button("Delete All data"):
+                            if st.button("Delete All data",use_container_width=True):
                                 st.session_state.Select_data_button=False
                                 st.session_state.delete_all=True
                                 # st.rerun()
@@ -427,7 +427,7 @@ if st.session_state["connected"]:
                                 refresh_page()
 
                         with del_cols[1]:
-                            if st.button("Delete Selected Data"):
+                            if st.button("Delete Selected Data",use_container_width=True):
                                 st.session_state.delete_all=False
                                 st.session_state.Select_data_button=True
                                 #  
@@ -501,7 +501,7 @@ if st.session_state["connected"]:
                                 refresh_page()
 
                         with del_cols[2]:
-                            if st.button("Go Back"):
+                            if st.button("Go Back",use_container_width=True):
                                 refresh_page()
                 else:
                     if user_name in admins:
@@ -663,14 +663,15 @@ if st.session_state["connected"]:
                                     summary_df['Start_Date'] = pd.to_datetime(summary_df['Start_Date'],errors='coerce')
                                     summary_df['End_Date'] = pd.to_datetime(summary_df['End_Date'],errors='coerce')
                                     with st.container():
-                                        col1, col2= st.columns([4, 1])  # Added extra spacing
-                                        with col2:
+                                        col1, col2= st.columns([1, 4])  # Added extra spacing
+                                        with col1:
                                             st.download_button(
                                                 key='dbs_summary',
                                                 label="Download data",
                                                 data=convert_df_to_excel(summary_df),
                                                 file_name="bank_statement_summary.xlsx",
-                                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                                use_container_width=True
                                             )
                             else:
                                 if st.button("Show Dummy Summary",key='showd1'):
@@ -959,6 +960,7 @@ if st.session_state["connected"]:
             authenticator.logout()
   
 else:
+    streamlit_js_eval(js_expressions=f"localStorage.setItem('app_name', 'nothing')",key="One")
     auth_url=authenticator.login()
     if not auth_url:
         st.error("Authentication URL is not available.")
