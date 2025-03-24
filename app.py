@@ -312,6 +312,15 @@ if st.session_state["connected"]:
                         st.toast(":red[Please upload files smaller than 2MB.]")
 
                 if not common_data.empty:
+                    st.markdown(
+                        """
+                        <style>
+                            div.block-container { padding-top: 0rem; } /* Reduce padding */
+                            div[data-testid="stTabs"] { margin-top: -110px; } /* Move tabs higher */
+                        </style>
+                        """,
+                        unsafe_allow_html=True
+                    )
                     tabs = st.tabs(["Duplicate data"])
                     with tabs[0]:
                         st.warning("These transactions already exists. What would you like to do?")
@@ -1011,62 +1020,74 @@ else:
     else:
         css = """
                 <style>
-                    header[data-testid="stHeader"]{
-                        z-index:1000;
-                  }
-                    .gcenter {
-                        margin-top:1.5rem;
-                        hieght:100px;
-                        overflow-x:hidden;
-                        width: 100vw;
-                        display: flex;
-                        position:fixed;
-                        top: 1vh;
-                        left:6vw;
-                        background-color:white;
-                        z-index: 1000000000000000;
+                    header[data-testid="stHeader"] {
+                        z-index: 1000;
                     }
+
+                    /* Button Wrapper */
+                    .gcenter {
+                        margin-top: 0.5rem; /* Reduced top margin */
+                        height: 50px; /* Reduced height */
+                        overflow-x: hidden;
+                        width: 100%; /* Ensures it aligns with text width */
+                        display: flex;
+                        position: fixed;
+                        top: 1.5vh; /* Adjusted height for better placement */
+                        left: 4vw; /* Keeps alignment with text */
+                        background-color: transparent; /* No background */
+                        z-index: 1000000000000000;
+                        justify-content: flex-start; /* Aligns with text */
+                        align-items: center;
+                    }
+
+                    /* Google Button */
                     .google-button {
                         background-color: #4285F4;
                         color: white !important;
                         border-radius: 5px;
-                        padding: 10px 15px;
-                        font-size: 1.5rem;
+                        padding: 6px 12px; /* Reduced padding */
+                        font-size: 1.2rem;
                         border: none;
                         cursor: pointer;
                         display: flex;
                         align-items: center;
                         text-decoration: none !important;
-                        gap: 5px;
+                        gap: 6px;
+                        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
                     }
+
                     .google-button img {
-                        width: 1.5rem;
-                        height: 1.5rem;
-                        margin-left: 5px;
+                        width: 1.3rem; /* Adjusted icon size */
+                        height: 1.3rem;
+                        margin-left: 4px;
                         border-radius: 50%;
                     }
-                    /* Media query for screens 768px and smaller */
+
+                    /* Prevent Text Overlap */
+                    .content {
+                        margin-top: 4rem; /* Pushes content down */
+                    }
+
+                    /* Responsive Adjustments */
                     @media (max-width: 1100px) {
                         .gcenter {
-                            background-color:white
-                            position: fixed;
-                            top: 1vh;
-                            left: 50%;
-                            transform: translateX(-50%); /* Moves it to center */
-                            width: max-content; /* Adjust width based on content */
-                            display: flex;
-                            justify-content: center; /* Ensures content is centered */
-                            align-items: center; /* Vertically aligns the button */
+                            left: 3vw; /* Align with text */
+                            top: 1.5vh;
+                            width: 100%;
                         }
                         .google-button {
-                            padding: 8px 12px;
-                            font-size: 1.2rem;
+                            padding: 5px 10px;
+                            font-size: 1.1rem;
                         }
                     }
-                                        /* Media query for mobile-sized screens */
+
                     @media (max-width: 480px) {
+                        .gcenter {
+                            left: 2vw; /* Align with text */
+                            top: 1.5vh;
+                        }
                         .google-button {
-                            padding: 6px 10px;
+                            padding: 4px 8px;
                             font-size: 1rem;
                         }
                     }
