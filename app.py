@@ -317,17 +317,24 @@ if st.session_state["connected"]:
                         <style>
                             div.block-container { padding-top: 0rem; } /* Reduce padding */
                             div[data-testid="stTabs"] { margin-top: -110px; } /* Move tabs higher */
+                            .stButton>button { margin-top: 50px; } /* Move buttons lower */
                         </style>
                         """,
                         unsafe_allow_html=True
                     )
+                    
                     tabs = st.tabs(["Duplicate data"])
                     with tabs[0]:
-                        st.warning("These transactions already exists. What would you like to do?")
+                        st.warning("These transactions already exist. What would you like to do?")
 
                         common_data = common_data[['Name', 'Bank', 'Date', 'Narration', 'Debit', 'Credit']]
                         common_data['Date'] = common_data['Date'].dt.strftime('%d-%b-%Y')
-                        display_data(common_data, 300, [], True)
+
+                        # Increase table height
+                        display_data(common_data, 600, [], True)
+
+                        # Add spacing before buttons
+                        st.markdown("<br><br>", unsafe_allow_html=True)
 
                         cll = st.columns(5)
                         with cll[0]:
@@ -356,12 +363,13 @@ if st.session_state["connected"]:
                                     openning_bal = row.loc[0, 'Balance']
                                     row.loc[0, 'Balance'] += ex_balance_sum
                                     update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
-                                                   res['oldest_date'], res['latest_date'], res['no_of_transactions'],
-                                                   row.loc[0, 'Balance'], openning_bal)
+                                                    res['oldest_date'], res['latest_date'], res['no_of_transactions'],
+                                                    row.loc[0, 'Balance'], openning_bal)
 
                             st.toast(":green[Data updated successfully]")
                             time.sleep(1.5)
                             refresh_page()
+
 
                         elif keep:
                             if not df.empty:
