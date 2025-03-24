@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-st.set_page_config(page_title="Fintellect", page_icon=os.getenv("Fevicon_Path"), layout="wide")
+st.set_page_config(page_title="Fintellect", page_icon=os.getenv("Fevicon_Path"), layout="wide",initial_sidebar_state="expanded")
 import razorpay
 import streamlit.components.v1 as components
 import pandas as pd
@@ -205,7 +205,7 @@ if st.session_state["connected"]:
                     authenticator.logout()
 
                 # get data from db
-                db_df = get_transaction_data(db_name, user_name)
+                db_df = get_transaction_data(db_name, user_name,"order by Name,Bank,Date")
 
                 summary_df = get_summary_data(db_name, summ_table)
 
@@ -442,7 +442,6 @@ if st.session_state["connected"]:
                             if st.button("Delete Selected Data", use_container_width=True):
                                 st.session_state.delete_all = False
                                 st.session_state.Select_data_button = True
-                                #
 
                         if st.session_state.Select_data_button and not st.session_state.delete_all:
                             if not db_df.empty:
@@ -490,7 +489,7 @@ if st.session_state["connected"]:
                                         res = get_oldest_latest_date(name_selected, bank_selected, user_name)
 
                                         if res:
-                                            row_condition = f"where Date='{res['oldest_date']}' limit 1"
+                                            row_condition = f"where Date='{res['oldest_date']}' and Bank='{bank_selected}' and Name='{name_selected}' limit 1"
                                             row = get_transaction_data(db_name, user_name, row_condition)
                                             res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                             row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
@@ -503,13 +502,15 @@ if st.session_state["connected"]:
                                             update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
                                                            res['oldest_date'], res['latest_date'],
                                                            res['no_of_transactions'], cred_deb_sum, openning_bal)
-                                        st.toast(":green[Data deleted successfully]")
+                                            st.toast(":green[Data deleted successfully]")
+                                            st.session_state.confirm = False
+                                            time.sleep(2)
+                                            refresh_page()
+                                        else:
+                                            st.toast(":red[Failed to delete data. Please try again.")
                                     except Exception as e:
                                         print(f"Error in deleting: {e}")
                                         st.toast(":red[Something went wrong.Please try again.]")
-                                    st.session_state.confirm = False
-                                    time.sleep(1.5)
-                                    refresh_page()
 
                                 if can_button:
                                     refresh_page()
@@ -749,6 +750,8 @@ if st.session_state["connected"]:
                                                SMTP_PASSWORD)
                                     # send_email(feedback,user_email,ADMIN_EMAIL2,SMTP_SERVER,SMTP_USER,SMTP_PASSWORD)
                                     st.toast(":green[Thank you for your feedback! It has been sent to the admin.]")
+                                    time.sleep(2)
+                                    refresh_page()
                                 except Exception as e:
                                     print(f"Error sending feedback: {e}")
                                     st.toast(":red[Failed to send feedback. Please try again later.]")
