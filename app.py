@@ -685,7 +685,7 @@ if st.session_state["connected"]:
                             else:
                                 if st.button("Show Dummy Data", key='showd2'):
                                     dummy_data['Date'] = dummy_data['Date'].dt.strftime('%d-%b-%Y')
-                                    display_data(dummy_data, 600, [], True)
+                                    display_data(dummy_data, 700, [], True)
                                     dummy_data['Date'] = pd.to_datetime(dummy_data['Date'], errors='coerce')
 
                         except Exception as e:
