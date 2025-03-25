@@ -868,7 +868,7 @@ if st.session_state["connected"]:
                                 st.rerun()
 
                             # Add New Entry Section
-                            st.subheader("Add New Item")
+                            
 
                             col = st.columns(3)  # Layout columns
 
@@ -946,7 +946,7 @@ if st.session_state["connected"]:
                             grid_response = AgGrid(
                                 st.session_state.table_data,
                                 gridOptions=grid_options,
-                                height=300,
+                                height=600,
                                 fit_columns_on_grid_load=True
                             )
 
