@@ -847,7 +847,6 @@ if st.session_state["connected"]:
                                         st.error(f"An error occurred: {e}")
                                 else:
                                     st.error("Please enter all details before proceeding.")
-
                         with tab6:
                             table_nm = "Categories"
                             initialize_db(table_nm)
@@ -868,26 +867,23 @@ if st.session_state["connected"]:
                                 st.rerun()
 
                             # Add New Entry Section
-                            
-
-                            col = st.columns(3)  # Layout columns
+                            col1, col2, col3, col4, col5 = st.columns(5)  # Layout columns with 5 columns for all elements
 
                             # Unique categories sorted A-Z
                             unique_categories = sorted(st.session_state.table_data["Category"].unique())
-                            new_category = col[0].selectbox("Select Category", ["Add new category"] + unique_categories,
-                                                            index=0)
+                            new_category = col1.selectbox("Select Category", ["Add new category"] + unique_categories,
+                                                        index=0)
 
                             if new_category == "Add new category":
-                                new_category = col[1].text_input("Enter New Category")
+                                new_category = col2.text_input("Enter New Category")
 
-                            next_col = st.columns(3)
-                            new_keywords = next_col[0].text_input("Enter comma-separated Keywords")
-                            type = next_col[1].selectbox("Select Transaction type", ["Credit", "Debit"])
+                            new_keywords = col3.text_input("Enter Keywords")
+                            type = col4.selectbox("Select Transaction type", ["Credit", "Debit"])
 
                             message_to_display = ""
                             success_message = False
 
-                            with next_col[2]:
+                            with col5:
                                 # Move button slightly up
                                 st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
                                 # Check for duplicate and show prompt
@@ -912,7 +908,7 @@ if st.session_state["connected"]:
                                                 for new_keyword in keyword_list:
                                                     new_entry = pd.DataFrame(
                                                         {"Keyword": [new_keyword], "Category": [new_category],
-                                                         "Type": [type]})
+                                                        "Type": [type]})
                                                     st.session_state.table_data = pd.concat(
                                                         [st.session_state.table_data, new_entry], ignore_index=True)
                                                 delete_all(table_nm)
@@ -933,15 +929,12 @@ if st.session_state["connected"]:
 
                             # Display the table
                             st.subheader("Category & Keyword Table")
-
+                            
                             gb = GridOptionsBuilder.from_dataframe(st.session_state.table_data)
-
                             # Add checkbox selection
                             gb.configure_selection(selection_mode="multiple", use_checkbox=True)
-
                             # Build grid options
                             grid_options = gb.build()
-
                             # Render AgGrid
                             grid_response = AgGrid(
                                 st.session_state.table_data,
