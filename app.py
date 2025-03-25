@@ -223,7 +223,7 @@ if st.session_state["connected"]:
                 db_df['Date'] = pd.to_datetime(db_df['Date'], errors='coerce')
 
                 common_data = pd.DataFrame()
-                ex_balance_sum = db_df['Credit'].sum() - db_df['Debit'].sum()
+                ex_balance_sum = 0
 
                 # Show confirmation inside sidebar
                 if st.session_state.ok:
@@ -272,6 +272,10 @@ if st.session_state["connected"]:
                                     db_df[col] = db_df[col].str.strip()
 
                                 common_data = has_common_rows(df, db_df)
+                                bank_name_filtered_df = db_df[(db_df['Name'] == ac_name) & (db_df['Bank'] == bank)]
+                                sum_debit = bank_name_filtered_df['Debit'].sum()
+                                sum_credit = bank_name_filtered_df['Credit'].sum()
+                                ex_balance_sum=sum_debit+sum_credit
                                 if common_data.empty:
                                     if not df.empty:
                                         ex_balance_sum += df['Credit'].sum() - df['Debit'].sum()
@@ -282,16 +286,17 @@ if st.session_state["connected"]:
                                         res = get_oldest_latest_date(ac_name, bank, user_name)
 
                                         if res:
-                                            row_condition = f"where Date='{res['oldest_date']}' limit 1"
+                                            row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
                                             row = get_transaction_data(db_name, user_name, row_condition)
+
                                             res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                             row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                             openning_bal = row.loc[0, 'Balance']
                                             row.loc[0, 'Balance'] += ex_balance_sum
                                             update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
-                                                           res['oldest_date'], res['latest_date'],
-                                                           res['no_of_transactions'], row.loc[0, 'Balance'],
-                                                           openning_bal)
+                                                        res['oldest_date'], res['latest_date'],
+                                                        res['no_of_transactions'], row.loc[0, 'Balance'],
+                                                        openning_bal)
 
                                     st.toast(":green[Data updated successfully]")
                                     time.sleep(1.5)
@@ -356,7 +361,7 @@ if st.session_state["connected"]:
                                 res = get_oldest_latest_date(ac_name, bank, user_name)
 
                                 if res:
-                                    row_condition = f"where Date='{res['oldest_date']}' limit 1"
+                                    row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
                                     row = get_transaction_data(db_name, user_name, row_condition)
                                     res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                     row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
@@ -380,7 +385,7 @@ if st.session_state["connected"]:
                                 res = get_oldest_latest_date(ac_name, bank, user_name)
 
                                 if res:
-                                    row_condition = f"where Date='{res['oldest_date']}' limit 1"
+                                    row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
                                     row = get_transaction_data(db_name, user_name, row_condition)
                                     res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                     row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
