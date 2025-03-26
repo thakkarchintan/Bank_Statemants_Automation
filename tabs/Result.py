@@ -383,13 +383,16 @@ def calculate_age(dob):
     return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
 def format_numbers(value):
-    """Format numbers to be integers or 2 decimal places if float"""
+    """Safely format numbers, handling strings and edge cases"""
+    if isinstance(value, str):
+        try:
+            value = float(value) if "." in value else int(value)
+        except (ValueError, TypeError):
+            return value
     if isinstance(value, (int, float)):
-        if value.is_integer():
-            return int(value)
-        else:
-            return round(float(value), 2)
+        return int(value) if isinstance(value, float) and value.is_integer() else round(float(value), 2)
     return value
+
 
 def result():
     username = st.session_state.get("username")
@@ -551,12 +554,12 @@ def result():
                 "EoY Savings Portfolio (Investable Savings)"
             ]
             
-            # Format all numeric columns
             for df in [data, income_details_df, expense_details_df, savings_details_df, investment_details_df]:
                 numeric_cols = df.select_dtypes(include=[np.number]).columns
                 for col in numeric_cols:
-                    df[col] = df[col].apply(format_numbers)
-            
+                    df[col] = pd.to_numeric(df[col], errors="coerce")  # Force conversion
+                    df[col] = df[col].apply(format_numbers)  # Format numbers
+                
             # Special handling for savings columns - ensure they are numeric and properly formatted
             for col in savings_columns:
                 if col in data.columns:
