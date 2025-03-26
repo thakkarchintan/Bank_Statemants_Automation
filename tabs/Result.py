@@ -307,14 +307,6 @@
 #     calculated_height = (len(df_dependents)+2) * row_height
 #     AgGrid(df_dependents, fit_columns_on_grid_load=True,height=calculated_height)
 
-
-
-
-
-
-
-
-
 import streamlit as st
 from datetime import datetime, date
 from database import *
@@ -327,15 +319,13 @@ from st_aggrid import AgGrid, GridOptionsBuilder
 import time
 
 def display_combined_aggrid(data):
-    # st.subheader(title)
     gb = GridOptionsBuilder.from_dataframe(data)
-    row_height = 35  # Approximate height per row
+    row_height = 35
     calculated_height = (len(data)+2) * row_height
     if "Age" in data.columns:
         gb.configure_column("Age", cellStyle={"textAlign": "left"})
     gridOptions = gb.build()
-    # Auto-fit columns on load so that they appear perfect without clicking reset
-    AgGrid(data, gridOptions=gridOptions, fit_columns_on_grid_load=True,height=calculated_height)
+    AgGrid(data, gridOptions=gridOptions, fit_columns_on_grid_load=True, height=calculated_height)
 
 def create_combined_table(username):
     income_data = get_incomes(username)
@@ -343,7 +333,6 @@ def create_combined_table(username):
     investment_data = get_investments(username)
     savings_data = get_savings(username)
     
-    # Build Income DataFrame
     df_income = pd.DataFrame(income_data, columns=["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"])
     df_income = df_income.drop(columns=["ID"]).rename(columns={
         "Source": "Type", 
@@ -353,7 +342,6 @@ def create_combined_table(username):
     })
     df_income["Category"] = "Income"
     
-    # Build Expenses DataFrame
     df_expenses = pd.DataFrame(expense_data, columns=["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"])
     df_expenses = df_expenses.drop(columns=["ID"]).rename(columns={
         "Expense_Type": "Type",
@@ -363,7 +351,6 @@ def create_combined_table(username):
     })
     df_expenses["Category"] = "Expenses"
     
-    # Build Investments DataFrame
     df_investments = pd.DataFrame(investment_data, columns=["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"])
     df_investments = df_investments.drop(columns=["ID"]).rename(columns={
         "Amount": "Value",
@@ -372,7 +359,6 @@ def create_combined_table(username):
     df_investments["Frequency"] = None
     df_investments["Category"] = "Investments"
     
-    # Build Savings DataFrame
     df_savings = pd.DataFrame(savings_data, columns=["ID", "Savings Rate"])
     df_savings = df_savings.drop(columns=["ID"])
     df_savings["Category"] = "Savings Rate"
@@ -380,13 +366,11 @@ def create_combined_table(username):
         df_savings[col] = None
     df_savings = df_savings.rename(columns={"Savings Rate": "Inflation / Growth Rate"})
     
-    # Convert date columns to formatted strings
     for df in [df_income, df_expenses, df_investments]:
         for col in ["Start Date", "End Date"]:
             if col in df.columns:
                 df[col] = pd.to_datetime(df[col], errors="coerce").dt.strftime("%Y-%m-%d")
     
-    # Combine and reorder columns
     combined_df = pd.concat([df_income, df_expenses, df_investments, df_savings], ignore_index=True)
     return combined_df[["Category", "Type", "Value", "Frequency", "Start Date", "End Date", "Inflation / Growth Rate"]]
 
@@ -398,6 +382,15 @@ def calculate_age(dob):
     today = date.today()
     return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
+def format_numbers(value):
+    """Format numbers to be integers or 2 decimal places if float"""
+    if isinstance(value, (int, float)):
+        if value.is_integer():
+            return int(value)
+        else:
+            return round(float(value), 2)
+    return value
+
 def result():
     username = st.session_state.get("username")
     st.header("Net Worth Projection")
@@ -405,7 +398,6 @@ def result():
     
     display_combined_table(username)
     
-    # Dependents Data
     dependents_data = get_dependents(username)
     df_dependents = pd.DataFrame(dependents_data, columns=["ID", "Name", "Date_of_Birth", "Gender", "Relationship"])
     df_dependents = df_dependents.drop(columns=["ID"])
@@ -419,17 +411,14 @@ def result():
         investment_data = get_investments(username)
         savings_data = get_savings(username)
         
-        
         if not (income_data and expense_data and investment_data and savings_data):
             st.toast("Please add the inputs to calculate net worth.", icon="⚠️")
-            time.sleep(3)  # Toast duration (adjust as needed)
-        else :
-            # Create DataFrames with ID columns removed
+            time.sleep(3)
+        else:
             df_incomes = pd.DataFrame(income_data, columns=["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"]).drop(columns=["ID"])
             df_expenses = pd.DataFrame(expense_data, columns=["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"]).drop(columns=["ID"])
             df_investments = pd.DataFrame(investment_data, columns=["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"]).drop(columns=["ID"])
             
-            # Date conversions
             df_incomes["Start_Date"] = pd.to_datetime(df_incomes["Start_Date"], errors="coerce")
             df_incomes["End_Date"] = pd.to_datetime(df_incomes["End_Date"], errors="coerce")
             df_expenses["Start_Date"] = pd.to_datetime(df_expenses["Start_Date"], errors="coerce")
@@ -437,7 +426,6 @@ def result():
             df_investments["Start Date"] = pd.to_datetime(df_investments["Start Date"], errors="coerce")
             df_investments["End Date"] = pd.to_datetime(df_investments["End Date"], errors="coerce")
             
-            # Calculation logic (same as original)
             current_year = date.today().year
             dob = df_dependents[df_dependents["Relationship"] == "Self"]["Date_of_Birth"].values[0]
             dob = pd.to_datetime(dob).date()
@@ -556,6 +544,26 @@ def result():
             savings_details_df = pd.DataFrame(savings_details)
             investment_details_df = pd.DataFrame(investment_details)
             
+            # Define savings columns that need special formatting
+            savings_columns = [
+                "Starting Value - Investable Savings",
+                "Income from Investable Savings",
+                "EoY Savings Portfolio (Investable Savings)"
+            ]
+            
+            # Format all numeric columns
+            for df in [data, income_details_df, expense_details_df, savings_details_df, investment_details_df]:
+                numeric_cols = df.select_dtypes(include=[np.number]).columns
+                for col in numeric_cols:
+                    df[col] = df[col].apply(format_numbers)
+            
+            # Special handling for savings columns - ensure they are numeric and properly formatted
+            for col in savings_columns:
+                if col in data.columns:
+                    data[col] = pd.to_numeric(data[col], errors='coerce')
+                if col in savings_details_df.columns:
+                    savings_details_df[col] = pd.to_numeric(savings_details_df[col], errors='coerce')
+            
             # Data processing
             data = data.sort_values("Year").drop_duplicates(subset=["Year"])
             data["Year"] = pd.to_numeric(data["Year"], errors="coerce")
@@ -602,14 +610,48 @@ def result():
             )
             st.plotly_chart(fig)
 
-            # Excel export
+            # Excel export with proper number formatting
             with BytesIO() as output:
                 with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+                    # Create formats
+                    int_format = writer.book.add_format({'num_format': '#,##0'})
+                    float_format = writer.book.add_format({'num_format': '#,##0.00'})
+                    
+                    # Write dataframes
                     data.to_excel(writer, sheet_name="Net Worth Projection", index=False)
                     income_details_df.to_excel(writer, sheet_name="Income Details", index=False)
                     expense_details_df.to_excel(writer, sheet_name="Expense Details", index=False)
                     savings_details_df.to_excel(writer, sheet_name="Savings Details", index=False)
                     investment_details_df.to_excel(writer, sheet_name="Investments Details", index=False)
+
+                    # Apply formatting to all sheets
+                    for sheet_name in writer.sheets:
+                        worksheet = writer.sheets[sheet_name]
+                        # Get the dataframe for this sheet
+                        if sheet_name == "Net Worth Projection":
+                            df = data
+                        elif sheet_name == "Income Details":
+                            df = income_details_df
+                        elif sheet_name == "Expense Details":
+                            df = expense_details_df
+                        elif sheet_name == "Savings Details":
+                            df = savings_details_df
+                        elif sheet_name == "Investments Details":
+                            df = investment_details_df
+                        
+                        # Apply formatting to each column
+                        for idx, col in enumerate(df.columns):
+                            if pd.api.types.is_numeric_dtype(df[col]):
+                                # Special handling for savings columns - always use float format
+                                if col in savings_columns:
+                                    worksheet.set_column(idx, idx, 18, float_format)
+                                else:
+                                    # Check if all values in column are integers
+                                    if all(x.is_integer() if isinstance(x, float) else True for x in df[col]):
+                                        worksheet.set_column(idx, idx, 18, int_format)
+                                    else:
+                                        worksheet.set_column(idx, idx, 18, float_format)
+                
                 output.seek(0)
                 st.download_button(
                     label="Download Excel File",
@@ -620,7 +662,7 @@ def result():
 
     # Display only dependents table
     st.subheader("Dependents Data")
-    row_height = 35  # Approximate height per row
+    row_height = 35
     calculated_height = (len(df_dependents)+2) * row_height
     df_dependents = rename_column(df_dependents,"Date_of_Birth","Date of Birth")
-    AgGrid(df_dependents, fit_columns_on_grid_load=True,height=calculated_height)
+    AgGrid(df_dependents, fit_columns_on_grid_load=True, height=calculated_height)

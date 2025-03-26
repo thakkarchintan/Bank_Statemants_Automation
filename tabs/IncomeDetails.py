@@ -29,16 +29,26 @@ def income_details():
             else:
                 st.error("End Date must be after Start Date.")
 
-    # Fetch and display incomes from SQL database
+# Fetch and display incomes from SQL database
     incomes = get_incomes(username)
-    df = pd.DataFrame(incomes) # Convert to DataFrame
+    df = pd.DataFrame(incomes)  # Convert to DataFrame
     st.subheader("Incomes List")
     if not incomes:
         st.write("No Incomes found.")
     else:
-        df.columns = ["ID", "Source", "Value", "Frequency", "Start Date","End Date", "Growth Rate"]
+        df.columns = ["ID", "Source", "Value", "Frequency", "Start Date", "End Date", "Growth Rate"]
         df.columns = df.columns.astype(str) 
         print(f"Income Dataframe :{df}")
-        df = format_date_columns(df,["Start Date","End Date"])
-        display_added_data(df,"Income")
+        
+        # Format date columns to dd-mmm-yyyy
+        for date_col in ["Start Date", "End Date"]:
+            if date_col in df.columns:
+                try:
+                    # First convert to datetime, then format as string
+                    df[date_col] = pd.to_datetime(df[date_col]).dt.strftime('%d-%b-%Y')
+                except Exception as e:
+                    st.warning(f"Couldn't format {date_col}: {str(e)}")
+                    continue
+        
+        display_added_data(df, "Income")
 
