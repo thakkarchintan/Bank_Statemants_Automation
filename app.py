@@ -275,7 +275,7 @@ if st.session_state["connected"]:
                                 bank_name_filtered_df = db_df[(db_df['Name'] == ac_name) & (db_df['Bank'] == bank)]
                                 sum_debit = bank_name_filtered_df['Debit'].sum()
                                 sum_credit = bank_name_filtered_df['Credit'].sum()
-                                ex_balance_sum=sum_debit+sum_credit
+                                ex_balance_sum=sum_credit-sum_debit
                                 if common_data.empty:
                                     if not df.empty:
                                         ex_balance_sum += df['Credit'].sum() - df['Debit'].sum()
@@ -288,10 +288,11 @@ if st.session_state["connected"]:
                                         if res:
                                             row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
                                             row = get_transaction_data(db_name, user_name, row_condition)
-
                                             res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
-                                            row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
+                                            row.loc[0, 'Balance']=float(row.loc[0, 'Balance'])
+                                            row.loc[0, 'Balance'] += float(row.loc[0, 'Debit']) - float(row.loc[0, 'Credit'])
                                             openning_bal = row.loc[0, 'Balance']
+                                            # print(row.loc[0, 'Balance'])
                                             row.loc[0, 'Balance'] += ex_balance_sum
                                             update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
                                                         res['oldest_date'], res['latest_date'],
@@ -509,10 +510,11 @@ if st.session_state["connected"]:
                                         delete_data(db_name, user_name, condition)
                                         delete_data(db_name, summ_table, condition_summ)
                                         res = get_oldest_latest_date(name_selected, bank_selected, user_name)
-
+                                        # print(res)
                                         if res:
                                             row_condition = f"where Date='{res['oldest_date']}' and Bank='{bank_selected}' and Name='{name_selected}' limit 1"
                                             row = get_transaction_data(db_name, user_name, row_condition)
+                                            # print(row)
                                             res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                             row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                             openning_bal = row.loc[0, 'Balance']
@@ -521,7 +523,7 @@ if st.session_state["connected"]:
                                             cred_deb_sum = cred_deb_df['Credit'].sum() - cred_deb_df['Debit'].sum() + row.loc[
                                                 0, 'Balance']
 
-                                            update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
+                                            update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank_selected,
                                                            res['oldest_date'], res['latest_date'],
                                                            res['no_of_transactions'], cred_deb_sum, openning_bal)
                                             st.toast(":green[Data deleted successfully]")
@@ -529,7 +531,10 @@ if st.session_state["connected"]:
                                             time.sleep(2)
                                             refresh_page()
                                         else:
-                                            st.toast(":red[Failed to delete data. Please try again.")
+                                            st.toast(":green[Data deleted successfully]")
+                                            st.session_state.confirm = False
+                                            time.sleep(2)
+                                            refresh_page()
                                     except Exception as e:
                                         print(f"Error in deleting: {e}")
                                         st.toast(":red[Something went wrong.Please try again.]")
