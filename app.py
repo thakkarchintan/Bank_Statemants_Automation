@@ -1058,7 +1058,24 @@ if st.session_state["connected"]:
             """, unsafe_allow_html=True)
 
     else:
+
         # Main page content when no app is selected
+        st.markdown("""
+            <style>
+                .block-container {
+                    padding-top: 0rem !important;
+                    margin-top: -2rem !important;
+                }
+                [data-testid="stVerticalBlock"] {
+                    gap: 0rem !important;
+                }
+                .stMarkdown {
+                    margin-bottom: 0rem !important;
+                }
+            </style>
+        """, 
+        unsafe_allow_html=True)
+
         st.write("# Welcome to Fintellect! 👋")
         st.markdown("""
             ### Select an app to get started:
