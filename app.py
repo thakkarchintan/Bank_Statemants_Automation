@@ -1101,7 +1101,7 @@ if st.session_state["connected"]:
             st.markdown("""
                 <div style='text-align: center; padding: 20px; border-radius: 10px; background-color: #f0f2f6; margin-bottom: 20px;'>
                     <h3>📊 Net Worth Tracker</h3>
-                    <p>Track your assets, liabilities, and overall net worth over time.</p>
+                    <p>Monitor your assets, liabilities, and overall financial net worth consistently over time.</p>
                     <div style='margin-top: 20px;'>
             """, unsafe_allow_html=True)
             if st.button("Open Net Worth Tracker", key="networth_tracker"):
