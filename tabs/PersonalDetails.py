@@ -4,12 +4,20 @@ from database import *
 from utils import *
 import pandas as pd
 
+@st.cache_data  # Cache the retrieval of personal details
+def fetch_self_details(username):
+    return get_self_details(username)
+
+@st.cache_data  # Cache the retrieval of dependents
+def fetch_dependents(username):
+    return get_dependents(username)
+
 def personal_details():
     st.markdown("Your personal details will be stored in the dependents table as 'Self'.")
 
     # Fetch existing details if present
     username = st.session_state.get("username")
-    existing_details = get_self_details(username)
+    existing_details = fetch_self_details(username)
 
     # Prefill data if exists
     if existing_details:
@@ -65,7 +73,7 @@ def personal_details():
                 st.error("Please fill all fields.")
 
     ### --- Retrieve and Display Dependents ---
-    dependents = get_dependents(username)
+    dependents = fetch_dependents(username)
     st.subheader("Dependents List")
     
     if not dependents:

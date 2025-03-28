@@ -317,6 +317,21 @@ from io import BytesIO
 import numpy as np
 from st_aggrid import AgGrid, GridOptionsBuilder
 import time
+from functools import lru_cache
+
+@st.cache_data(show_spinner=False, ttl=3600)
+def get_cached_data(username, data_type):
+    if data_type == "income":
+        return get_incomes(username)
+    elif data_type == "expense":
+        return get_expenses(username)
+    elif data_type == "investment":
+        return get_investments(username)
+    elif data_type == "savings":
+        return get_savings(username)
+    elif data_type == "dependents":
+        return get_dependents(username)
+    return None
 
 def display_combined_aggrid(data):
     gb = GridOptionsBuilder.from_dataframe(data)
@@ -327,11 +342,12 @@ def display_combined_aggrid(data):
     gridOptions = gb.build()
     AgGrid(data, gridOptions=gridOptions, fit_columns_on_grid_load=True, height=calculated_height)
 
+@st.cache_data(show_spinner=False, ttl=3600)
 def create_combined_table(username):
-    income_data = get_incomes(username)
-    expense_data = get_expenses(username)
-    investment_data = get_investments(username)
-    savings_data = get_savings(username)
+    income_data = get_cached_data(username, "income")
+    expense_data = get_cached_data(username, "expense")
+    investment_data = get_cached_data(username, "investment")
+    savings_data = get_cached_data(username, "savings")
     
     df_income = pd.DataFrame(income_data, columns=["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"])
     df_income = df_income.drop(columns=["ID"]).rename(columns={
@@ -378,10 +394,12 @@ def display_combined_table(username):
     combined_df = create_combined_table(username)
     display_combined_aggrid(combined_df)
 
+@st.cache_data(show_spinner=False, ttl=3600)
 def calculate_age(dob):
     today = date.today()
     return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
+@st.cache_data(show_spinner=False)
 def format_numbers(value):
     """Safely format numbers, handling strings and edge cases"""
     if isinstance(value, str):
@@ -393,6 +411,172 @@ def format_numbers(value):
         return int(value) if isinstance(value, float) and value.is_integer() else round(float(value), 2)
     return value
 
+@st.cache_data(show_spinner=False, ttl=3600)
+def calculate_net_worth_projection(username):
+    income_data = get_cached_data(username, "income")
+    expense_data = get_cached_data(username, "expense")
+    investment_data = get_cached_data(username, "investment")
+    savings_data = get_cached_data(username, "savings")
+    dependents_data = get_cached_data(username, "dependents")
+    
+    df_incomes = pd.DataFrame(income_data, columns=["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"]).drop(columns=["ID"])
+    df_expenses = pd.DataFrame(expense_data, columns=["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"]).drop(columns=["ID"])
+    df_investments = pd.DataFrame(investment_data, columns=["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"]).drop(columns=["ID"])
+    
+    df_incomes["Start_Date"] = pd.to_datetime(df_incomes["Start_Date"], errors="coerce")
+    df_incomes["End_Date"] = pd.to_datetime(df_incomes["End_Date"], errors="coerce")
+    df_expenses["Start_Date"] = pd.to_datetime(df_expenses["Start_Date"], errors="coerce")
+    df_expenses["End_Date"] = pd.to_datetime(df_expenses["End_Date"], errors="coerce")
+    df_investments["Start Date"] = pd.to_datetime(df_investments["Start Date"], errors="coerce")
+    df_investments["End Date"] = pd.to_datetime(df_investments["End Date"], errors="coerce")
+    
+    current_year = date.today().year
+    df_dependents = pd.DataFrame(dependents_data, columns=["ID", "Name", "Date_of_Birth", "Gender", "Relationship"])
+    dob = df_dependents[df_dependents["Relationship"] == "Self"]["Date_of_Birth"].values[0]
+    dob = pd.to_datetime(dob).date()
+    current_age = current_year - dob.year
+
+    min_year = min(
+        df_incomes["Start_Date"].dt.year.min(), 
+        df_expenses["Start_Date"].dt.year.min(), 
+        df_investments["Start Date"].dt.year.min()
+    )
+    future_years = range(min_year, current_year + (100 - current_age))
+
+    net_worth = []
+    income_details = []
+    expense_details = []
+    savings_details = []
+    investment_details = []
+
+    investible_savings = 0
+    p, t = 0, 0
+
+    for year in future_years:
+        annual_income = 0
+        annual_expenses = 0
+        annual_savings = 0
+        annual_investment_income = 0
+        net_ev = 0
+
+        # Income calculation
+        for _, row in df_incomes.iterrows():
+            if row["Start_Date"].year <= year <= row["End_Date"].year:
+                years_passed = year - row["Start_Date"].year
+                annual_value = compute_annual_amount(row["Value"], row["Frequency"])
+                annual_value = apply_growth_rate(annual_value, row["Growth_Rate"], years_passed)
+                annual_income += annual_value
+                income_details.append({
+                    "Year": year, "Source": row["Source"], "Value": row["Value"], 
+                    "Frequency": row["Frequency"], "Growth Rate (%)": row["Growth_Rate"], 
+                    "Annual Income": annual_value
+                })
+
+        # Expense calculation
+        for _, row in df_expenses.iterrows():
+            if row["Start_Date"].year <= year <= row["End_Date"].year:
+                years_passed = year - row["Start_Date"].year
+                annual_value = compute_annual_amount(row["Value"], row["Frequency"])
+                annual_value = apply_growth_rate(annual_value, row["Inflation_Rate"], years_passed)
+                annual_expenses += annual_value
+                expense_details.append({
+                    "Year": year, "Type": row["Expense_Type"], "Value": row["Value"], 
+                    "Frequency": row["Frequency"], "Inflation Rate (%)": row["Inflation_Rate"], 
+                    "Annual Expense": annual_value
+                })
+
+        # Savings calculation
+        annual_savings = annual_income - annual_expenses
+        temp_val = investible_savings if annual_savings > 0 else investible_savings + annual_savings
+        sv_invest = max(temp_val, 0)
+        income_from_sv = sv_invest * (savings_data[0][1] / 100) if sv_invest > 0 else 0
+        investible_savings = max(annual_savings + sv_invest + income_from_sv, 0)
+        savings_details.append({
+            "Year": year, "Annual Savings / Deficit": annual_savings, 
+            "Savings rate": savings_data[0][1], "Starting Value - Investable Savings": sv_invest,
+            "Income from Investable Savings": income_from_sv, 
+            "EoY Savings Portfolio (Investable Savings)": investible_savings
+        })
+
+        # Investment calculation
+        net_sv_ia, net_income_ia, net_ev = 0, 0, 0
+        for _, row in df_investments.iterrows():
+            if year < row["Start Date"].year:
+                continue
+            elif year == row["Start Date"].year:
+                sv_ia = row["Amount"]
+                income_ia = sv_ia * (row["Rate of Return"] / 100)
+                ev = sv_ia + income_ia
+            elif year <= row["End Date"].year:
+                temp_val2 = ev + annual_savings if investible_savings == 0 and annual_savings < 0 else ev
+                sv_ia = max(temp_val2, 0)
+                income_ia = sv_ia * (row["Rate of Return"] / 100)
+                ev = sv_ia + income_ia
+            else:
+                sv_ia, income_ia, ev = 0, 0, 0
+
+            net_sv_ia += sv_ia
+            net_income_ia += income_ia
+            net_ev += ev
+            investment_details.append({
+                "Year": year, "Investment Type": row["Type"], 
+                "Starting Value - Investments & Assets": sv_ia, 
+                "Rate of Return (%)": row["Rate of Return"], 
+                "Income from Investments & Assets": income_ia, 
+                "Ending Value - Investments & Assets": ev
+            })
+
+        # Net worth calculation
+        net_worth_val = (annual_savings + t if investible_savings == 0 and net_ev == 0 else net_ev + investible_savings) + (p if investible_savings == 0 else 0)
+        p, t = investible_savings, net_worth_val
+        net_worth.append({
+            "Year": year, "Age": current_age + (year - current_year),
+            "Income": annual_income, "Expenses": annual_expenses,
+            "Annual Savings / Deficit": annual_savings,
+            "Starting Value - Investable Savings": sv_invest,
+            "Income from Investable Savings": income_from_sv,
+            "EoY Savings Portfolio (Investable Savings)": investible_savings,
+            "Starting Value - Investments & Assets": net_sv_ia,
+            "Income from Investments & Assets": net_income_ia,
+            "Ending Value - Investments & Assets": net_ev,
+            "Net Worth": net_worth_val
+        })
+
+    # Create DataFrames
+    data = pd.DataFrame(net_worth)
+    income_details_df = pd.DataFrame(income_details)
+    expense_details_df = pd.DataFrame(expense_details)
+    savings_details_df = pd.DataFrame(savings_details)
+    investment_details_df = pd.DataFrame(investment_details)
+    
+    # Define savings columns that need special formatting
+    savings_columns = [
+        "Starting Value - Investable Savings",
+        "Income from Investable Savings",
+        "EoY Savings Portfolio (Investable Savings)"
+    ]
+    
+    for df in [data, income_details_df, expense_details_df, savings_details_df, investment_details_df]:
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce")  # Force conversion
+            df[col] = df[col].apply(format_numbers)  # Format numbers
+        
+    # Special handling for savings columns - ensure they are numeric and properly formatted
+    for col in savings_columns:
+        if col in data.columns:
+            data[col] = pd.to_numeric(data[col], errors='coerce')
+        if col in savings_details_df.columns:
+            savings_details_df[col] = pd.to_numeric(savings_details_df[col], errors='coerce')
+    
+    # Data processing
+    data = data.sort_values("Year").drop_duplicates(subset=["Year"])
+    data["Year"] = pd.to_numeric(data["Year"], errors="coerce")
+    data["Age"] = pd.to_numeric(data["Age"], errors="coerce")
+    data["Net Worth"] = pd.to_numeric(data["Net Worth"], errors="coerce")
+    data = data.dropna()
+
+    return data, income_details_df, expense_details_df, savings_details_df, investment_details_df
 
 def result():
     username = st.session_state.get("username")
@@ -401,178 +585,32 @@ def result():
     
     display_combined_table(username)
     
-    dependents_data = get_dependents(username)
+    dependents_data = get_cached_data(username, "dependents")
     df_dependents = pd.DataFrame(dependents_data, columns=["ID", "Name", "Date_of_Birth", "Gender", "Relationship"])
     df_dependents = df_dependents.drop(columns=["ID"])
     df_dependents["Date_of_Birth"] = pd.to_datetime(df_dependents["Date_of_Birth"], errors="coerce")
     df_dependents["Age"] = df_dependents["Date_of_Birth"].apply(calculate_age)
     df_dependents["Date_of_Birth"] = df_dependents["Date_of_Birth"].dt.strftime("%Y-%m-%d")
     
+    # Define savings columns that need special formatting
+    savings_columns = [
+        "Starting Value - Investable Savings",
+        "Income from Investable Savings",
+        "EoY Savings Portfolio (Investable Savings)"
+    ]
+    
     if st.button("Calculate Net Worth Projection"):
-        income_data = get_incomes(username)
-        expense_data = get_expenses(username)
-        investment_data = get_investments(username)
-        savings_data = get_savings(username)
+        income_data = get_cached_data(username, "income")
+        expense_data = get_cached_data(username, "expense")
+        investment_data = get_cached_data(username, "investment")
+        savings_data = get_cached_data(username, "savings")
         
         if not (income_data and expense_data and investment_data and savings_data):
             st.toast("Please add the inputs to calculate net worth.", icon="⚠️")
             time.sleep(3)
         else:
-            df_incomes = pd.DataFrame(income_data, columns=["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"]).drop(columns=["ID"])
-            df_expenses = pd.DataFrame(expense_data, columns=["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"]).drop(columns=["ID"])
-            df_investments = pd.DataFrame(investment_data, columns=["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"]).drop(columns=["ID"])
-            
-            df_incomes["Start_Date"] = pd.to_datetime(df_incomes["Start_Date"], errors="coerce")
-            df_incomes["End_Date"] = pd.to_datetime(df_incomes["End_Date"], errors="coerce")
-            df_expenses["Start_Date"] = pd.to_datetime(df_expenses["Start_Date"], errors="coerce")
-            df_expenses["End_Date"] = pd.to_datetime(df_expenses["End_Date"], errors="coerce")
-            df_investments["Start Date"] = pd.to_datetime(df_investments["Start Date"], errors="coerce")
-            df_investments["End Date"] = pd.to_datetime(df_investments["End Date"], errors="coerce")
-            
-            current_year = date.today().year
-            dob = df_dependents[df_dependents["Relationship"] == "Self"]["Date_of_Birth"].values[0]
-            dob = pd.to_datetime(dob).date()
-            current_age = current_year - dob.year
-
-            min_year = min(
-                df_incomes["Start_Date"].dt.year.min(), 
-                df_expenses["Start_Date"].dt.year.min(), 
-                df_investments["Start Date"].dt.year.min()
-            )
-            future_years = range(min_year, current_year + (100 - current_age))
-
-            net_worth = []
-            income_details = []
-            expense_details = []
-            savings_details = []
-            investment_details = []
-
-            investible_savings = 0
-            p, t = 0, 0
-
-            for year in future_years:
-                annual_income = 0
-                annual_expenses = 0
-                annual_savings = 0
-                annual_investment_income = 0
-                net_ev = 0
-
-                # Income calculation
-                for _, row in df_incomes.iterrows():
-                    if row["Start_Date"].year <= year <= row["End_Date"].year:
-                        years_passed = year - row["Start_Date"].year
-                        annual_value = compute_annual_amount(row["Value"], row["Frequency"])
-                        annual_value = apply_growth_rate(annual_value, row["Growth_Rate"], years_passed)
-                        annual_income += annual_value
-                        income_details.append({
-                            "Year": year, "Source": row["Source"], "Value": row["Value"], 
-                            "Frequency": row["Frequency"], "Growth Rate (%)": row["Growth_Rate"], 
-                            "Annual Income": annual_value
-                        })
-
-                # Expense calculation
-                for _, row in df_expenses.iterrows():
-                    if row["Start_Date"].year <= year <= row["End_Date"].year:
-                        years_passed = year - row["Start_Date"].year
-                        annual_value = compute_annual_amount(row["Value"], row["Frequency"])
-                        annual_value = apply_growth_rate(annual_value, row["Inflation_Rate"], years_passed)
-                        annual_expenses += annual_value
-                        expense_details.append({
-                            "Year": year, "Type": row["Expense_Type"], "Value": row["Value"], 
-                            "Frequency": row["Frequency"], "Inflation Rate (%)": row["Inflation_Rate"], 
-                            "Annual Expense": annual_value
-                        })
-
-                # Savings calculation
-                annual_savings = annual_income - annual_expenses
-                temp_val = investible_savings if annual_savings > 0 else investible_savings + annual_savings
-                sv_invest = max(temp_val, 0)
-                income_from_sv = sv_invest * (savings_data[0][1] / 100) if sv_invest > 0 else 0
-                investible_savings = max(annual_savings + sv_invest + income_from_sv, 0)
-                savings_details.append({
-                    "Year": year, "Annual Savings / Deficit": annual_savings, 
-                    "Savings rate": savings_data[0][1], "Starting Value - Investable Savings": sv_invest,
-                    "Income from Investable Savings": income_from_sv, 
-                    "EoY Savings Portfolio (Investable Savings)": investible_savings
-                })
-
-                # Investment calculation
-                net_sv_ia, net_income_ia, net_ev = 0, 0, 0
-                for _, row in df_investments.iterrows():
-                    if year < row["Start Date"].year:
-                        continue
-                    elif year == row["Start Date"].year:
-                        sv_ia = row["Amount"]
-                        income_ia = sv_ia * (row["Rate of Return"] / 100)
-                        ev = sv_ia + income_ia
-                    elif year <= row["End Date"].year:
-                        temp_val2 = ev + annual_savings if investible_savings == 0 and annual_savings < 0 else ev
-                        sv_ia = max(temp_val2, 0)
-                        income_ia = sv_ia * (row["Rate of Return"] / 100)
-                        ev = sv_ia + income_ia
-                    else:
-                        sv_ia, income_ia, ev = 0, 0, 0
-
-                    net_sv_ia += sv_ia
-                    net_income_ia += income_ia
-                    net_ev += ev
-                    investment_details.append({
-                        "Year": year, "Investment Type": row["Type"], 
-                        "Starting Value - Investments & Assets": sv_ia, 
-                        "Rate of Return (%)": row["Rate of Return"], 
-                        "Income from Investments & Assets": income_ia, 
-                        "Ending Value - Investments & Assets": ev
-                    })
-
-                # Net worth calculation
-                net_worth_val = (annual_savings + t if investible_savings == 0 and net_ev == 0 else net_ev + investible_savings) + (p if investible_savings == 0 else 0)
-                p, t = investible_savings, net_worth_val
-                net_worth.append({
-                    "Year": year, "Age": current_age + (year - current_year),
-                    "Income": annual_income, "Expenses": annual_expenses,
-                    "Annual Savings / Deficit": annual_savings,
-                    "Starting Value - Investable Savings": sv_invest,
-                    "Income from Investable Savings": income_from_sv,
-                    "EoY Savings Portfolio (Investable Savings)": investible_savings,
-                    "Starting Value - Investments & Assets": net_sv_ia,
-                    "Income from Investments & Assets": net_income_ia,
-                    "Ending Value - Investments & Assets": net_ev,
-                    "Net Worth": net_worth_val
-                })
-
-            # Create DataFrames
-            data = pd.DataFrame(net_worth)
-            income_details_df = pd.DataFrame(income_details)
-            expense_details_df = pd.DataFrame(expense_details)
-            savings_details_df = pd.DataFrame(savings_details)
-            investment_details_df = pd.DataFrame(investment_details)
-            
-            # Define savings columns that need special formatting
-            savings_columns = [
-                "Starting Value - Investable Savings",
-                "Income from Investable Savings",
-                "EoY Savings Portfolio (Investable Savings)"
-            ]
-            
-            for df in [data, income_details_df, expense_details_df, savings_details_df, investment_details_df]:
-                numeric_cols = df.select_dtypes(include=[np.number]).columns
-                for col in numeric_cols:
-                    df[col] = pd.to_numeric(df[col], errors="coerce")  # Force conversion
-                    df[col] = df[col].apply(format_numbers)  # Format numbers
-                
-            # Special handling for savings columns - ensure they are numeric and properly formatted
-            for col in savings_columns:
-                if col in data.columns:
-                    data[col] = pd.to_numeric(data[col], errors='coerce')
-                if col in savings_details_df.columns:
-                    savings_details_df[col] = pd.to_numeric(savings_details_df[col], errors='coerce')
-            
-            # Data processing
-            data = data.sort_values("Year").drop_duplicates(subset=["Year"])
-            data["Year"] = pd.to_numeric(data["Year"], errors="coerce")
-            data["Age"] = pd.to_numeric(data["Age"], errors="coerce")
-            data["Net Worth"] = pd.to_numeric(data["Net Worth"], errors="coerce")
-            data = data.dropna()
+            with st.spinner("Calculating net worth projection..."):
+                data, income_details_df, expense_details_df, savings_details_df, investment_details_df = calculate_net_worth_projection(username)
 
             # Visualization
             fig = go.Figure()
