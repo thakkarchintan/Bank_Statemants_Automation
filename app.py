@@ -990,70 +990,24 @@ if st.session_state["connected"]:
             st.sidebar.write(f"<p style='margin-bottom: 5px;'>Logged in as {name}</p>", unsafe_allow_html=True)
             st.sidebar.markdown("---")
             networth(authenticator)
-        else:
-            # Main page content when no app is selected
-            st.markdown("""
-                            <style>
-                                .block-container {
-                                    padding-top: 0rem !important;
-                                }
-                                [data-testid="stVerticalBlock"] {
-                                    gap: 0.5rem !important;
-                                }
-                                .stMarkdown {
-                                    margin-bottom: 0.5rem !important;
-                                }
-
-                            </style>
-                        """, unsafe_allow_html=True)
-
-            st.write("# Welcome to Fintellect! 👋")
-            st.markdown("""
-                ### Select an app to get started:
-            """)
-            
-            # Create columns for app buttons
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("""
-                    <div style='text-align: center; padding: 20px; border-radius: 10px; background-color: #f0f2f6; margin-bottom: 20px;'>
-                        <h3>🏦 Bank Statements Automation</h3>
-                        <p>Upload and analyze your bank statements to track transactions and spending patterns.</p>
-                        <div style='margin-top: 20px;'>
-                """, unsafe_allow_html=True)
-                if st.button("Open Bank Analyzer", key="bank_analyzer"):
-                    streamlit_js_eval(js_expressions="localStorage.setItem('app_name', 'bank_statements')", key="bank_app")
-                    time.sleep(1)
-                    refresh_page()
-                st.markdown("</div></div>", unsafe_allow_html=True)
-            
-            with col2:
-                st.markdown("""
-                    <div style='text-align: center; padding: 20px; border-radius: 10px; background-color: #f0f2f6; margin-bottom: 20px;'>
-                        <h3>📊 NetWorth App</h3>
-                        <p>Track your assets, liabilities, and overall net worth over time.</p>
-                        <div style='margin-top: 20px;'>
-                """, unsafe_allow_html=True)
-                if st.button("Open Net Worth Tracker", key="networth_tracker"):
-                    streamlit_js_eval(js_expressions="localStorage.setItem('app_name', 'networth')", key="networth_app")
-                    time.sleep(1)
-                    refresh_page()
-                st.markdown("</div></div>", unsafe_allow_html=True)
-            
-            st.markdown("---")
-            st.markdown("""
-                <style>
-                    .app-button {
-                        width: 100%;
-                        padding: 15px;
-                        font-size: 16px;
-                    }
-                </style>
-            """, unsafe_allow_html=True)
 
     else:
         # Main page content when no app is selected
+        st.markdown("""
+                <style>
+                    .block-container {
+                        padding-top: 0rem !important;
+                        margin-top: -4rem !important;
+                    }
+                    [data-testid="stVerticalBlock"] {
+                        gap: 0rem !important;
+                    }
+                    .stMarkdown {
+                        margin-bottom: 0rem !important;
+                    }
+
+                </style>
+            """, unsafe_allow_html=True)
         st.write("# Welcome to Fintellect! 👋")
         st.markdown("""
             ### Select an app to get started:
@@ -1079,7 +1033,7 @@ if st.session_state["connected"]:
             st.markdown("""
                 <div style='text-align: center; padding: 20px; border-radius: 10px; background-color: #f0f2f6; margin-bottom: 20px;'>
                     <h3>📊 Net Worth Tracker</h3>
-                    <p>Track your assets, liabilities, and overall net worth over time.</p>
+                    <p>Monitor your assets, liabilities, and overall financial net worth consistently over time.</p>
                     <div style='margin-top: 20px;'>
             """, unsafe_allow_html=True)
             if st.button("Open Net Worth Tracker", key="networth_tracker"):
@@ -1099,21 +1053,16 @@ if st.session_state["connected"]:
             </style>
         """, unsafe_allow_html=True)
 
-        # Sidebar dropdown to select an app
-        app_name = st.sidebar.selectbox("📂 Select an App", list(apps.keys()))
-        app_name = apps[app_name]
-        if st.sidebar.button("Open app", use_container_width=True):
-            streamlit_js_eval(js_expressions=f"localStorage.setItem('app_name', '{app_name}')", key="One")
-            time.sleep(1)
-            refresh_page()
+        if st.sidebar.button("Log out", use_container_width=True):
+            authenticator.logout()
 
         st.markdown("""
-        <style>
-            .st-emotion-cache-1gwvy71{
-                padding-bottom:0rem;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+            <style>
+                .st-emotion-cache-1gwvy71{
+                    padding-bottom:0rem;
+                }
+            </style>
+        """, unsafe_allow_html=True)
 
         st.sidebar.markdown(
             """
@@ -1122,10 +1071,8 @@ if st.session_state["connected"]:
             """,
             unsafe_allow_html=True,
         )
-        st.sidebar.markdown("---")
-        if st.sidebar.button("Log out", use_container_width=True):
-            authenticator.logout()
 
+        st.sidebar.markdown("---")
 else:
     streamlit_js_eval(js_expressions=f"localStorage.setItem('app_name', 'nothing')", key="One")
     auth_url = authenticator.login()

@@ -71,7 +71,7 @@ def networth(authenticator):
                         """
                         <style>
                             div.block-container { padding-top: 0rem; } /* Reduce padding */
-                            div[data-testid="stTabs"] { margin-top: -40px; } /* Move tabs higher */
+                            div[data-testid="stTabs"] { margin-top: -110px; } /* Move tabs higher */
                         </style>
                         """,
                         unsafe_allow_html=True
