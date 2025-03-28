@@ -735,9 +735,7 @@ def home_page():
         
     html = f"""
         <div class="container">
-                <div class="text-section" style="padding-top: 0; margin-top: 0;">
-                    <img src="https://res.cloudinary.com/dglzo349x/image/upload/v1743169321/Logo_Fintellect_mvv4bp.png" alt="Fintellect Logo" class="logo small-logo" style="width: 150px; height: auto; max-width: 100%; margin-top: 0;">
-                    <h1>Fintellect: Your All-in-One Financial Companion</h1>
+                <h1>Fintellect: Your All-in-One Financial Companion</h1>
                     <div class="para-section">
                         <div class="para">Take control of your finances with <span class="bold">Fintellect</span> , a powerful platform designed to:</div>
                         <div class="para"><span class="bold">✅ Assess & Project Your Net Worth – </span> Understand your financial standing today and plan for tomorrow.</div>
