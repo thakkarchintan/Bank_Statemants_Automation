@@ -735,7 +735,8 @@ def home_page():
         
     html = f"""
         <div class="container">
-                <div class="text-section">
+                <div class="text-section" style="padding-top: 0; margin-top: 0;">
+                    <img src="https://res.cloudinary.com/dglzo349x/image/upload/v1743169321/Logo_Fintellect_mvv4bp.png" alt="Fintellect Logo" class="logo small-logo" style="width: 150px; height: auto; max-width: 100%; margin-top: 0;">
                     <h1>Fintellect: Your All-in-One Financial Companion</h1>
                     <div class="para-section">
                         <div class="para">Take control of your finances with <span class="bold">Fintellect</span> , a powerful platform designed to:</div>
@@ -1286,16 +1287,16 @@ def display_added_data(data, form):
 
     gb = GridOptionsBuilder.from_dataframe(data)
 
-    # ✅ Set checkbox selection
+    # Set checkbox selection
     gb.configure_selection(selection_mode="multiple", use_checkbox=True)
 
-    # ✅ Ensure at least one visible column has checkboxes
+    # Ensure at least one visible column has checkboxes
     cols = ["Name","Source","Expense Type","Investment Type"]
     for ele in cols:
         if ele in data.columns:  # Change "Name" to any visible column in your DataFrame
             gb.configure_column(ele, checkboxSelection=True)
 
-    # ✅ Hide "ID" column but keep it for selection
+    # Hide "ID" column but keep it for selection
     if "ID" in data.columns:
         gb.configure_column("ID", hide=True)
 
@@ -1338,84 +1339,3 @@ def display_added_data(data, form):
         if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
             delete_expense(selected_rows,username)
             refresh_page()
-
-def display_hichart2(df,selected_name,selected_bank):
-    # Filter data for the selected name and bank
-    if selected_bank!='All':
-        df = df[df["Bank"] == selected_bank]
-    if selected_name!='All':
-        df = df[df["Name"] == selected_name]
-    
-    df["Month"] = df["Date"].dt.strftime("%Y-%m")
-    # df["Month_Sort"] = df["Date"].dt.to_period("M")  # Convert to period for proper sorting
-
-    # # Sort DataFrame by Month_Sort instead of Month
-    # df = df.sort_values(by="Month_Sort")
-
-    # Drop the sorting helper column if not needed
-    # df = df.drop(columns=["Month_Sort"])
-    # Aggregate data by Month
-    monthly_data = df.groupby("Month").agg({"Debit": "sum", "Credit": "sum"}).reset_index()
-
-    # First Level Drilldown: Debit & Credit per month
-    drilldown_series = []
-
-    for _, row in monthly_data.iterrows():
-        month = row["Month"]
-        
-        # Debit Categories Breakdown
-        debit_categories = df[df["Month"] == month].groupby("Category")["Debit"].sum().reset_index()
-        drilldown_series.append({
-            "id": f"debit_{month}",
-            "name": f"Debit Breakdown - {month}",
-            "data": debit_categories.apply(lambda x: {"name": x["Category"], "y": x["Debit"], "drilldown": f"debit_cat_{month}_{x['Category']}"}, axis=1).tolist()
-        })
-
-        # Credit Categories Breakdown
-        credit_categories = df[df["Month"] == month].groupby("Category")["Credit"].sum().reset_index()
-        drilldown_series.append({
-            "id": f"credit_{month}",
-            "name": f"Credit Breakdown - {month}",
-            "data": credit_categories.apply(lambda x: {"name": x["Category"], "y": x["Credit"], "drilldown": f"credit_cat_{month}_{x['Category']}"}, axis=1).tolist()
-        })
-
-        # Second Level Drilldown: Narration per Category
-        for _, cat_row in debit_categories.iterrows():
-            category = cat_row["Category"]
-            narrations = df[(df["Month"] == month) & (df["Category"] == category) & (df["Debit"] > 0)]
-            drilldown_series.append({
-                "id": f"debit_cat_{month}_{category}",
-                "name": f"Debit Narrations - {category} ({month})",
-                "data": narrations[["Narration", "Debit"]].values.tolist()
-            })
-
-        for _, cat_row in credit_categories.iterrows():
-            category = cat_row["Category"]
-            narrations = df[(df["Month"] == month) & (df["Category"] == category) & (df["Credit"] > 0)]
-            drilldown_series.append({
-                "id": f"credit_cat_{month}_{category}",
-                "name": f"Credit Narrations - {category} ({month})",
-                "data": narrations[["Narration", "Credit"]].values.tolist()
-            })
-
-    # First Level Chart Configuration
-    chart_config = {
-        "chart": {"type": "column"},
-        "title": {"text": "💰 Monthly Debit & Credit Transactions"},
-        "xAxis": {"type": "category"},
-        "yAxis": {"title": {"text": "Amount"}},
-        "series": [{
-            "name": "Transactions",
-            "data": monthly_data.apply(lambda row: {
-                "name": row["Month"],
-                "y": row["Debit"] + row["Credit"],  
-                "drilldown": f"debit_{row['Month']}" if row["Debit"] > row["Credit"] else f"credit_{row['Month']}"
-            }, axis=1).tolist()
-        }],
-        "drilldown": {
-            "series": drilldown_series
-        }
-    }
-
-    # Display chart
-    hct.streamlit_highcharts(chart_config)
