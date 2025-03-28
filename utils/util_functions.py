@@ -280,6 +280,7 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
                                 updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
                                 delete_data(db_name,user_name,"1=1")
                                 add_data(updated_df,False,db_name,user_name)
+                                st.cache_data.clear()
                                 st.toast(":green[Data saved successfully.]")
                 with col2:
                     st.download_button(

@@ -57,7 +57,7 @@ components.html(
 )
 
 query_params = st.query_params
-page = query_params.get("page", ["home"])
+page = query_params.get("page", ["home"])[0]
 
 authenticator = Authenticator(
     token_key=TOKEN_KEY,
@@ -204,6 +204,8 @@ if st.session_state["connected"]:
                 if st.sidebar.button("Log out", use_container_width=True):
                     authenticator.logout()
 
+                # st.experimental_set_query_params(placeholder="") 
+                # with st.spinner("Refreshing Data ..."):
                 # get data from db
                 db_df = get_transaction_data(db_name, user_name,"order by Name,Bank,Date")
 
@@ -287,7 +289,7 @@ if st.session_state["connected"]:
 
                                         if res:
                                             row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
-                                            row = get_transaction_data(db_name, user_name, row_condition)
+                                            row = get_transaction_data2(db_name, user_name, row_condition)
                                             res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                             row.loc[0, 'Balance']=float(row.loc[0, 'Balance'])
                                             row.loc[0, 'Balance'] += float(row.loc[0, 'Debit']) - float(row.loc[0, 'Credit'])
@@ -300,6 +302,7 @@ if st.session_state["connected"]:
                                                         openning_bal)
 
                                     st.toast(":green[Data updated successfully]")
+                                    st.cache_data.clear()
                                     time.sleep(1.5)
                                     refresh_page()
 
@@ -363,7 +366,7 @@ if st.session_state["connected"]:
 
                                 if res:
                                     row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
-                                    row = get_transaction_data(db_name, user_name, row_condition)
+                                    row = get_transaction_data2(db_name, user_name, row_condition)
                                     res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                     row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                     openning_bal = row.loc[0, 'Balance']
@@ -373,6 +376,7 @@ if st.session_state["connected"]:
                                                     row.loc[0, 'Balance'], openning_bal)
 
                             st.toast(":green[Data updated successfully]")
+                            st.cache_data.clear()
                             time.sleep(1.5)
                             refresh_page()
 
@@ -387,7 +391,7 @@ if st.session_state["connected"]:
 
                                 if res:
                                     row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
-                                    row = get_transaction_data(db_name, user_name, row_condition)
+                                    row = get_transaction_data2(db_name, user_name, row_condition)
                                     res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                     row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                     openning_bal = row.loc[0, 'Balance']
@@ -396,6 +400,7 @@ if st.session_state["connected"]:
                                                    res['oldest_date'], res['latest_date'], res['no_of_transactions'],
                                                    row.loc[0, 'Balance'], openning_bal)
                             st.toast(":green[Data updated successfully]")
+                            st.cache_data.clear()
                             time.sleep(1.5)
                             refresh_page()
 
@@ -450,6 +455,7 @@ if st.session_state["connected"]:
                                     except Exception as e:
                                         print(f"Error in deleting: {e}")
                                         st.toast(":red[Something went wrong.Please try again.]")
+                                    st.cache_data.clear()
                                     time.sleep(1.5)
                                     refresh_page()
 
@@ -513,13 +519,13 @@ if st.session_state["connected"]:
                                         # print(res)
                                         if res:
                                             row_condition = f"where Date='{res['oldest_date']}' and Bank='{bank_selected}' and Name='{name_selected}' limit 1"
-                                            row = get_transaction_data(db_name, user_name, row_condition)
+                                            row = get_transaction_data2(db_name, user_name, row_condition)
                                             # print(row)
                                             res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
                                             row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
                                             openning_bal = row.loc[0, 'Balance']
                                             cred_deb_condition = f"where Bank='{bank_selected}' and Name='{name_selected}'"
-                                            cred_deb_df = get_transaction_data(db_name, user_name, cred_deb_condition)
+                                            cred_deb_df = get_transaction_data2(db_name, user_name, cred_deb_condition)
                                             cred_deb_sum = cred_deb_df['Credit'].sum() - cred_deb_df['Debit'].sum() + row.loc[
                                                 0, 'Balance']
 
@@ -528,11 +534,13 @@ if st.session_state["connected"]:
                                                            res['no_of_transactions'], cred_deb_sum, openning_bal)
                                             st.toast(":green[Data deleted successfully]")
                                             st.session_state.confirm = False
+                                            st.cache_data.clear()
                                             time.sleep(2)
                                             refresh_page()
                                         else:
                                             st.toast(":green[Data deleted successfully]")
                                             st.session_state.confirm = False
+                                            st.cache_data.clear()
                                             time.sleep(2)
                                             refresh_page()
                                     except Exception as e:
