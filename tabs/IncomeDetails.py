@@ -2,8 +2,13 @@ import streamlit as st
 from datetime import date
 from database import *
 from utils import *
+import pandas as pd
+
+@st.cache_data  # Cache income retrieval
+def fetch_incomes(username):
+    return get_incomes(username)
+
 def income_details():
-    # st.header("Income")
     st.markdown("Use this section to list down all primary sources of income without considering income from investments and assets.")
 
     username = st.session_state.get("username") 
@@ -26,29 +31,28 @@ def income_details():
             if end_date >= start_date:
                 add_income(username, source, value, frequency, start_date, end_date, growth_rate)
                 st.success("Income added successfully!")
+                st.session_state["updated"] = True
+                st.rerun()
             else:
                 st.error("End Date must be after Start Date.")
 
-# Fetch and display incomes from SQL database
-    incomes = get_incomes(username)
-    df = pd.DataFrame(incomes)  # Convert to DataFrame
+    # Fetch and display incomes from SQL database
+    incomes = fetch_incomes(username)
     st.subheader("Incomes List")
+
     if not incomes:
         st.write("No Incomes found.")
     else:
-        df.columns = ["ID", "Source", "Value", "Frequency", "Start Date", "End Date", "Growth Rate"]
-        df.columns = df.columns.astype(str) 
-        print(f"Income Dataframe :{df}")
+        df = pd.DataFrame(incomes, columns=["ID", "Source", "Value", "Frequency", "Start Date", "End Date", "Growth Rate"])
         
         # Format date columns to dd-mmm-yyyy
         for date_col in ["Start Date", "End Date"]:
             if date_col in df.columns:
                 try:
-                    # First convert to datetime, then format as string
                     df[date_col] = pd.to_datetime(df[date_col]).dt.strftime('%d-%b-%Y')
                 except Exception as e:
                     st.warning(f"Couldn't format {date_col}: {str(e)}")
-                    continue
         
         display_added_data(df, "Income")
+
 
