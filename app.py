@@ -343,8 +343,17 @@ if st.session_state["connected"]:
                         display_data(common_data, 600, [], True)
 
                         # Add spacing before buttons
-                        st.markdown("<br><br>", unsafe_allow_html=True)
-
+                        st.markdown(
+                                    """
+                                    <style>
+                                    .stButton>button {
+                                        margin-top: 0px !important;
+                                        padding-top: 0px !important;
+                                    }
+                                    </style>
+                                    """,
+                                    unsafe_allow_html=True
+                                )
                         cll = st.columns(5)
                         with cll[0]:
                             overwrite = st.button("Overwrite", use_container_width=True)
