@@ -205,14 +205,14 @@ def add_user(database_name,table_name,data):
 
     # create_database(database_name,cursor)
 
-    create_table_query = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
-            user_name VARCHAR(50) primary key,
-            name VARCHAR(50),
-            email VARCHAR(50) UNIQUE
-        )
-    """
-    create_table(database_name,create_table_query,conn)
+    # create_table_query = f"""
+    #     CREATE TABLE IF NOT EXISTS {table_name} (
+    #         user_name VARCHAR(50) primary key,
+    #         name VARCHAR(50),
+    #         email VARCHAR(50) UNIQUE
+    #     )
+    # """
+    # create_table(database_name,create_table_query,conn)
     insert_data(database_name,table_name,data,conn,cursor)
     # Close the connection
     cursor.close()
@@ -314,13 +314,13 @@ def add_feedback(database_name,table_name,data):
 
     # create_database(database_name,cursor)
 
-    create_table_query = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
-            id varchar(50) ,
-            feedback VARCHAR(255)
-        )
-    """
-    create_table(database_name,create_table_query,conn)
+    # create_table_query = f"""
+    #     CREATE TABLE IF NOT EXISTS {table_name} (
+    #         id varchar(50) ,
+    #         feedback VARCHAR(255)
+    #     )
+    # """
+    # create_table(database_name,create_table_query,conn)
     insert_data(database_name,table_name,data,conn,cursor)
     # Close the connection
     cursor.close()
@@ -331,14 +331,14 @@ def get_name(database_name,table_name,user_name):
     cursor = conn.cursor()
     # create_database(database_name,cursor)
     conn.select_db(database_name)
-    create_table_query = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
-            user_name VARCHAR(50) primary key,
-            name VARCHAR(50),
-            email VARCHAR(50) UNIQUE
-        )
-    """
-    create_table(database_name,create_table_query,conn)
+    # create_table_query = f"""
+    #     CREATE TABLE IF NOT EXISTS {table_name} (
+    #         user_name VARCHAR(50) primary key,
+    #         name VARCHAR(50),
+    #         email VARCHAR(50) UNIQUE
+    #     )
+    # """
+    # create_table(database_name,create_table_query,conn)
     query = f"SELECT name FROM {table_name} WHERE user_name = %s;"
     cursor.execute(query, (user_name,))
 
@@ -352,22 +352,22 @@ def get_name(database_name,table_name,user_name):
     return name[0] if name else ""
 
 def get_category_df(database_name,table_name):
-    conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
-    cursor = conn.cursor()
+    # conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
+    # cursor = conn.cursor()
     # create_database(database_name,cursor)
 
-    create_table_query = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            keyword VARCHAR(255) NOT NULL,
-            category VARCHAR(255) NOT NULL
-        )
-    """
-    create_table(database_name, create_table_query, conn)
+    # create_table_query = f"""
+    #     CREATE TABLE IF NOT EXISTS {table_name} (
+    #         id INT AUTO_INCREMENT PRIMARY KEY,
+    #         keyword VARCHAR(255) NOT NULL,
+    #         category VARCHAR(255) NOT NULL
+    #     )
+    # """
+    # create_table(database_name, create_table_query, conn)
 
-    # Close the connection
-    cursor.close()
-    conn.close()
+    # # Close the connection
+    # cursor.close()
+    # conn.close()
 
     # Create database connection
     engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")

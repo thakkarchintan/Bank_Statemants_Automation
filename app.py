@@ -984,6 +984,7 @@ if st.session_state["connected"]:
                                 if colB.button("❌ Cancel"):
                                     st.session_state.replace_prompt = False
                                     refresh_table()
+
             except Exception as e:
                 print(f"Error in fetching data : {e}")
                 st.toast(":red[Something went wrong.Please try again.]")
@@ -1101,7 +1102,7 @@ if st.session_state["connected"]:
                     <div style='margin-top: 30px;'>  <!-- Increased margin here -->
             """, unsafe_allow_html=True)
             
-            if st.button("Open Bank Analyzer", key="bank_analyzer"):
+            if st.button("Open Bank Statements Analyzer", key="bank_analyzer"):
                 streamlit_js_eval(js_expressions="localStorage.setItem('app_name', 'bank_statements')", key="bank_app")
                 time.sleep(1)
                 refresh_page()
