@@ -4,20 +4,10 @@ from database import *
 import time
 from utils import *
 import uuid  
-import pandas as pd
-
-@st.cache_data  # Cache expenses retrieval
-def fetch_expenses(username):
-    return get_expenses(username)
-
-@st.cache_data  # Cache savings retrieval
-def fetch_savings(username):
-    return get_savings(username)
-
-def expense_details():
+def expense_details() :
+    # st.header("Expenses")
     st.markdown("Use this section to list down all current and foreseeable future expenses. The more detailed you can be, the better the outcome will be.")
     username = st.session_state.get("username") 
-
     # Expense input form
     with st.form(key='expense_form'):
         exp_type = st.selectbox("Expense Type", ["Rent", "Household expenses", "Home Maintenance & Utilities", "Groceries", "Housekeeping Services",
@@ -44,22 +34,24 @@ def expense_details():
         if exp_type and exp_value and exp_frequency and exp_start_date and exp_end_date:
             if exp_end_date >= exp_start_date:
                 add_expense(username, exp_type, exp_value, exp_frequency, exp_start_date, exp_end_date, inflation_rate)
+        
                 st.success("Expense added successfully and saved to your profile!")
-                st.session_state["updated"] = True
-                st.rerun()
             else:
                 st.error("End Date must be after Start Date.")
-
-    expenses = fetch_expenses(username)
+                    
+    expenses = get_expenses(username)
+    df = pd.DataFrame(expenses)
     if not expenses:
         st.write("No expenses found.")
     else:
-        df = pd.DataFrame(expenses, columns=["ID", "Expense Type", "Value", "Frequency", "Start Date", "End Date", "Inflation Rate"])
-        df = format_date_columns(df, ["Start Date", "End Date"])
+        df.columns = ["ID", "Expense Type", "Value", "Frequency", "Start Date","End Date", "Inflation Rate"]
+        df.columns = df.columns.astype(str) 
+        print(f"Expense Dataframe :{df}")
+        df = format_date_columns(df,["Start Date","End Date"])
         st.subheader("Expense List")
-        display_added_data(df, "Expenses")
+        display_added_data(df,"Expenses")
 
-    # Ask for savings rate
+        # Ask for savings rate
     with st.form(key='savings_rate_form'):    
         st.header("Savings Rate")
         st.markdown("This is the annual growth rate which will be applied to Annual Income - Annual Expenses")
@@ -67,20 +59,21 @@ def expense_details():
         submit_saving_rate = st.form_submit_button("Add Saving Rate")
 
     if submit_saving_rate:
-        add_savings(username, savings_rate if savings_rate else 0.0)
-        st.success("Savings rate added successfully!")
-        st.session_state["updated"] = True
-        st.rerun()
+        if not savings_rate:
+            add_savings(username, 0.0)
+        if savings_rate:
+            add_savings(username, savings_rate)
+            st.success("Savings rate added successfully!")
 
-    savings = fetch_savings(username)
+    savings = get_savings(username)        
 
-    # Retrieve the fields for each document and display with an X button
+# Retrieve the fields for each document and display with an X button
     for saving in savings:
-        Saving_ID, Saving_Rate = saving
+        Saving_ID , Saving_Rate = saving
         col1, col2 = st.columns([1, 10])
         with col1:
             if st.button("❌", key=f"delete_savings_{Saving_ID}"):
-                delete_savings(username, Saving_ID)
+                delete_savings(username,Saving_ID)
                 st.rerun()
         with col2:
-            st.write(f"**Saving**: {Saving_Rate}")
+                st.write(f"**Saving**: {Saving_Rate}")
