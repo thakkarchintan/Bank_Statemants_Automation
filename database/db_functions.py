@@ -326,6 +326,7 @@ def add_feedback(database_name,table_name,data):
     cursor.close()
     conn.close()
 
+@st.cache_data
 def get_name(database_name,table_name,user_name):
     conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, port=PORT)
     cursor = conn.cursor()

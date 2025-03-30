@@ -77,6 +77,7 @@ apps = {
 if st.session_state["connected"]:
     user_info = st.session_state['user_info']
     name = user_info.get('name')
+    g_id = user_info.get('id')
     if name:
         user_email = str(user_info.get('email'))
         streamlit_js_eval(js_expressions=f"localStorage.setItem('local_email', '{user_email}')", key="el")
@@ -88,7 +89,7 @@ if st.session_state["connected"]:
     user_name = user_email[:-10]
     user_name = user_name.replace('.', '__')
     summ_table = user_name + '_summary'
-    if name:
+    if g_id:
         user_data = (user_name, user_info.get('name'), user_email)
         add_user(db_name, 'users', user_data)
     else:
@@ -598,87 +599,57 @@ if st.session_state["connected"]:
                     # Content for each tab
                     with tab1:
                         try:
-                            # show_messege()
 
-                            if not db_df.empty:
-                                name_options = ["All"] + list(db_df["Name"].unique())
-                                bank_options = ["All"] + list(db_df["Bank"].unique())
+                            g_df=db_df.copy()
+                            if db_df.empty:
+                                g_df=dummy_data.copy()
 
-                                g_df = db_df[['Date', 'Name', 'Bank', 'Debit', 'Credit']].copy()
-                                g1_df = db_df[['Date', 'Name', 'Bank', 'Narration', 'Debit', 'Credit']].copy()
-                                g2_df = db_df[['Date', 'Name', 'Bank', 'Narration', 'Debit', 'Credit']].copy()
-                                g3_df = db_df[['Date', 'Name', 'Bank', 'Debit']].copy()
-                                g_df_hichart = db_df[['Name', 'Bank', 'Date', 'Narration', 'Debit', 'Credit', 'Category']].copy()
-                                g_df_hichart["Date"] = pd.to_datetime(g_df_hichart["Date"])  # Convert Date column to datetime
-                                g_df_hichart["Year"] = g_df_hichart["Date"].dt.year
-                                g_df_hichart["Month"] = g_df_hichart["Date"].dt.strftime("%B")
-                                # Create 3 columns
-                                d1, d2, d3 = st.columns(3)
+                            name_options = ["All"] + list(g_df["Name"].unique())
+                            bank_options = ["All"] + list(g_df["Bank"].unique())
 
-                                # Dropdown to select a name and bank
-                                with d1:
-                                    selected_name = st.selectbox("Select Name:", options=name_options)
+                            g_df = g_df[['Name', 'Bank', 'Date', 'Narration', 'Debit', 'Credit', 'Category']]
+                            
+                            g_df["Date"] = pd.to_datetime(g_df["Date"])
+                            g_df['Year'] = g_df['Date'].dt.year.astype(int)  # Convert to integer type
+                            g_df['Month'] = g_df['Date'].dt.strftime('%m-%Y')
+                            g_df['Category'] = g_df['Category'].replace("", "Untagged").astype(str)
+                            # g_df['Category'] = g_df['Category'].fillna('Untagged').astype(str)
+                            # Create 3 columns
+                            d1, d2, d3 = st.columns(3)
 
-                                with d2:
-                                    selected_bank = st.selectbox("Select Bank:", options=bank_options)
+                            # Dropdown to select a name and bank
+                            with d1:
+                                selected_name = st.selectbox("Select Name:", options=name_options)
 
-                                show_data = False
-                                with d3:
-                                    st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
-                                    if st.button("Show Data"):
-                                        show_data = True
+                            with d2:
+                                selected_bank = st.selectbox("Select Bank:", options=bank_options)
 
-                                if show_data:
-                                    display_hicharts(g_df_hichart, selected_name, selected_bank)
-                                    display_hichart2(g_df_hichart, selected_name, selected_bank)
-                                    display_graph(g_df, selected_name, selected_bank)
-                                    display_graph1(g1_df, selected_name, selected_bank, 'salary', 'Monthly Income from Salary',
-                                                  'Credit')
-                                    display_graph1(g2_df, selected_name, selected_bank, 'emi', 'Monthly EMI', 'Debit')
-                                    display_graph2(g2_df, selected_name, selected_bank, True,
-                                                   'Debit transactions between 0 to 500')
-                                    display_graph2(g2_df, selected_name, selected_bank, False,
-                                                   'Debit transactions between 501 to 1500')
+                            show_data = False
+                            with d3:
+                                st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
+                                if st.button("Show Data"):
+                                    show_data = True
 
-                            else:
-                                name_options = ["All"] + list(dummy_data["Name"].unique())
-                                bank_options = ["All"] + list(dummy_data["Bank"].unique())
+                            if show_data:
+                                if selected_bank!='All':
+                                    g_df = g_df[g_df["Bank"] == selected_bank]
+                                if selected_name!='All':
+                                    g_df = g_df[g_df["Name"] == selected_name]
 
-                                g_df = dummy_data[['Date', 'Name', 'Bank', 'Debit', 'Credit']].copy()
-                                g1_df = dummy_data[['Date', 'Name', 'Bank', 'Narration', 'Debit', 'Credit']].copy()
-                                g2_df = dummy_data[['Date', 'Name', 'Bank', 'Narration', 'Debit', 'Credit']].copy()
-                                g3_df = dummy_data[['Date', 'Name', 'Bank', 'Debit']].copy()
-                                g_df_hichart = dummy_data.copy()
-                                g_df_hichart["Date"] = pd.to_datetime(g_df_hichart["Date"])  # Convert Date column to datetime
-                                g_df_hichart["Year"] = g_df_hichart["Date"].dt.year
-                                g_df_hichart["Month"] = g_df_hichart["Date"].dt.strftime("%B")
-                                # Create 3 columns
-                                d1, d2, d3 = st.columns(3)
+                                credit_g_df=g_df[g_df['Credit'] != 0]
+                                debit_g_df=g_df[g_df['Debit'] != 0]
 
-                                # Dropdown to select a name and bank
-                                with d1:
-                                    selected_name = st.selectbox("Select Name:", options=name_options)
+                                cols1=st.columns(2)
+                                with cols1[0]:
+                                    top_left(credit_g_df)
+                                with cols1[1]:
+                                    top_right(debit_g_df)
 
-                                with d2:
-                                    selected_bank = st.selectbox("Select Bank:", options=bank_options)
-
-                                show_data = False
-                                with d3:
-                                    st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
-                                    if st.button("Show Dummy Data", key='showd3'):
-                                        show_data = True
-
-                                if show_data:
-                                    display_hicharts(g_df_hichart, selected_name, selected_bank)
-                                    display_hichart2(g_df_hichart, selected_name, selected_bank)
-                                    display_graph(g_df, selected_name, selected_bank)
-                                    display_graph1(g1_df, selected_name, selected_bank, 'salary', 'Monthly Income from Salary',
-                                                  'Credit')
-                                    display_graph1(g2_df, selected_name, selected_bank, 'emi', 'Monthly EMI', 'Debit')
-                                    display_graph2(g2_df, selected_name, selected_bank, True,
-                                                   'Debit transactions between 0 to 500')
-                                    display_graph2(g2_df, selected_name, selected_bank, False,
-                                                   'Debit transactions between 501 to 1500')
+                                cols2=st.columns(2)
+                                with cols2[0]:
+                                    bottom_left(credit_g_df)
+                                with cols2[1]:
+                                    bottom_right(debit_g_df)
 
                         except Exception as e:
                             print(f"Error in showing transction data graph: {e}")
@@ -1163,6 +1134,7 @@ if st.session_state["connected"]:
             authenticator.logout()
 
 else:
+    st.cache_data.clear()
     streamlit_js_eval(js_expressions=f"localStorage.setItem('app_name', 'nothing')", key="One")
     auth_url = authenticator.login()
     if not auth_url:

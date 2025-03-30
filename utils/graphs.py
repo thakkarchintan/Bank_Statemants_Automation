@@ -3,31 +3,29 @@ import pandas as pd
 import json
 from streamlit.components.v1 import html
 
-# df = pd.read_excel("assets/other/dummy_data.xlsx")
+# # df = pd.read_excel("assets/other/dummy_data.xlsx")
 # df["Date"] = pd.to_datetime(df["Date"])
 # df['Year'] = df['Date'].dt.year.astype(int)  # Convert to integer type
 # df['Month'] = df['Date'].dt.strftime('%m-%Y')
 # df['Category'] = df['Category'].fillna('Untagged').astype(str)
-# print(df)
 
 def render_chart(chart_id, options):
     html_code = f"""
-    <div id="{chart_id}" style="width:100%; height: 400px;"></div>
+    <div id="{chart_id}" style="width: 100%; height: 400px; display: inline-block;"></div>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
     <script>
     Highcharts.chart('{chart_id}', {json.dumps(options)});
     </script>
     """
-    html(html_code, height=400)
-
-# st.title("Interactive Financial Data Analysis")
+    html(html_code, height=600)
 
 def top_left(df):
-    # ---------- Top Left Graph (Credit) ----------
-    # Aggregating data for the initial Year-wise Credit graph
     year_wise_credit = df.groupby('Year')['Credit'].sum().reset_index()
-    year_wise_credit['Year'] = year_wise_credit['Year'].astype(float)  # Convert to int for JSON serialization
+    year_wise_credit['Year'] = year_wise_credit['Year'].astype(str)
 
     # Creating Highcharts options
     credit_chart_options = {
@@ -40,56 +38,62 @@ def top_left(df):
             'colorByPoint': True,
             'data': [
                 {
-                    'name': str(int(row['Year'])),
-                    'y': int(row['Credit']),  # Convert to int for JSON serialization
-                    'drilldown': str(int(row['Year']))
+                    'name': row['Year'],
+                    'y': float(row['Credit']),
+                    'drilldown': row['Year']
                 } for index, row in year_wise_credit.iterrows()
             ]
         }],
         'drilldown': {
             'series': []
+        },
+        'exporting': {
+            'buttons': {
+                'contextButton': {
+                    'menuItems': [
+                        "viewFullscreen"
+                    ]
+                }
+            }
+        },
+        'credits': {
+            'enabled': False
         }
     }
 
-    # Adding Category-wise Credit drilldown data
     for year in year_wise_credit['Year'].unique():
-        category_data = df[df['Year'] == year].groupby('Category')['Credit'].sum().reset_index()
-        category_data['Credit'] = category_data['Credit'].astype(float)  # Convert to float for JSON serialization
+        category_data = df[df['Year'] == int(year)].groupby('Category')['Credit'].sum().reset_index()
         drilldown_series = {
-            'id': str(int(year)),
+            'id': year,
             'name': f'Category Wise Credit for {year}',
             'data': [
                 {
                     'name': row['Category'],
-                    'y': int(row['Credit']),  # Convert to int for JSON serialization
-                    'drilldown': f'{int(year)}-{row["Category"]}'
+                    'y': float(row['Credit']),
+                    'drilldown': f'{year}-{row["Category"]}'
                 } for index, row in category_data.iterrows()
             ]
         }
         credit_chart_options['drilldown']['series'].append(drilldown_series)
 
-        # Adding Month-wise Credit drilldown data for each category
         for _, row in category_data.iterrows():
             category_name = row['Category']
-            month_data = df[(df['Year'] == year) & (df['Category'] == category_name)].groupby('Month')['Credit'].sum().reset_index()
+            month_data = df[(df['Year'] == int(year)) & (df['Category'] == category_name)].groupby('Month')['Credit'].sum().reset_index()
             
             drilldown_series = {
-                'id': f'{int(year)}-{category_name}',
-                'name': f'Month Wise Credit for {category_name} ({int(year)})',
+                'id': f'{year}-{category_name}',
+                'name': f'Month Wise Credit for {category_name} ({year})',
                 'data': [
-                    [row['Month'], float(row['Credit'])] for index, row in month_data.iterrows()  # Convert to int for JSON serialization
+                    [row['Month'], float(row['Credit'])] for index, row in month_data.iterrows()
                 ]
             }
             credit_chart_options['drilldown']['series'].append(drilldown_series)
 
-    # Render the Top Left graph
     render_chart('top_left_graph', credit_chart_options)
 
 def top_right(df):
-    # Aggregating data for the initial Year-wise Debit graph
-    # Aggregating data for the initial Year-wise debit graph
     year_wise_debit = df.groupby('Year')['Debit'].sum().reset_index()
-    year_wise_debit['Year'] = year_wise_debit['Year'].astype(float)  # Convert to int for JSON serialization
+    year_wise_debit['Year'] = year_wise_debit['Year'].astype(str)
 
     # Creating Highcharts options
     debit_chart_options = {
@@ -102,50 +106,58 @@ def top_right(df):
             'colorByPoint': True,
             'data': [
                 {
-                    'name': str(int(row['Year'])),
-                    'y': int(row['Debit']),  # Convert to int for JSON serialization
-                    'drilldown': str(int(row['Year']))
+                    'name': row['Year'],
+                    'y': float(row['Debit']),
+                    'drilldown': row['Year']
                 } for index, row in year_wise_debit.iterrows()
             ]
         }],
         'drilldown': {
             'series': []
+        },
+        'exporting': {
+            'buttons': {
+                'contextButton': {
+                    'menuItems': [
+                        "viewFullscreen"
+                    ]
+                }
+            }
+        },
+        'credits': {
+            'enabled': False
         }
     }
 
-    # Adding Category-wise debit drilldown data
     for year in year_wise_debit['Year'].unique():
-        category_data = df[df['Year'] == year].groupby('Category')['Debit'].sum().reset_index()
-        category_data['Debit'] = category_data['Debit'].astype(float)  # Convert to float for JSON serialization
+        category_data = df[df['Year'] == int(year)].groupby('Category')['Debit'].sum().reset_index()
         drilldown_series = {
-            'id': str(int(year)),
+            'id': year,
             'name': f'Category Wise debit for {year}',
             'data': [
                 {
                     'name': row['Category'],
-                    'y': int(row['Debit']),  # Convert to int for JSON serialization
-                    'drilldown': f'{int(year)}-{row["Category"]}'
+                    'y': float(row['Debit']),
+                    'drilldown': f'{year}-{row["Category"]}'
                 } for index, row in category_data.iterrows()
             ]
         }
         debit_chart_options['drilldown']['series'].append(drilldown_series)
 
-        # Adding Month-wise debit drilldown data for each category
         for _, row in category_data.iterrows():
             category_name = row['Category']
-            month_data = df[(df['Year'] == year) & (df['Category'] == category_name)].groupby('Month')['Debit'].sum().reset_index()
+            month_data = df[(df['Year'] == int(year)) & (df['Category'] == category_name)].groupby('Month')['Debit'].sum().reset_index()
             
             drilldown_series = {
-                'id': f'{int(year)}-{category_name}',
-                'name': f'Month Wise debit for {category_name} ({int(year)})',
+                'id': f'{year}-{category_name}',
+                'name': f'Month Wise debit for {category_name} ({year})',
                 'data': [
-                    [row['Month'], float(row['Debit'])] for index, row in month_data.iterrows()  # Convert to int for JSON serialization
+                    [row['Month'], float(row['Debit'])] for index, row in month_data.iterrows()
                 ]
             }
             debit_chart_options['drilldown']['series'].append(drilldown_series)
 
-    # Render the Top right graph
-    render_chart('top_right_graph', debit_chart_options)
+    render_chart('top_left_graph', debit_chart_options)
 
 def bottom_left(df):
     # Aggregating data for the initial Category-wise Credit graph
@@ -170,7 +182,17 @@ def bottom_left(df):
         }],
         'drilldown': {
             'series': []
-        }
+        },
+        'exporting': {
+            'buttons': {
+                'contextButton': {
+                    'menuItems': [
+                        "viewFullscreen"
+                    ]
+                }
+            }
+        },
+        'credits': {'enabled': False}
     }
 
     # Adding Month-wise Credit drilldown data for each category
@@ -230,7 +252,17 @@ def bottom_right(df):
         }],
         'drilldown': {
             'series': []
-        }
+        },
+        'exporting': {
+            'buttons': {
+                'contextButton': {
+                    'menuItems': [
+                        "viewFullscreen"
+                    ]
+                }
+            }
+        },
+        'credits': {'enabled': False}
     }
 
     # Adding Month-wise Debit drilldown data for each category
@@ -266,7 +298,6 @@ def bottom_right(df):
 
     # Render the Bottom Right graph
     render_chart('bottom_right_graph', debit_category_chart_options)
-
 
 # top_left(df)
 # top_right(df)
