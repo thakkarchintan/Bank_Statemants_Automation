@@ -612,8 +612,8 @@ if st.session_state["connected"]:
                             g_df["Date"] = pd.to_datetime(g_df["Date"])
                             g_df['Year'] = g_df['Date'].dt.year.astype(int)  # Convert to integer type
                             g_df['Month'] = g_df['Date'].dt.strftime('%m-%Y')
-                            g_df['Category'] = g_df['Category'].replace("", "Untagged").astype(str)
                             g_df['Category'] = g_df['Category'].fillna('Untagged').astype(str)
+                            g_df['Category'] = g_df['Category'].replace("", "Untagged").astype(str)
                             # Create 3 columns
                             d1, d2, d3 = st.columns(3)
 
