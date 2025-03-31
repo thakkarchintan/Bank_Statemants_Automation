@@ -965,7 +965,7 @@ if st.session_state["connected"]:
 
                                 if pending_users:
                                     for user in pending_users:
-                                        col1, col2, col3 = st.columns([5, 1, 1])
+                                        col1, col2, col3,clll4 = st.columns([5, 1, 1,3])
                                         col1.write(f"Name: {user['name']},\nEmail: {user['email']}")
                                         approve_button = col2.button("Approve", key=f"approve_{user['id']}")
                                         reject_button = col3.button("Reject", key=f"reject_{user['id']}")
