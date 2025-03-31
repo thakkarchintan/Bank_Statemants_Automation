@@ -3,11 +3,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
-import os
+from constant_variables import *
 
-def send_email(feedback,user_email,uploaded_file,ADMIN_EMAILS,SMTP_SERVER,SMTP_USER,SMTP_PASSWORD):
+def send_email(feedback,user_email,uploaded_file):
     SMTP_PORT = 587
-
+    # Admin Email Config
+    ADMIN_EMAILS = [ADMIN_EMAIL1, ADMIN_EMAIL2]
+    SMTP_PASSWORD = email_pass  # Use an App Password, not your main password
+    
     msg = MIMEMultipart()
     msg["From"] = SMTP_USER
     msg["To"] = ", ".join(ADMIN_EMAILS)  # Multiple recipients
@@ -33,3 +36,24 @@ def send_email(feedback,user_email,uploaded_file,ADMIN_EMAILS,SMTP_SERVER,SMTP_U
     server.login(SMTP_USER, SMTP_PASSWORD)
     server.sendmail(SMTP_USER, ADMIN_EMAILS, msg.as_string())  # Sending to multiple admins
     server.quit()
+
+def welcome_email(body,subject,user_email):
+    SMTP_PORT = 587
+    # Admin Email Config
+    ADMIN_EMAILS = [user_email]
+    SMTP_PASSWORD = email_pass  # Use an App Password, not your main password
+    
+    msg = MIMEMultipart()
+    msg["From"] = SMTP_USER
+    msg["To"] = ", ".join(ADMIN_EMAILS)  # Multiple recipients
+    msg["Subject"] = subject
+
+    msg.attach(MIMEText(body, "plain"))
+
+    # Send email via SMTP
+    server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+    server.starttls()
+    server.login(SMTP_USER, SMTP_PASSWORD)
+    server.sendmail(SMTP_USER, ADMIN_EMAILS, msg.as_string())  # Sending to multiple admins
+    server.quit()
+

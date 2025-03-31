@@ -1,4 +1,4 @@
-admins = ['professionalbuzz','shirishkumar1949','abutalha11503','ronakmehta0709']
+admins = ['professionalbuzz','shirishkumar1949','abutalha11503','ronakmehta0709','nikita__d@ambers']
 
 bank_status_dict = {
     'Axis Bank': False,
