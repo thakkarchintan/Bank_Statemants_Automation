@@ -3,6 +3,7 @@ from datetime import date
 from database import *
 from utils import *
 def income_details():
+    # st.header("Income")
     st.markdown("Use this section to list down all primary sources of income without considering income from investments and assets.")
 
     username = st.session_state.get("username") 
@@ -28,24 +29,30 @@ def income_details():
             else:
                 st.error("End Date must be after Start Date.")
 
-    # Fetch and display incomes from SQL database
+# Fetch and display incomes from SQL database
     incomes = get_incomes(username)
+    df = pd.DataFrame(incomes)  # Convert to DataFrame
     st.subheader("Incomes List")
-    
     if not incomes:
         st.write("No Incomes found.")
     else:
-        df = pd.DataFrame(incomes)
+        df.columns = ["ID", "Source", "Value", "Frequency", "Start Date", "End Date", "Growth Rate"]
+        df.columns = df.columns.astype(str) 
+        print(f"Income Dataframe :{df}")
         
         # Format date columns to dd-mmm-yyyy
         for date_col in ["Start Date", "End Date"]:
             if date_col in df.columns:
                 try:
+                    # First convert to datetime, then format as string
                     df[date_col] = pd.to_datetime(df[date_col]).dt.strftime('%d-%b-%Y')
                 except Exception as e:
                     st.warning(f"Couldn't format {date_col}: {str(e)}")
                     continue
         
         display_added_data(df, "Income")
+
+
+
 
 
