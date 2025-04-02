@@ -53,3 +53,6 @@ def income_details():
         display_added_data(df, "Income")
 
 
+
+
+

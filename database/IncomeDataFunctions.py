@@ -59,10 +59,10 @@ def get_incomes(username):
 
 # Function to delete an income record
 def delete_income(df, username):
-    """Delete all investment in the given DataFrame from the database using SQLAlchemy."""
+    """Delete all income records in the given DataFrame from the database."""
     if df.empty:
         logging.info("No Income to delete.")
-        return df  # Return unchanged DataFrame
+        return df
 
     try:
         engine = create_engine(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
@@ -72,31 +72,13 @@ def delete_income(df, username):
                 query = text(f"""
                     DELETE FROM `{username}_Incomes`
                     WHERE Income_ID = :id
-                    AND Source = :sr
-                    AND Value = :val
-                    AND Frequency = :fq
-                    AND Start_Date = :sd
-                    AND End_Date = :ed
-                    AND Growth_Rate = :gr
                 """)
-
-                conn.execute(query, {
-                    "id":row["ID"],
-                    "sr": row["Source"],
-                    "val": row["Value"],
-                    "fq":row["Frequency"],
-                    "sd": row["Start Date"],
-                    "ed": row["End Date"],
-                    "gr":row["Growth Rate"]
-                })
-                conn.commit()
+                conn.execute(query, {"id": row["ID"]})
+            conn.commit()
 
         logging.info(f"Deleted {len(df)} Income from the database.")
-
-        return df.iloc[0:0]  # Return empty DataFrame after deletion
+        return df.iloc[0:0]
 
     except Exception as e:
-        logging.error(f"Error deleting Income: {e}")
-        return df  # Return original DataFrame if error occurs
-
-
+        logging.error(f"Error deleting income: {e}")
+        return df
