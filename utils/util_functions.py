@@ -801,11 +801,13 @@ def home_page():
                     <td class="yes">Yes</td>
                     <td class="yes">Yes</td>
                 </tr>
+                <!--  
                 <tr>
                     <td>Indian Bank</td>
                     <td class="work-in-progress">Work in progress</td>
                     <td class="work-in-progress">Work in progress</td>
                 </tr>
+                -->
                 <tr>
                     <td>Indian Overseas Bank</td>
                     <td class="yes">Yes</td>
@@ -816,21 +818,25 @@ def home_page():
                     <td class="work-in-progress">Work in progress</td>
                     <td class="yes">Yes</td>
                 </tr>
+                <!--  
                 <tr>
                     <td>Punjab National Bank</td>
                     <td class="work-in-progress">Work in progress</td>
                     <td class="work-in-progress">Work in progress</td>
                 </tr>
+                -->
                 <tr>
                     <td>State Bank of India</td>
                     <td class="yes">Yes</td>
                     <td class="yes">Yes</td>
                 </tr>
+                <!--  
                 <tr>
                     <td>Union Bank of India</td>
                     <td class="work-in-progress">Work in progress</td>
                     <td class="work-in-progress">Work in progress</td>
                 </tr>
+                -->
         </table>
     </div>
     <div class="profile">
@@ -1108,6 +1114,78 @@ def refund_policy():
 
 def refresh_page():
     st.markdown('<meta http-equiv="refresh" content="0">', unsafe_allow_html=True)
+
+def page1():
+    st.markdown("""
+    <style>
+        body {
+            padding-top: 0 !important; /* Removes extra padding from the top */
+            margin-top: 0 !important;
+        }
+        h1 {
+            all: unset;
+            font-size: 2rem !important;
+            margin-bottom: 1rem !important;
+            font-weight: bold !important;
+            color: black;
+        }
+
+        .para {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <h1>Welcome to Fintellect Beta Access</h1>
+    <div class="para-section">
+        <div class="para"><strong>Experience the Future of Financial Management!</strong></div>
+        <div class="para">Thank you for your interest in Fintellect, your all-in-one financial companion. We're excited to offer you early access to our powerful platform designed to help you assess your net worth, analyze bank transactions, and make informed financial decisions effortlessly.</div>
+        <div class="para">To get started with the beta version, please click the <strong>"Request for Beta Version"</strong> button. Once you submit your request, our team will review it, and you'll receive approval notification shortly. We appreciate your patience and enthusiasm.</div>
+        <div class="para"><strong>Stay tuned and take control of your finances with Fintellect!</strong></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def page2():
+    st.markdown("""
+    <style>
+        body {
+            padding-top: 0 !important; /* Removes extra padding from the top */
+            margin-top: 0 !important;
+        }
+        h1 {
+            all: unset;
+            font-size: 2rem !important;
+            margin-bottom: 1rem !important;
+            font-weight: bold !important;
+            color: black;
+        }
+
+        .para {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <h1>Beta Access Request Pending</h1>
+    <div class="para-section">
+        <div class="para"><strong>Your Request is Being Processed!</strong></div>
+        <div class="para">We've received your request for beta access to Fintellect, and our team is currently reviewing it. You will be notified once your access has been approved. We appreciate your interest and enthusiasm in exploring our platform.</div>
+        <div class="para">While you wait, feel free to revisit the site or explore more about how Fintellect can empower you to make smarter financial decisions.</div>
+        <div class="para"><strong>Thank you for your patience and support!</strong></div>
+    </div>
+    """, unsafe_allow_html=True)
 
 def hide_3_dot_menu():
     st.markdown(

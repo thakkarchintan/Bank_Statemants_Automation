@@ -91,14 +91,14 @@ if st.session_state["connected"]:
     summ_table = user_name + '_summary'
     user_status = check_user_status(user_email)
 
-    if user_name in admins or (user_status and user_status['is_approved']) :
-        if g_id:
-            user_data = (user_name, user_info.get('name'), user_email)
-            add_user(db_name, 'users', user_data)
-        else:
-            name = get_name(db_name, 'users', user_name)
-            st.session_state['user_info']["name"] = name
+    if g_id:
+        user_data = (user_name, user_info.get('name'), user_email)
+        add_user(db_name, 'users', user_data)
+    else:
+        name = get_name(db_name, 'users', user_name)
+        st.session_state['user_info']["name"] = name
 
+    if user_name in admins or (user_status and user_status['is_approved']) :
         app_name = streamlit_js_eval(js_expressions="localStorage.getItem('app_name')", key="Four")
         if app_name and app_name != "nothing":
             main_page = False
@@ -343,8 +343,9 @@ if st.session_state["connected"]:
                             common_data = common_data[['Name', 'Bank', 'Date', 'Narration', 'Debit', 'Credit']]
                             common_data['Date'] = common_data['Date'].dt.strftime('%d-%b-%Y')
 
+                            unique_common_data=common_data.drop_duplicates()
                             # Increase table height
-                            display_data(common_data, 600, [], True)
+                            display_data(unique_common_data, 600, [], True)
 
                             # Add spacing before buttons
                             st.markdown(
@@ -960,20 +961,21 @@ if st.session_state["connected"]:
                                         refresh_table()
 
                             with tab7:
-                                st.subheader("Pending Beta Requests")
-                                pending_users = fetch_pending_users()
+                                try:
+                                    st.subheader("Pending Beta Requests")
+                                    pending_users = fetch_pending_users()
 
-                                if pending_users:
-                                    for user in pending_users:
-                                        col1, col2, col3,clll4 = st.columns([4, 1.2, 1.2,3])
-                                        col1.write(f"Name: {user['name']},\nEmail: {user['email']}")
-                                        approve_button = col2.button("Approve", key=f"approve_{user['id']}")
-                                        reject_button = col3.button("Reject", key=f"reject_{user['id']}")
+                                    if pending_users:
+                                        for user in pending_users:
+                                            col1, col2, col3,clll4 = st.columns([4, 1.2, 1.2,3])
+                                            col1.write(f"Name: {user['name']},\nEmail: {user['email']}")
+                                            approve_button = col2.button("Approve", key=f"approve_{user['id']}")
+                                            reject_button = col3.button("Reject", key=f"reject_{user['id']}")
 
-                                        if approve_button:
-                                            update_user_approval(user['id'], approve=True)
-                                            subject=f"{user['name']} - Welcome to Fintellect"
-                                            body=f"""
+                                            if approve_button:
+                                                update_user_approval(user['id'], approve=True)
+                                                subject=f"{user['name']} - Welcome to Fintellect"
+                                                body=f"""
 Hey {user['name']},
 
 Welcome to Fintellect! 🎉 We're thrilled to have you on board as one of our early users.
@@ -986,14 +988,20 @@ Thanks for being part of this journey with us. Let’s build something great tog
 
 Cheers,
 Team Fintellect
-                                            """
-                                            welcome_email(body,subject,user['email'])
-                                            st.rerun()
-                                        if reject_button:
-                                            delete_user(user['id'])
-                                            st.rerun()
-                                else:
-                                    st.write("No pending requests.")
+                                                """
+                                                welcome_email(body,subject,user['email'])
+                                                st.rerun()
+                                            if reject_button:
+                                                delete_user(user['id'])
+                                                st.rerun()
+                                    else:
+                                        st.write("No pending requests.")
+
+                                except Exception as e:
+                                    print(f"Error in beta request : {e}")
+                                    st.toast(":red[Something went wrong.Please try again.]")
+                                    time.sleep(2)
+                                    st.rerun()
 
 
                 except Exception as e:
@@ -1164,21 +1172,42 @@ Team Fintellect
             if st.sidebar.button("Log out", use_container_width=True):
                 authenticator.logout()
   
-    elif not user_status:
-        if name:
-            if st.button("Request for Beta Version"):
-                insert_user(name, user_email)
-                st.success("✅ Request submitted successfully.")
-                time.sleep(2)
-                refresh_page()
-        else:
-            authenticator.logout()
+    else:
+        try:
+            st.markdown(
+                """
+                <style>
+                    div.block-container { padding-top: 0rem; } /* Reduce padding */
+                    div[data-testid="stTabs"] { margin-top: -510px; } /* Move tabs higher */
+                    .stButton>button { margin-top: -200px; } /* Move buttons lower */
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            if not user_status:
+                if name:
+                    page1()
+                    if st.sidebar.button("Request for Beta Version", use_container_width=True):
+                        insert_user(name, user_email)
+                        st.toast(":green[✅ Request submitted successfully.]")
+                        time.sleep(2)
+                        refresh_page()
+                else:
+                    authenticator.logout()
 
-    elif not user_status['is_approved']:
-        st.write("Request for beta version is pending")
+            elif not user_status['is_approved']:
+                page2()
 
+            if st.sidebar.button("Log out", use_container_width=True):
+                authenticator.logout()
 
-    
+        except Exception as e:
+            print(f"Error in fetching data : {e}")
+            st.toast(":red[Something went wrong.]")
+            time.sleep(2)
+            refresh_page()
+
+  
 else:
     st.cache_data.clear()
     streamlit_js_eval(js_expressions=f"localStorage.setItem('app_name', 'nothing')", key="One")
