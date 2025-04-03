@@ -733,8 +733,7 @@ def home_page():
         } 
         </style>
         """
-    
-        
+  
     html = f"""
         <div class="container">
                 <h1>Fintellect: Your All-in-One Financial Companion</h1>
