@@ -733,6 +733,7 @@ def home_page():
         } 
         </style>
         """
+    
         
     html = f"""
         <div class="container">
