@@ -972,6 +972,7 @@ if st.session_state["connected"]:
                                             approve_button = col2.button("Approve", key=f"approve_{user['id']}")
                                             reject_button = col3.button("Reject", key=f"reject_{user['id']}")
 
+
                                             if approve_button:
                                                 update_user_approval(user['id'], approve=True)
                                                 subject=f"{user['name']} - Welcome to Fintellect"
