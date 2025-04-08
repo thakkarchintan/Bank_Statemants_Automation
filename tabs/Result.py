@@ -37,15 +37,19 @@
 #     df_income["Category"] = "Income"
     
 #     # Build Expenses DataFrame
-#     df_expenses = pd.DataFrame(expense_data, columns=["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"])
+#     expense_columns = ["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"]
+#     df_expenses = pd.DataFrame(expense_data, columns=expense_columns)
 #     df_expenses = df_expenses.drop(columns=["ID"]).rename(columns={
 #         "Expense_Type": "Type",
 #         "Inflation_Rate": "Inflation / Growth Rate",
 #         "Start_Date": "Start Date",
 #         "End_Date": "End Date"
 #     })
+#     # Add category first and reorder columns
 #     df_expenses["Category"] = "Expenses"
-    
+#     df_expenses = df_expenses[["Category", "Type", "Value", "Frequency", "Start Date", "End Date", "Inflation / Growth Rate"]]
+#     print(f"Expense DataFrame columns after fix: {df_expenses.columns.tolist()}")
+
 #     # Build Investments DataFrame
 #     df_investments = pd.DataFrame(investment_data, columns=["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"])
 #     df_investments = df_investments.drop(columns=["ID"]).rename(columns={
@@ -309,7 +313,7 @@
 
 import streamlit as st
 from datetime import datetime, date
-from database import *
+from database import *  # Assuming this includes get_user_profiles and save_profile
 import pandas as pd
 from utils import *
 import plotly.graph_objects as go
@@ -321,17 +325,17 @@ import time
 def display_combined_aggrid(data):
     gb = GridOptionsBuilder.from_dataframe(data)
     row_height = 35
-    calculated_height = (len(data)+2) * row_height
+    calculated_height = (len(data) + 2) * row_height
     if "Age" in data.columns:
         gb.configure_column("Age", cellStyle={"textAlign": "left"})
     gridOptions = gb.build()
     AgGrid(data, gridOptions=gridOptions, fit_columns_on_grid_load=True, height=calculated_height)
 
-def create_combined_table(username):
-    income_data = get_incomes(username)
-    expense_data = get_expenses(username)
-    investment_data = get_investments(username)
-    savings_data = get_savings(username)
+def create_combined_table(username, profile):
+    income_data = get_incomes(username, profile)
+    expense_data = get_expenses(username, profile)
+    investment_data = get_investments(username, profile)
+    savings_data = get_savings(username, profile)
     
     df_income = pd.DataFrame(income_data, columns=["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"])
     df_income = df_income.drop(columns=["ID"]).rename(columns={
@@ -351,10 +355,13 @@ def create_combined_table(username):
     })
     df_expenses["Category"] = "Expenses"
     
-    df_investments = pd.DataFrame(investment_data, columns=["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"])
+    df_investments = pd.DataFrame(investment_data, columns=["ID", "Investment_Type", "Amount", "Start_Date", "End_Date", "Rate_of_Return"])
     df_investments = df_investments.drop(columns=["ID"]).rename(columns={
+        "Investment_Type": "Type",
         "Amount": "Value",
-        "Rate of Return": "Inflation / Growth Rate"
+        "Rate_of_Return": "Inflation / Growth Rate",
+        "Start_Date": "Start Date",
+        "End_Date": "End Date"
     })
     df_investments["Frequency"] = None
     df_investments["Category"] = "Investments"
@@ -374,8 +381,8 @@ def create_combined_table(username):
     combined_df = pd.concat([df_income, df_expenses, df_investments, df_savings], ignore_index=True)
     return combined_df[["Category", "Type", "Value", "Frequency", "Start Date", "End Date", "Inflation / Growth Rate"]]
 
-def display_combined_table(username):
-    combined_df = create_combined_table(username)
+def display_combined_table(username, profile):
+    combined_df = create_combined_table(username, profile)
     display_combined_aggrid(combined_df)
 
 def calculate_age(dob):
@@ -393,13 +400,61 @@ def format_numbers(value):
         return int(value) if isinstance(value, float) and value.is_integer() else round(float(value), 2)
     return value
 
+def manage_profiles(username):
+    """Handle profile creation and selection with persistent storage"""
+    st.subheader("Profile Management")
+    
+    # Initialize session state for profiles if not exists, loading from database
+    if 'profiles' not in st.session_state:
+        profiles = get_profiles(username)  # Fetch profiles from database
+        st.session_state.profiles = profiles if profiles else ["Default"]  # Fallback to "Default" if none exist
+    
+    if 'selected_profile' not in st.session_state:
+        st.session_state.selected_profile = st.session_state.profiles[0]  # Default to first profile
+    
+    # Ensure selected_profile exists in profiles list
+    if st.session_state.selected_profile not in st.session_state.profiles:
+        st.session_state.selected_profile = st.session_state.profiles[0]  # Fallback to first profile
+    
+    # Profile selection
+    selected_profile = st.selectbox(
+        "Choose a profile",
+        st.session_state.profiles,
+        index=st.session_state.profiles.index(st.session_state.selected_profile)
+    )
+    
+    # Update selected profile in session state
+    if selected_profile != st.session_state.selected_profile:
+        st.session_state.selected_profile = selected_profile
+        st.rerun()
+    
+    # Profile creation
+    with st.expander("Create New Profile"):
+        new_profile_name = st.text_input("Enter new profile name")
+        if st.button("Create Profile"):
+            if new_profile_name and new_profile_name not in st.session_state.profiles:
+                st.session_state.profiles.append(new_profile_name)
+                insert_user(username, new_profile_name)  # Save to database
+                st.success(f"Profile '{new_profile_name}' created successfully!")
+                st.rerun()
+            elif new_profile_name in st.session_state.profiles:
+                st.error("Profile name already exists!")
+            else:
+                st.error("Please enter a valid profile name!")
+
+    return st.session_state.selected_profile
 
 def result():
     username = st.session_state.get("username")
+    
+    # Add profile management
+    selected_profile = manage_profiles(username)
+    
     st.header("Net Worth Projection")
+    st.markdown(f"Current Profile: {selected_profile}")
     st.markdown("Check all your inputs below. If you need to change anything or add/remove data, go to the respective tabs and add the details")
     
-    display_combined_table(username)
+    display_combined_table(username, selected_profile)
     
     dependents_data = get_dependents(username)
     df_dependents = pd.DataFrame(dependents_data, columns=["ID", "Name", "Date_of_Birth", "Gender", "Relationship"])
@@ -409,10 +464,10 @@ def result():
     df_dependents["Date_of_Birth"] = df_dependents["Date_of_Birth"].dt.strftime("%Y-%m-%d")
     
     if st.button("Calculate Net Worth Projection"):
-        income_data = get_incomes(username)
-        expense_data = get_expenses(username)
-        investment_data = get_investments(username)
-        savings_data = get_savings(username)
+        income_data = get_incomes(username, selected_profile)
+        expense_data = get_expenses(username, selected_profile)
+        investment_data = get_investments(username, selected_profile)
+        savings_data = get_savings(username, selected_profile)
         
         if not (income_data and expense_data and investment_data and savings_data):
             st.toast("Please add the inputs to calculate net worth.", icon="⚠️")
@@ -420,24 +475,23 @@ def result():
         else:
             df_incomes = pd.DataFrame(income_data, columns=["ID", "Source", "Value", "Frequency", "Start_Date", "End_Date", "Growth_Rate"]).drop(columns=["ID"])
             df_expenses = pd.DataFrame(expense_data, columns=["ID", "Expense_Type", "Value", "Frequency", "Start_Date", "End_Date", "Inflation_Rate"]).drop(columns=["ID"])
-            df_investments = pd.DataFrame(investment_data, columns=["ID", "Type", "Amount", "Start Date", "End Date", "Rate of Return"]).drop(columns=["ID"])
+            df_investments = pd.DataFrame(investment_data, columns=["ID", "Investment_Type", "Amount", "Start_Date", "End_Date", "Rate_of_Return"]).drop(columns=["ID"])
             
             df_incomes["Start_Date"] = pd.to_datetime(df_incomes["Start_Date"], errors="coerce")
             df_incomes["End_Date"] = pd.to_datetime(df_incomes["End_Date"], errors="coerce")
             df_expenses["Start_Date"] = pd.to_datetime(df_expenses["Start_Date"], errors="coerce")
             df_expenses["End_Date"] = pd.to_datetime(df_expenses["End_Date"], errors="coerce")
-            df_investments["Start Date"] = pd.to_datetime(df_investments["Start Date"], errors="coerce")
-            df_investments["End Date"] = pd.to_datetime(df_investments["End Date"], errors="coerce")
+            df_investments["Start_Date"] = pd.to_datetime(df_investments["Start_Date"], errors="coerce")
+            df_investments["End_Date"] = pd.to_datetime(df_investments["End_Date"], errors="coerce")
             
             current_year = date.today().year
-            dob = df_dependents[df_dependents["Relationship"] == "Self"]["Date_of_Birth"].values[0]
-            dob = pd.to_datetime(dob).date()
+            dob = pd.to_datetime(df_dependents[df_dependents["Relationship"] == "Self"]["Date_of_Birth"].values[0]).date()
             current_age = current_year - dob.year
 
             min_year = min(
                 df_incomes["Start_Date"].dt.year.min(), 
                 df_expenses["Start_Date"].dt.year.min(), 
-                df_investments["Start Date"].dt.year.min()
+                df_investments["Start_Date"].dt.year.min()
             )
             future_years = range(min_year, current_year + (100 - current_age))
 
@@ -454,7 +508,6 @@ def result():
                 annual_income = 0
                 annual_expenses = 0
                 annual_savings = 0
-                annual_investment_income = 0
                 net_ev = 0
 
                 # Income calculation
@@ -499,16 +552,16 @@ def result():
                 # Investment calculation
                 net_sv_ia, net_income_ia, net_ev = 0, 0, 0
                 for _, row in df_investments.iterrows():
-                    if year < row["Start Date"].year:
+                    if year < row["Start_Date"].year:
                         continue
-                    elif year == row["Start Date"].year:
+                    elif year == row["Start_Date"].year:
                         sv_ia = row["Amount"]
-                        income_ia = sv_ia * (row["Rate of Return"] / 100)
+                        income_ia = sv_ia * (row["Rate_of_Return"] / 100)
                         ev = sv_ia + income_ia
-                    elif year <= row["End Date"].year:
+                    elif year <= row["End_Date"].year:
                         temp_val2 = ev + annual_savings if investible_savings == 0 and annual_savings < 0 else ev
                         sv_ia = max(temp_val2, 0)
-                        income_ia = sv_ia * (row["Rate of Return"] / 100)
+                        income_ia = sv_ia * (row["Rate_of_Return"] / 100)
                         ev = sv_ia + income_ia
                     else:
                         sv_ia, income_ia, ev = 0, 0, 0
@@ -517,9 +570,9 @@ def result():
                     net_income_ia += income_ia
                     net_ev += ev
                     investment_details.append({
-                        "Year": year, "Investment Type": row["Type"], 
+                        "Year": year, "Investment Type": row["Investment_Type"], 
                         "Starting Value - Investments & Assets": sv_ia, 
-                        "Rate of Return (%)": row["Rate of Return"], 
+                        "Rate of Return (%)": row["Rate_of_Return"], 
                         "Income from Investments & Assets": income_ia, 
                         "Ending Value - Investments & Assets": ev
                     })
@@ -666,6 +719,6 @@ def result():
     # Display only dependents table
     st.subheader("Dependents Data")
     row_height = 35
-    calculated_height = (len(df_dependents)+2) * row_height
-    df_dependents = rename_column(df_dependents,"Date_of_Birth","Date of Birth")
+    calculated_height = (len(df_dependents) + 2) * row_height
+    df_dependents = df_dependents.rename(columns={"Date_of_Birth": "Date of Birth"})
     AgGrid(df_dependents, fit_columns_on_grid_load=True, height=calculated_height)

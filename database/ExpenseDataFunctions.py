@@ -1,13 +1,14 @@
 from .database_init import *
-# Function to insert Expense records
-
+import logging 
+# Function to create Expenses table
 def create_expense_table(username):
-    """Delete an income record by ID."""
+    """Create an expense table for a specific user if it doesn't exist."""
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
                 query = f'''CREATE TABLE IF NOT EXISTS `{username}_Expenses`(
                         Expense_ID INT AUTO_INCREMENT PRIMARY KEY,
+                        Profile_Name VARCHAR(100) NOT NULL,
                         Expense_Type ENUM('Rent', 'Household expenses', 'Home Maintenance & Utilities', 'Groceries', 'Housekeeping Services', 
                                         'School Tuition Fees', 'College Tuition Fees', 'Vacation - Domestic', 'Vacation - International',
                                         'EMI - Home Loan', 'EMI - Auto Loan', 'EMI - Education Loan', 'EMI - Personal Loan', 'EMI - Other Loan',
@@ -23,16 +24,15 @@ def create_expense_table(username):
                         );'''
                 cursor.execute(query)
                 conn.commit()
-                logging.info(f"Table created {username}-Expenses")
+                logging.info(f"✅ Table `{username}_Expenses` created successfully.")
     except mysql.connector.Error as err:
-        logging.error(f"Error deleting income: {err}")
+        logging.error(f"❌ Error creating expenses table: {err}")
 
             
-def add_expense(username, exp_type, exp_value, exp_frequency, exp_start_date, exp_end_date, inflation_rate):
-    """Insert expense details into the expenses table."""
+def add_expense(username, profile_name, exp_type, exp_value, exp_frequency, exp_start_date, exp_end_date, inflation_rate):
+    """Insert expense details into the expenses table for a specific profile."""
     create_expense_table(username)  # Ensure table exists
 
-    # Validate ENUM values
     VALID_EXPENSE_TYPES = {'Rent', 'Household expenses', 'Home Maintenance & Utilities', 'Groceries', 'Housekeeping Services',
                             'School Tuition Fees', 'College Tuition Fees', 'Vacation - Domestic', 'Vacation - International',
                             'EMI - Home Loan', 'EMI - Auto Loan', 'EMI - Education Loan', 'EMI - Personal Loan', 'EMI - Other Loan',
@@ -44,49 +44,42 @@ def add_expense(username, exp_type, exp_value, exp_frequency, exp_start_date, ex
     VALID_FREQUENCIES = {'Daily', 'Weekly', 'bi-Weekly', 'Monthly', 'Quarterly', 'Half-Yearly', 'Annual'}
 
     if exp_type not in VALID_EXPENSE_TYPES or exp_frequency not in VALID_FREQUENCIES:
-        logging.error(f"Invalid ENUM value: Expense_Type={exp_type}, Frequency={exp_frequency}")
+        logging.error(f"❌ Invalid ENUM value: Expense_Type={exp_type}, Frequency={exp_frequency}")
         return
 
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
                 insert_query = f"""
-                    INSERT INTO `{username}_Expenses` (Expense_Type, Value, Frequency, Start_Date, End_Date, Inflation_Rate)
-                    VALUES (%s, %s, %s, %s, %s, %s);
+                    INSERT INTO `{username}_Expenses` (Profile_Name, Expense_Type, Value, Frequency, Start_Date, End_Date, Inflation_Rate)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s);
                 """
-                cursor.execute(insert_query, (exp_type, exp_value, exp_frequency, exp_start_date, exp_end_date, inflation_rate))
+                cursor.execute(insert_query, (profile_name, exp_type, exp_value, exp_frequency, exp_start_date, exp_end_date, inflation_rate))
                 conn.commit()
-                logging.info(f"Expense added successfully for user {username}.")
-
-                # Debugging: Check if the expense is added
-                expenses = get_expenses(username)
-                print(f"DEBUG: Expenses after adding = {expenses}")
-                
+                logging.info(f"✅ Expense added successfully for `{username}` under profile `{profile_name}`.")
 
     except mysql.connector.Error as err:
-        logging.error(f"Error inserting Expense: {err}")
+        logging.error(f"❌ Error inserting expense: {err}")
 
 
-
-def get_expenses(username):
+def get_expenses(username, profile_name):
+    """Retrieve all expenses for a specific user and profile."""
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
-                query = f"SELECT * FROM `{username}_Expenses`"
-                cursor.execute(query)
-                data = cursor.fetchall()
-                print(f"DEBUG: Expenses fetched -> {data}")
-                return data
+                query = f"SELECT Expense_ID, Expense_Type, Value, Frequency, Start_Date, End_Date, Inflation_Rate FROM `{username}_Expenses` WHERE Profile_Name = %s"
+                cursor.execute(query, (profile_name,))
+                return cursor.fetchall()
     except mysql.connector.Error as err:
-        print(f"ERROR: {err}")
+        logging.error(f"❌ Error retrieving expenses: {err}")
         return []
 
 
-def delete_expense(df,username):
-    """Delete all investment in the given DataFrame from the database using SQLAlchemy."""
+def delete_expense(df, username, profile_name):
+    """Delete all expense records in the given DataFrame for a specific profile."""
     if df.empty:
-        logging.info("No Expenses to delete.")
-        return df  # Return unchanged DataFrame
+        logging.info("⚠️ No Expenses to delete.")
+        return df
 
     try:
         engine = create_engine(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
@@ -95,95 +88,78 @@ def delete_expense(df,username):
             for _, row in df.iterrows():
                 query = text(f"""
                     DELETE FROM `{username}_Expenses`
-                    WHERE Expense_ID = :id
-                    AND Expense_Type = :et
-                    AND Value = :val
-                    AND Frequency = :fq
-                    AND Start_Date = :sd
-                    AND End_Date = :ed
-                    AND Inflation_Rate = :ir
+                    WHERE Expense_ID = :id AND Profile_Name = :profile_name
                 """)
+                conn.execute(query, {"id": row["ID"], "profile_name": profile_name})
+            conn.commit()
 
-                conn.execute(query, {
-                    "id":row["ID"],
-                    "et": row["Expense Type"],
-                    "val": row["Value"],
-                    "fq":row["Frequency"],
-                    "sd": row["Start Date"],
-                    "ed": row["End Date"],
-                    "ir":row["Inflation Rate"]
-                })
-                conn.commit()
-
-        logging.info(f"Deleted {len(df)} Expenses from the database.")
-
-        return df.iloc[0:0]  # Return empty DataFrame after deletion
+        logging.info(f"✅ Deleted {len(df)} expenses for profile `{profile_name}`.")
+        return df.iloc[0:0]
 
     except Exception as e:
-        logging.error(f"Error deleting Expenses: {e}")
-        return df  # Return original DataFrame if error occurs)
+        logging.error(f"❌ Error deleting expenses: {e}")
+        return df
 
-            
+
 #################################################### Add savings ########################################### 
 def create_savings_table(username):
+    """Create a savings table for a user if it does not exist."""
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
                 create_table_query = f"""
                 CREATE TABLE IF NOT EXISTS `{username}_Savings`(
                     Saving_ID INT AUTO_INCREMENT PRIMARY KEY,
+                    Profile_Name VARCHAR(100) NOT NULL,
                     Saving_Rate DECIMAL(5,2)
                 );
                 """
-
-                # Execute the query
                 cursor.execute(create_table_query)
                 conn.commit()
-                print("✅ Savings table created successfully!")
-
+                logging.info(f"✅ Savings table created for `{username}`.")
     except mysql.connector.Error as err:
-        print(f"❌ Error creating table: {err}")
- 
+        logging.error(f"❌ Error creating savings table: {err}")
 
-def add_savings(username,rate):
-    """Insert income details into the Incomes table."""
+
+def add_savings(username, profile_name, rate):
+    """Insert saving details into the savings table for a specific profile."""
     create_savings_table(username)
+
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
                 insert_query = f"""
-                                INSERT INTO `{username}_Savings`(Saving_Rate)
-                                VALUES (%s);
-                                """
-                cursor.execute(insert_query, (rate,))
+                    INSERT INTO `{username}_Savings` (Profile_Name, Saving_Rate)
+                    VALUES (%s, %s);
+                """
+                cursor.execute(insert_query, (profile_name, rate))
                 conn.commit()
-                logging.info(f"Saving added successfully for user {username}.")
+                logging.info(f"✅ Saving added successfully for `{username}` under profile `{profile_name}`.")
     except mysql.connector.Error as err:
-        logging.error(f"Error inserting Saving: {err}")
+        logging.error(f"❌ Error inserting saving: {err}")
 
-            
-def get_savings(username):
-    """Retrieve all expenses details for a specific user."""
+
+def get_savings(username, profile_name):
+    """Retrieve all savings for a specific user and profile."""
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
-                query = f"SELECT * FROM `{username}_Savings`"
-                cursor.execute(query)
+                query = f"SELECT Saving_ID, Saving_Rate FROM `{username}_Savings` WHERE Profile_Name = %s"
+                cursor.execute(query, (profile_name,))
                 return cursor.fetchall()
     except mysql.connector.Error as err:
-        logging.error(f"Error retrieving savings: {err}")
+        logging.error(f"❌ Error retrieving savings: {err}")
         return []
 
-            
-def delete_savings(username,savings_id):
-    """Delete an income record by ID."""
+
+def delete_savings(username, profile_name, savings_id):
+    """Delete a saving record by ID and profile name."""
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
-                query = f"DELETE FROM `{username}_Savings` WHERE Saving_ID = %s"
-                cursor.execute(query, (savings_id,))
+                query = f"DELETE FROM `{username}_Savings` WHERE Saving_ID = %s AND Profile_Name = %s"
+                cursor.execute(query, (savings_id, profile_name))
                 conn.commit()
-                logging.info(f"Income {savings_id} deleted successfully.")
+                logging.info(f"✅ Saving `{savings_id}` deleted for profile `{profile_name}`.")
     except mysql.connector.Error as err:
-        logging.error(f"Error deleting income: {err}")
- 
+        logging.error(f"❌ Error deleting saving: {err}")

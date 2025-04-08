@@ -2,11 +2,15 @@ import streamlit as st
 from datetime import date
 from database import *
 from utils import *
+import pandas as pd
+
 def income_details():
     # st.header("Income")
     st.markdown("Use this section to list down all primary sources of income without considering income from investments and assets.")
 
-    username = st.session_state.get("username") 
+    username = st.session_state.get("username")
+    # Retrieve the selected profile from session state; default to "Default" if not set.
+    selected_profile = st.session_state.get("selected_profile", "Default")
 
     # Create a form for income input
     with st.form("income_form"):
@@ -24,33 +28,33 @@ def income_details():
     if submit:
         if source and value and frequency and start_date and end_date:
             if end_date >= start_date:
-                add_income(username, source, value, frequency, start_date, end_date, growth_rate)
+                add_income(username, selected_profile, source, value, frequency, start_date, end_date, growth_rate)
                 st.success("Income added successfully!")
             else:
                 st.error("End Date must be after Start Date.")
 
-# Fetch and display incomes from SQL database
-    incomes = get_incomes(username)
+    # Fetch and display incomes from SQL database
+    incomes = get_incomes(username, selected_profile)
     df = pd.DataFrame(incomes)  # Convert to DataFrame
     st.subheader("Incomes List")
-    if not incomes:
+    if df.empty:
         st.write("No Incomes found.")
     else:
         df.columns = ["ID", "Source", "Value", "Frequency", "Start Date", "End Date", "Growth Rate"]
-        df.columns = df.columns.astype(str) 
+        df.columns = df.columns.astype(str)
         print(f"Income Dataframe :{df}")
-        
+
         # Format date columns to dd-mmm-yyyy
         for date_col in ["Start Date", "End Date"]:
             if date_col in df.columns:
                 try:
-                    # First convert to datetime, then format as string
                     df[date_col] = pd.to_datetime(df[date_col]).dt.strftime('%d-%b-%Y')
                 except Exception as e:
                     st.warning(f"Couldn't format {date_col}: {str(e)}")
                     continue
-        
+
         display_added_data(df, "Income")
+
 
 
 

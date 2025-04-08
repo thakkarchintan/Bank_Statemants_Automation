@@ -1,8 +1,5 @@
 [browser]
 showSidebarNavigation = false
 
-[theme]
-base="light"  # Ensures the app always stays in light mode
-
 [client]
 toolbarMode = "minimal"  # Removes the three-dot menu

@@ -84,6 +84,6 @@ def networth(authenticator):
     with tabs[2]:
         expense_details()
     with tabs[3]:
-        investment_deatils()   
+        investment_details()   
     with tabs[4]:
         result()
