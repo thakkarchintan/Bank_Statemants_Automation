@@ -1,8 +1,8 @@
 from .database_init import *
+from sqlalchemy import create_engine, text
 import logging 
 # Function to create Expenses table
 def create_expense_table(username):
-    """Create an expense table for a specific user if it doesn't exist."""
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
@@ -25,6 +25,7 @@ def create_expense_table(username):
                 cursor.execute(query)
                 conn.commit()
                 logging.info(f"✅ Table `{username}_Expenses` created successfully.")
+                ensure_profile_name_column(username)  # Add this call
     except mysql.connector.Error as err:
         logging.error(f"❌ Error creating expenses table: {err}")
 
@@ -103,7 +104,6 @@ def delete_expense(df, username, profile_name):
 
 #################################################### Add savings ########################################### 
 def create_savings_table(username):
-    """Create a savings table for a user if it does not exist."""
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
@@ -117,6 +117,7 @@ def create_savings_table(username):
                 cursor.execute(create_table_query)
                 conn.commit()
                 logging.info(f"✅ Savings table created for `{username}`.")
+                ensure_profile_name_column(username)  # Add this call
     except mysql.connector.Error as err:
         logging.error(f"❌ Error creating savings table: {err}")
 

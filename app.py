@@ -12,6 +12,7 @@ from streamlit_js_eval import streamlit_js_eval
 from networth import *
 from auth import Authenticator
 
+
 if "connected" not in st.session_state:
     st.session_state["connected"] = False
 
@@ -1148,7 +1149,7 @@ Team Fintellect
 
             # Sidebar dropdown to select an app
             st.sidebar.header("📂 Select an App")
-            app_name = st.sidebar.selectbox("", list(apps.keys()))
+            app_name = st.sidebar.selectbox("Choose below:", list(apps.keys()))
             app_name = apps[app_name]
             st.sidebar.markdown("<br>", unsafe_allow_html=True)  # Added space between dropdown and button
 

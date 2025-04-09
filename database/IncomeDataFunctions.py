@@ -1,5 +1,7 @@
 from .database_init import *
+from sqlalchemy import create_engine, text
 import logging 
+
 def create_incomes_table(username):
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
@@ -16,19 +18,17 @@ def create_incomes_table(username):
                     Growth_Rate DECIMAL(5,2)
                 );
                 """
-
-                # Execute the query
                 cursor.execute(create_table_query)
                 conn.commit()
                 print("✅ Incomes table created successfully!")
-
+                # Ensure Profile_Name column exists (even though it's in the query, call this for consistency)
+                ensure_profile_name_column(username)
     except mysql.connector.Error as err:
         print(f"❌ Error creating table: {err}")
     
 
 def add_income(username, profile_name, source, value, frequency, start_date, end_date, growth_rate):
-    """Insert income details into the Incomes table for a specific profile."""
-    create_incomes_table(username)
+    create_incomes_table(username)  # This will now ensure Profile_Name exists
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:

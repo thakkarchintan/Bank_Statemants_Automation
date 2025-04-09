@@ -1,4 +1,5 @@
 from .database_init import *
+from sqlalchemy import create_engine, text
 import logging
 def create_dependents_table(username):
     """Creates the Dependents table if it does not already exist."""

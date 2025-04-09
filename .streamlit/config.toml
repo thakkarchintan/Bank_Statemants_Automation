@@ -1,8 +1,8 @@
 [browser]
 showSidebarNavigation = false
 
-[theme]
-base = "light"
+# [theme]
+# base = "light"
 
 [client]
 toolbarMode = "minimal"  # Removes the three-dot menu

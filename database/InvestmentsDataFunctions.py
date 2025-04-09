@@ -4,7 +4,6 @@ import mysql.connector
 from sqlalchemy import create_engine, text
 
 def create_investment_table(username):
-    """Create a table for storing user investments."""
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
@@ -27,6 +26,7 @@ def create_investment_table(username):
                 cursor.execute(query)
                 conn.commit()
                 logging.info(f"✅ Table `{username}_Investments` created successfully.")
+                ensure_profile_name_column(username)  # Add this call
     except mysql.connector.Error as err:
         logging.error(f"❌ Error creating investment table: {err}")
 
