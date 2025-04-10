@@ -739,129 +739,132 @@ if st.session_state["connected"]:
                                     else:
                                         st.error("Please enter all details before proceeding.")
                             with tab6:
-                                table_nm = "Categories"
-                                initialize_db(table_nm)
-                                # Initialize session state for table data
-                                if "table_data" not in st.session_state:
-                                    st.session_state.table_data = get_categories(table_nm)
+                                try:
+                                    table_nm = "Categories"
+                                    initialize_db(table_nm)
+                                    # Initialize session state for table data
+                                    if "table_data" not in st.session_state:
+                                        st.session_state.table_data = get_categories(table_nm)
 
-                                # Session state to track replace prompt
-                                if "replace_prompt" not in st.session_state:
-                                    st.session_state.replace_prompt = False
-                                    st.session_state.pending_category = None
-                                    st.session_state.pending_keyword = None
-                                    st.session_state.existing_category = None
+                                    # Session state to track replace prompt
+                                    if "replace_prompt" not in st.session_state:
+                                        st.session_state.replace_prompt = False
+                                        st.session_state.pending_category = None
+                                        st.session_state.pending_keyword = None
+                                        st.session_state.existing_category = None
 
-                                # Function to refresh the table
-                                def refresh_table():
-                                    time.sleep(3)
-                                    st.rerun()
+                                    # Function to refresh the table
+                                    def refresh_table():
+                                        time.sleep(3)
+                                        st.rerun()
 
-                                # Add New Entry Section
-                                col1, col2, col3, col4, col5 = st.columns(5)  # Layout columns with 5 columns for all elements
+                                    # Add New Entry Section
+                                    col1, col2, col3, col4, col5 = st.columns(5)  # Layout columns with 5 columns for all elements
 
-                                # Unique categories sorted A-Z
-                                unique_categories = sorted(st.session_state.table_data["Category"].unique())
-                                new_category = col1.selectbox("Select Category", ["Add new category"] + unique_categories,
-                                                            index=0)
+                                    # Unique categories sorted A-Z
+                                    unique_categories = sorted(st.session_state.table_data["Category"].unique())
+                                    new_category = col1.selectbox("Select Category", ["Add new category"] + unique_categories,
+                                                                index=0)
 
-                                if new_category == "Add new category":
-                                    new_category = col2.text_input("Enter New Category")
+                                    if new_category == "Add new category":
+                                        new_category = col2.text_input("Enter New Category")
 
-                                new_keywords = col3.text_input("Enter Keywords")
-                                type = col4.selectbox("Select Transaction type", ["Credit", "Debit"])
+                                    new_keywords = col3.text_input("Enter Keywords")
+                                    type = col4.selectbox("Select Transaction type", ["Credit", "Debit"])
 
-                                message_to_display = ""
-                                success_message = False
-
-                                with col5:
-                                    # Move button slightly up
-                                    st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
-                                    # Check for duplicate and show prompt
-                                    if st.button("Add", use_container_width=True):
-                                        keyword_list = [item for item in new_keywords.split(",") if item]
-                                        if new_category and new_keywords:
-                                            for new_keyword in keyword_list:
-                                                existing_entry = st.session_state.table_data[
-                                                    (st.session_state.table_data["Keyword"] == new_keyword) & (
-                                                            type == st.session_state.table_data["Type"])]
-
-                                                if not existing_entry.empty:
-                                                    # Store the existing keyword/category in session state
-                                                    st.session_state.pending_category = new_category
-                                                    st.session_state.pending_keyword = new_keyword
-                                                    st.session_state.existing_category = existing_entry.iloc[0]["Category"]
-                                                    # st.session_state.replace_prompt = True
-
-                                                else:
-                                                    success_message = True
-                                                    # Add new entry since no duplicate exists
-                                                    for new_keyword in keyword_list:
-                                                        new_entry = pd.DataFrame(
-                                                            {"Keyword": [new_keyword], "Category": [new_category],
-                                                            "Type": [type]})
-                                                        st.session_state.table_data = pd.concat(
-                                                            [st.session_state.table_data, new_entry], ignore_index=True)
-                                                    delete_all(table_nm)
-                                                    add_category_df(st.session_state.table_data, table_nm)
-                                                    message_to_display = f"✅ Added: {new_category} - {keyword_list}"
-
-                                        else:
-                                            success_message = False
-                                            message_to_display = "⚠ Please enter both Category and Keyword!"
-
-                                if message_to_display != "":
-                                    if not success_message:
-                                        st.error(message_to_display)
-                                    else:
-                                        st.success(message_to_display)
                                     message_to_display = ""
-                                    refresh_table()
+                                    success_message = False
 
-                                # Display the table
-                                st.subheader("Category & Keyword Table")
-                                
-                                gb = GridOptionsBuilder.from_dataframe(st.session_state.table_data)
-                                # Add checkbox selection
-                                gb.configure_selection(selection_mode="multiple", use_checkbox=True)
-                                # Build grid options
-                                grid_options = gb.build()
-                                # Render AgGrid
-                                grid_response = AgGrid(
-                                    st.session_state.table_data,
-                                    gridOptions=grid_options,
-                                    height=600,
-                                    fit_columns_on_grid_load=True
-                                )
+                                    with col5:
+                                        # Move button slightly up
+                                        st.markdown("<div style='margin-top: 27px;'></div>", unsafe_allow_html=True)  # Adds margin
+                                        # Check for duplicate and show prompt
+                                        if st.button("Add", use_container_width=True):
+                                            keyword_list = [item for item in new_keywords.split(",") if item]
+                                            if new_category and new_keywords:
+                                                for new_keyword in keyword_list:
+                                                    existing_entry = st.session_state.table_data[
+                                                        (st.session_state.table_data["Keyword"] == new_keyword) & (
+                                                                type == st.session_state.table_data["Type"])]
 
-                                # Get selected rows as a DataFrame
-                                selected_rows = pd.DataFrame(grid_response["selected_rows"])
+                                                    if not existing_entry.empty:
+                                                        # Store the existing keyword/category in session state
+                                                        st.session_state.pending_category = new_category
+                                                        st.session_state.pending_keyword = new_keyword
+                                                        st.session_state.existing_category = existing_entry.iloc[0]["Category"]
+                                                        # st.session_state.replace_prompt = True
 
-                                # Delete Selected Rows
-                                if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
-                                    st.session_state.table_data = st.session_state.table_data.merge(selected_rows, how="left",
-                                                                                                indicator=True).query(
-                                        '_merge == "left_only"').drop('_merge', axis=1)
-                                    delete_all(table_nm)
-                                    add_category_df(st.session_state.table_data, table_nm)
-                                    refresh_table()
+                                                    else:
+                                                        success_message = True
+                                                        # Add new entry since no duplicate exists
+                                                        for new_keyword in keyword_list:
+                                                            new_entry = pd.DataFrame(
+                                                                {"Keyword": [new_keyword], "Category": [new_category],
+                                                                "Type": [type]})
+                                                            st.session_state.table_data = pd.concat(
+                                                                [st.session_state.table_data, new_entry], ignore_index=True)
+                                                        delete_all(table_nm)
+                                                        add_category_df(st.session_state.table_data, table_nm)
+                                                        message_to_display = f"✅ Added: {new_category} - {keyword_list}"
 
-                                # Handle Replace Prompt
-                                if st.session_state.replace_prompt:
-                                    st.warning(
-                                        f"⚠ The keyword **'{st.session_state.pending_keyword}'** already exists under **'{st.session_state.existing_category}'** category.")
+                                            else:
+                                                success_message = False
+                                                message_to_display = "⚠ Please enter both Category and Keyword!"
 
-                                    colA, colB = st.columns(2)
-
-                                    if colA.button("🔄 Replace Existing"):
-                                        st.session_state.table_data.loc[
-                                            st.session_state.table_data["Keyword"] == st.session_state.pending_keyword, "Category"] = st.session_state.pending_category
-                                        st.session_state.replace_prompt = False
+                                    if message_to_display != "":
+                                        if not success_message:
+                                            st.error(message_to_display)
+                                        else:
+                                            st.success(message_to_display)
+                                        message_to_display = ""
                                         refresh_table()
 
-                                    if colB.button("❌ Cancel"):
-                                        st.session_state.replace_prompt = False
+                                    # Display the table
+                                    st.subheader("Category & Keyword Table")
+                                    
+                                    gb = GridOptionsBuilder.from_dataframe(st.session_state.table_data)
+                                    # Add checkbox selection
+                                    gb.configure_selection(selection_mode="multiple", use_checkbox=True)
+                                    # Build grid options
+                                    grid_options = gb.build()
+                                    # Render AgGrid
+                                    grid_response = AgGrid(
+                                        st.session_state.table_data,
+                                        gridOptions=grid_options,
+                                        height=600,
+                                        fit_columns_on_grid_load=True
+                                    )
+
+                                    # Get selected rows as a DataFrame
+                                    selected_rows = pd.DataFrame(grid_response["selected_rows"])
+
+                                    # Delete Selected Rows
+                                    if not selected_rows.empty and st.button("❌ Delete Selected Rows"):
+                                        st.session_state.table_data = st.session_state.table_data.merge(selected_rows, how="left",
+                                                                                                    indicator=True).query(
+                                            '_merge == "left_only"').drop('_merge', axis=1)
+                                        delete_all(table_nm)
+                                        add_category_df(st.session_state.table_data, table_nm)
                                         refresh_table()
+
+                                    # Handle Replace Prompt
+                                    if st.session_state.replace_prompt:
+                                        st.warning(
+                                            f"⚠ The keyword **'{st.session_state.pending_keyword}'** already exists under **'{st.session_state.existing_category}'** category.")
+
+                                        colA, colB = st.columns(2)
+
+                                        if colA.button("🔄 Replace Existing"):
+                                            st.session_state.table_data.loc[
+                                                st.session_state.table_data["Keyword"] == st.session_state.pending_keyword, "Category"] = st.session_state.pending_category
+                                            st.session_state.replace_prompt = False
+                                            refresh_table()
+
+                                        if colB.button("❌ Cancel"):
+                                            st.session_state.replace_prompt = False
+                                            refresh_table()
+                                except Exception as e:
+                                    st.toast(f"Error in fetching data : {e}")
 
                             with tab7:
                                 try:
