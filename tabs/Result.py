@@ -434,7 +434,7 @@ def manage_profiles(username):
         if st.button("Create Profile"):
             if new_profile_name and new_profile_name not in st.session_state.profiles:
                 st.session_state.profiles.append(new_profile_name)
-                insert_user(username, new_profile_name)  # Save to database
+                add_profile(username, new_profile_name)  # Save to database
                 st.success(f"Profile '{new_profile_name}' created successfully!")
                 st.rerun()
             elif new_profile_name in st.session_state.profiles:
