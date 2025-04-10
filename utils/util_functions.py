@@ -229,12 +229,7 @@ def filter_data(df, query):
     return df
 
 def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",category_present=False,category_list=[]):
-    try:
-        bal_df=pd.DataFrame()
-        if category_present:
-            bal_df=df[["Balance"]].copy()
-            df.drop('Balance', axis=1, inplace=True)
-    
+    try:    
         # Configure the ag-Grid options without pagination
         gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_side_bar()  # Add a sidebar
@@ -247,6 +242,8 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
             if column not in num_cols:
                 gb.configure_column(column, minWidth=100,wrapText=True,filter="agTextColumnFilter")
             
+        gb.configure_column("Id", hide=True)
+        gb.configure_column("Balance", hide=True)
         gb.configure_grid_options(enableColumnResizing=True, enableHorizontalScroll=True)
 
         gridOptions = gb.build()
@@ -262,24 +259,19 @@ def display_data(df,Height,download_df=[],summary=False,db_name="",user_name="",
                             g_resonse=pd.DataFrame(grid_response["data"])
                             if not g_resonse.empty:
                                 # print(g_resonse)
-                                # Merge df with g_resonse on 'A' and 'B', keeping df's structure
-                                df = df.merge(g_resonse, on=['Name','Bank','Date','Narration','Debit','Credit'], how='left', suffixes=('_df', '_g_resonse'))
-
+                                df = df.merge(g_resonse, on=['Id','Name','Bank','Date','Narration','Debit','Credit','Balance'], how='left', suffixes=('_df', '_g_resonse'))
+                                # print(df)
                                 # Update 'Category' Column: take 'Category_g_resonse' if it's not null, otherwise keep 'Category_df'
                                 df['Category'] = df['Category_g_resonse'].combine_first(df['Category_df'])
 
                                 # Drop extra columns and keep the required structure
-                                df = df[['Name','Bank','Date','Narration','Debit','Credit','Category']]
+                                df = df[['Id','Name','Bank','Date','Narration','Debit','Credit','Category','Balance']]
                                 download_df=df
-                                df = df.reset_index(drop=True)
-                                bal_df = bal_df.reset_index(drop=True)
-                                # print(g_resonse)
-                                # print(bal_df)
-                                updated_df = pd.concat([df, bal_df], axis=1)
-                                # print(updated_df)
-                                updated_df['Date'] = pd.to_datetime(updated_df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
+                                # df = df.reset_index(drop=True)
+                                
+                                df['Date'] = pd.to_datetime(df['Date'],errors='coerce').dt.strftime('%Y-%m-%d')
                                 delete_data(db_name,user_name,"1=1")
-                                add_data(updated_df,False,db_name,user_name)
+                                add_data(df,False,db_name,user_name)
                                 st.cache_data.clear()
                                 st.toast(":green[Data saved successfully.]")
                 with col2:

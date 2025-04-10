@@ -81,6 +81,7 @@ def add_data(df,override,database_name, table_name):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
+            Id INT AUTO_INCREMENT PRIMARY KEY,
             Name VARCHAR(255),
             Bank TEXT, 
             Date DATE, 
@@ -109,6 +110,7 @@ def add_data(df,override,database_name, table_name):
     conn.close()
     encrypt_columns = ["Narration", "Debit", "Credit", "Category"]
     edf = encrypt_dataframe(df,encrypt_columns)
+    # print(edf)
     # Create database connection
     engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
 
@@ -132,6 +134,7 @@ def get_transaction_data(database_name,table_name,condition=""):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
+            Id INT AUTO_INCREMENT PRIMARY KEY,
             Name VARCHAR(255),
             Bank TEXT, 
             Date DATE, 
@@ -169,6 +172,7 @@ def get_transaction_data2(database_name,table_name,condition=""):
 
     create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
+            Id INT AUTO_INCREMENT PRIMARY KEY,
             Name VARCHAR(255),
             Bank TEXT, 
             Date DATE, 

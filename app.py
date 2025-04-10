@@ -278,38 +278,37 @@ if st.session_state["connected"]:
                                         df[col] = df[col].str.strip()
                                         db_df[col] = db_df[col].str.strip()
 
-                                    common_data = has_common_rows(df, db_df)
                                     bank_name_filtered_df = db_df[(db_df['Name'] == ac_name) & (db_df['Bank'] == bank)]
                                     sum_debit = bank_name_filtered_df['Debit'].sum()
                                     sum_credit = bank_name_filtered_df['Credit'].sum()
                                     ex_balance_sum=sum_credit-sum_debit
-                                    if common_data.empty:
-                                        if not df.empty:
-                                            ex_balance_sum += df['Credit'].sum() - df['Debit'].sum()
-                                            add_data(df, override, db_name, user_name)
-                                            if not db_df.empty:
-                                                condition_summ = f"Name='{ac_name}' and Bank='{bank}';"
-                                                delete_data(db_name, summ_table, condition_summ)
-                                            res = get_oldest_latest_date(ac_name, bank, user_name)
+                                    
+                                    if not df.empty:
+                                        ex_balance_sum += df['Credit'].sum() - df['Debit'].sum()
+                                        add_data(df, override, db_name, user_name)
+                                        if not db_df.empty:
+                                            condition_summ = f"Name='{ac_name}' and Bank='{bank}';"
+                                            delete_data(db_name, summ_table, condition_summ)
+                                        res = get_oldest_latest_date(ac_name, bank, user_name)
 
-                                            if res:
-                                                row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
-                                                row = get_transaction_data2(db_name, user_name, row_condition)
-                                                res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
-                                                row.loc[0, 'Balance']=float(row.loc[0, 'Balance'])
-                                                row.loc[0, 'Balance'] += float(row.loc[0, 'Debit']) - float(row.loc[0, 'Credit'])
-                                                openning_bal = row.loc[0, 'Balance']
-                                                # print(row.loc[0, 'Balance'])
-                                                row.loc[0, 'Balance'] += ex_balance_sum
-                                                update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
-                                                            res['oldest_date'], res['latest_date'],
-                                                            res['no_of_transactions'], row.loc[0, 'Balance'],
-                                                            openning_bal)
+                                        if res:
+                                            row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
+                                            row = get_transaction_data2(db_name, user_name, row_condition)
+                                            res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
+                                            row.loc[0, 'Balance']=float(row.loc[0, 'Balance'])
+                                            row.loc[0, 'Balance'] += float(row.loc[0, 'Debit']) - float(row.loc[0, 'Credit'])
+                                            openning_bal = row.loc[0, 'Balance']
+                                            # print(row.loc[0, 'Balance'])
+                                            row.loc[0, 'Balance'] += ex_balance_sum
+                                            update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
+                                                        res['oldest_date'], res['latest_date'],
+                                                        res['no_of_transactions'], row.loc[0, 'Balance'],
+                                                        openning_bal)
 
-                                        st.toast(":green[Data updated successfully]")
-                                        st.cache_data.clear()
-                                        time.sleep(1.5)
-                                        refresh_page()
+                                    st.toast(":green[Data updated successfully]")
+                                    st.cache_data.clear()
+                                    time.sleep(1.5)
+                                    refresh_page()
 
                                 except Exception as e:
                                     st.session_state.ok = False
@@ -325,103 +324,7 @@ if st.session_state["connected"]:
                             st.session_state.ok = False
                             st.toast(":red[Please upload files smaller than 2MB.]")
 
-                    if not common_data.empty:
-                        st.markdown(
-                            """
-                            <style>
-                                div.block-container { padding-top: 0rem; } /* Reduce padding */
-                                div[data-testid="stTabs"] { margin-top: -110px; } /* Move tabs higher */
-                                .stButton>button { margin-top: 50px; } /* Move buttons lower */
-                            </style>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                        
-                        tabs = st.tabs(["Duplicate data"])
-                        with tabs[0]:
-                            st.warning("These transactions already exist. What would you like to do?")
-
-                            common_data = common_data[['Name', 'Bank', 'Date', 'Narration', 'Debit', 'Credit']]
-                            common_data['Date'] = common_data['Date'].dt.strftime('%d-%b-%Y')
-
-                            unique_common_data=common_data.drop_duplicates()
-                            # Increase table height
-                            display_data(unique_common_data, 600, [], True)
-
-                            # Add spacing before buttons
-                            st.markdown(
-                                        """
-                                        <style>
-                                        .stButton>button {
-                                            margin-top: 0px !important;
-                                            padding-top: 0px !important;
-                                        }
-                                        </style>
-                                        """,
-                                        unsafe_allow_html=True
-                                    )
-                            cll = st.columns(5)
-                            with cll[0]:
-                                overwrite = st.button("Overwrite", use_container_width=True)
-                            with cll[1]:
-                                keep = st.button("Keep Both", use_container_width=True)
-                            with cll[2]:
-                                cancel = st.button("Cancel", use_container_width=True)
-
-                            if overwrite:
-                                # Remove exact matches
-                                df = df.merge(db_df, on=df.columns.tolist(), how='left', indicator=True).query(
-                                    '_merge == "left_only"').drop('_merge', axis=1)
-                                if not df.empty:
-                                    ex_balance_sum += df['Credit'].sum() - df['Debit'].sum()
-                                    add_data(df, override, db_name, user_name)
-                                    condition_summ = f"Name='{ac_name}' and Bank='{bank}';"
-                                    delete_data(db_name, summ_table, condition_summ)
-                                    res = get_oldest_latest_date(ac_name, bank, user_name)
-
-                                    if res:
-                                        row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
-                                        row = get_transaction_data2(db_name, user_name, row_condition)
-                                        res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
-                                        row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
-                                        openning_bal = row.loc[0, 'Balance']
-                                        row.loc[0, 'Balance'] += ex_balance_sum
-                                        update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
-                                                        res['oldest_date'], res['latest_date'], res['no_of_transactions'],
-                                                        row.loc[0, 'Balance'], openning_bal)
-
-                                st.toast(":green[Data updated successfully]")
-                                st.cache_data.clear()
-                                time.sleep(1.5)
-                                refresh_page()
-
-
-                            elif keep:
-                                if not df.empty:
-                                    ex_balance_sum += df['Credit'].sum() - df['Debit'].sum()
-                                    add_data(df, override, db_name, user_name)
-                                    condition_summ = f"Name='{ac_name}' and Bank='{bank}';"
-                                    delete_data(db_name, summ_table, condition_summ)
-                                    res = get_oldest_latest_date(ac_name, bank, user_name)
-
-                                    if res:
-                                        row_condition = f"where Date='{res['oldest_date']}' and Name='{ac_name}' and Bank='{bank}' limit 1"
-                                        row = get_transaction_data2(db_name, user_name, row_condition)
-                                        res['oldest_date'] = pd.to_datetime(res['oldest_date'], errors='coerce')
-                                        row.loc[0, 'Balance'] += row.loc[0, 'Debit'] - row.loc[0, 'Credit']
-                                        openning_bal = row.loc[0, 'Balance']
-                                        row.loc[0, 'Balance'] += ex_balance_sum
-                                        update_summary1(db_name, summ_table, row.iloc[0]['Name'], bank,
-                                                    res['oldest_date'], res['latest_date'], res['no_of_transactions'],
-                                                    row.loc[0, 'Balance'], openning_bal)
-                                st.toast(":green[Data updated successfully]")
-                                st.cache_data.clear()
-                                time.sleep(1.5)
-                                refresh_page()
-
-                            elif cancel:
-                                refresh_page()
-
+               
                     elif st.session_state.confirm:
                         # Apply CSS to reduce space above tabs in the "Delete Data" section
                         st.markdown(
@@ -604,7 +507,6 @@ if st.session_state["connected"]:
                         # Content for each tab
                         with tab1:
                             try:
-
                                 g_df=db_df.copy()
                                 if db_df.empty:
                                     g_df=dummy_data.copy()
