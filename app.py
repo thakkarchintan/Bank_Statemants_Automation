@@ -817,7 +817,8 @@ if st.session_state["connected"]:
                                         else:
                                             st.success(message_to_display)
                                         message_to_display = ""
-                                        refresh_table()
+                                        time.sleep(2)
+                                        refresh_page()
 
                                     # Display the table
                                     st.subheader("Category & Keyword Table")
@@ -845,7 +846,8 @@ if st.session_state["connected"]:
                                             '_merge == "left_only"').drop('_merge', axis=1)
                                         delete_all(table_nm)
                                         add_category_df(st.session_state.table_data, table_nm)
-                                        refresh_table()
+                                        time.sleep(2)
+                                        refresh_page()
 
                                     # Handle Replace Prompt
                                     if st.session_state.replace_prompt:
@@ -864,7 +866,9 @@ if st.session_state["connected"]:
                                             st.session_state.replace_prompt = False
                                             refresh_table()
                                 except Exception as e:
-                                    st.toast(f"{e}")
+                                    st.toast(":red[Something went wrong.Please try again.]")
+                                    time.sleep(2)
+                                    refresh_page()
 
                             with tab7:
                                 try:
