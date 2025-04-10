@@ -28,7 +28,7 @@ streamlit_cookies_manager
 dateutils==0.6.12
 numpy==1.26.4
 pandas==2.2.0
-streamlit==1.37.0
+streamlit==1.41.1
 XlsxWriter==3.2.0
 proto-plus==1.23.0
 protobuf==4.25.3
