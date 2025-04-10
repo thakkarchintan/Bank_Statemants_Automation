@@ -864,7 +864,7 @@ if st.session_state["connected"]:
                                             st.session_state.replace_prompt = False
                                             refresh_table()
                                 except Exception as e:
-                                    st.toast(f"Error in fetching data : {e}")
+                                    st.toast(f"{e}")
 
                             with tab7:
                                 try:
