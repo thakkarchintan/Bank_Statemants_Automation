@@ -917,11 +917,10 @@ Team Fintellect
 
                 except Exception as e:
                     print(f"Error in fetching data : {e}")
-                    st.toast(":red[Something went wrong.Please try again.]")
+                    st.toast(e)
                     # delete_data(db_name,user_name,"Name is NULL")
                     time.sleep(2)
-                    authenticator.logout()
-                    # refresh_page()
+                    refresh_page()
             elif app_name == "networth":
                 if st.sidebar.button("Go to Main Page"):
                     main_page = True
