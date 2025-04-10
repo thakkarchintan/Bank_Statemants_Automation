@@ -138,6 +138,7 @@ def create_profiles_table():
 def add_profile(email, profile_name):
     """Add a new profile for a user."""
     create_profiles_table()
+    logging.info(f"Attempting to insert profile `{profile_name}` for user `{email}`...")
     try:
         with mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name) as conn:
             with conn.cursor() as cursor:
